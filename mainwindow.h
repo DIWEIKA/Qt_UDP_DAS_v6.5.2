@@ -31,6 +31,7 @@ QT_END_NAMESPACE
  //使用前向声明
 class WriteToFiles;
 class UDP_Recv;
+class wave_widget;
 
 class MainWindow : public QMainWindow
 {
@@ -45,6 +46,7 @@ public:
     QTimer* udpTimer;
     UDP_Recv* udp_recv;
     WriteToFiles* writeToFiles;
+    wave_widget *wave_Widget;
     bool isSave;
     bool isStart;
     bool isASCII;

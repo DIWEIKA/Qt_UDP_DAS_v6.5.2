@@ -19,7 +19,6 @@ MainWindow::MainWindow(QWidget *parent)
     //set Local Message
     setLocalMsg();
 
-    //new UDP_Recv Thread
     udp_recv = new UDP_Recv(this);
 
     udp_recv->start();
@@ -28,8 +27,9 @@ MainWindow::MainWindow(QWidget *parent)
     udpTimer = new QTimer();
     udpTimer->setTimerType(Qt::PreciseTimer);
 
-    //new WriteToFiles Thread
     writeToFiles = new WriteToFiles(udp_recv);
+
+    wave_Widget = new wave_widget(udp_recv->CHdata2);
 
     //clear window
     if(ui->textEdit_Msg->isFullScreen())
@@ -42,6 +42,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     //Every time dealMsg is finished, connect dealMsgFinshedSlot()
     connect(writeToFiles,&QThread::finished,this,&MainWindow::FinishWriteToFilesThread);
+
+    connect(udp_recv,&UDP_Recv::SendtoWidget,wave_Widget,&wave_widget::FlashWave,Qt::BlockingQueuedConnection);
+
+    connect(udp_recv,&UDP_Recv::SendtoWidget2,wave_Widget,&wave_widget::FlashWave2,Qt::BlockingQueuedConnection);
 
 }
 
@@ -155,8 +159,6 @@ void MainWindow::on_checkBox_Hex_clicked()
 
 void MainWindow::on_pushButton_Display_clicked()
 {
-    wave_widget *v = new wave_widget();
-
-    v->show();
+        wave_Widget->show();
 }
 

@@ -39,9 +39,12 @@ public:
     bool isHEX;
     QHostAddress clientAddr;
     quint16 clientPort;
-    int lenoRecv = 1024;
+    int lenoRecv = 4096;
     qint64 lenoRecvHEX;
     qint64 LenoUDP = 4096*1000; //1s发送的数据个数(Bytes)
+    int pack_count = 0;
+    char pack_HEX_32[2048*32]; //用于存放32帧数据
+
     shared_ptr<CirQueue<unsigned char>> CHdata2;
     shared_ptr<CirQueue<unsigned char>> CHdata3;
     shared_ptr<CirQueue<unsigned char>> CHdata4;
@@ -91,7 +94,8 @@ protected:
     void run();
 
 signals:
-
+    void SendtoWidget(char datagram[]);
+    void SendtoWidget2(char datagramHEX[]);
 };
 
 #endif // UDP_RECV_H

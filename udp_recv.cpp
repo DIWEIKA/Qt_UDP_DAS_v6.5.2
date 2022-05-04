@@ -32,6 +32,9 @@ UDP_Recv::UDP_Recv(MainWindow* mainwindow)
     p_echo_net_pack_array.reserve(1024);
     p_echo_net_pack_HEX.reserve(2048);
 
+    //
+
+
     CHdata2 = make_shared<CirQueue<unsigned char>>(LenoUDP);
     CHdata3 = make_shared<CirQueue<unsigned char>>(LenoUDP);
     CHdata4 = make_shared<CirQueue<unsigned char>>(LenoUDP);
@@ -136,14 +139,6 @@ void UDP_Recv::run()
 
             net_pack_size = 0;
 
-
-            //release p_echo_net_pack
-            //            delete p_echo_net_pack;
-            //            p_echo_net_pack = NULL;
-
-            //            delete bufPtr;
-            //            bufPtr = NULL;
-
             //ASCII接收
             if(isASCII && (!isHEX)){
 
@@ -163,10 +158,24 @@ void UDP_Recv::run()
                 //init RECORD_BUF
                 bufPtr[0] = '\0';
 
-                //                RECORD_BUF = make_shared<char*>(bufPtr);
-
                 //RECORD_BUF << p_echo_net_pack
                 memcpy(bufPtr,p_echo_net_pack,lenoRecv);
+
+                pack_count = pack_count + net_pack_size;
+
+                //将p_echo_net_pack传给wave_widget
+                if(pack_count>1024000){
+
+                    emit SendtoWidget(p_echo_net_pack);
+
+                    pack_count = 0;
+                }
+
+                QMetaMethod signal1 = QMetaMethod::fromSignal(UDP_Recv::SendtoWidget);
+
+                bool isSignalConnected  = this->isSignalConnected(signal1);
+
+                qDebug()<<"isSignalConnected = "<< isSignalConnected <<endl;
 
                 //CHData << RECORD_BUF
                 for(int i=0; i<lenoRecv; i++) {
@@ -174,16 +183,6 @@ void UDP_Recv::run()
                     unsigned char usCHDATA =(unsigned char)bufPtr[i];
 
                     for(int j = 0; j<SaveNumber; j++){
-
-//                        //如果CHdataj没满，存入CHdataj，跳出循环；否则存入CHdataj+1
-//                        if(!CHdataArray[j]->isFull()){
-
-//                            CHdataArray[j]->push(usCHDATA);
-
-//                            break;
-//                        }
-//                        else
-//                            continue;
 
                         //如果CHdataj满了，j++；否则存入CHdataj，然后break
                         if(CHdataArray[j]->isFull())
@@ -219,7 +218,25 @@ void UDP_Recv::run()
 
                 p_echo_net_pack_HEX = p_echo_net_pack_array.toHex().toUpper();
 
-                //CHData << RECORD_BUF
+                //p_echo_net_pack_HEX >> pack_HEX_32[]
+                for(int k = 2*pack_count; k<(2*pack_count + net_pack_size*2) ; k++ )
+                    pack_HEX_32[k] = p_echo_net_pack_HEX[k];
+
+                //计数收到的包个数
+                pack_count = pack_count + net_pack_size;
+
+                //收到32个包时
+                if(pack_count>net_pack_size*32){
+
+                    emit SendtoWidget2(pack_HEX_32);
+
+                    pack_count = 0;
+
+                    memset(pack_HEX_32,'\0',sizeof(pack_HEX_32)); //清空数组
+
+                }
+
+                //CHData << p_echo_net_pack_HEX
                 for(int i=0; i<lenoRecvHEX; i++) {
 
                     unsigned char usCHDATA =(unsigned char)p_echo_net_pack_HEX[i];
