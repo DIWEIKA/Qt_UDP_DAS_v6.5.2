@@ -16,7 +16,7 @@
 #define READ_LENGTH 1024*32 //从CHdataX里读取的数据长度
 #define CHDATA_ALL_LENGTH 1024*8 //四个通道的十进制数数据长度
 #define CHDATA_LENGTH 1024*2 //一个通道的十进制数长度
-#define DISPLAY_LENGTH 1024 //展示在widget上的数据长度
+#define DISPLAY_LENGTH 256*2 //展示在widget上的数据长度
 #define SaveNumber 40 //存储容器的个数
 
 using namespace std;
@@ -32,7 +32,7 @@ class wave_widget : public QWidget
     Q_OBJECT
 
 public:
-    wave_widget(shared_ptr<CirQueue<unsigned char>> CHdataX);
+    wave_widget();
     ~wave_widget();
 
     QTimer* m_timer;
@@ -46,35 +46,37 @@ public:
     qint64 LenoUDP = READ_LENGTH;
 
     QVector<QPointF> pointsSeries;
-    QString saveFolder;//存储目录（文件夹）
+    QString saveFolder;
     QString saveFilenameAll;
     ifstream infileAll;
-    char CHdata[READ_LENGTH];
-    char CHdataHEX[READ_LENGTH*2];
+    //ASCII接收
+    char CHdata[READ_LENGTH]= {'\0'};
     int CHdata_DEC_all[CHDATA_ALL_LENGTH] =  {0};
     int CHdata_DEC_1[CHDATA_LENGTH]= {0};
     int CHdata_DEC_2[CHDATA_LENGTH] =  {0};
     int CHdata_DEC_3[CHDATA_LENGTH] =  {0};
     int CHdata_DEC_4[CHDATA_LENGTH] =  {0};
+    //HEX接收
+    char CHdataHEX[READ_LENGTH*2] = {'\0'};
+    int CHdata_DEC_all_HEX[CHDATA_ALL_LENGTH*2] =  {0};
+    int CHdata_DEC_1_HEX[CHDATA_LENGTH*2]= {0};
+    int CHdata_DEC_2_HEX[CHDATA_LENGTH*2] =  {0};
+    int CHdata_DEC_3_HEX[CHDATA_LENGTH*2] =  {0};
+    int CHdata_DEC_4_HEX[CHDATA_LENGTH*2] =  {0};
 
-    shared_ptr<CirQueue<unsigned char>> CHdataQueueArray[SaveNumber];
-    shared_ptr<CirQueue<unsigned char>> CHdataQueue;
+    int CHdata_DEC_disp[CHDATA_LENGTH] = {0};
 
     void initWidget();
-    void slotTimeout();
-    void slotTimeout2();
-    void slotTimeout3();
     void ReadFromFiles();
-    void ReadFromQueue();
     void DisplayWave();
 
 public slots:
     void FlashWave(char[]);
-    void FlashWave2(char[]);
+    void FlashWave2(QByteArray);
+    void FlashWave3(char[]);
 
 private slots:
     void on_btnReset_clicked();
-
 
 
 private:

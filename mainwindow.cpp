@@ -29,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     writeToFiles = new WriteToFiles(udp_recv);
 
-    wave_Widget = new wave_widget(udp_recv->CHdata2);
+    wave_Widget = new wave_widget();
 
     //clear window
     if(ui->textEdit_Msg->isFullScreen())
@@ -43,10 +43,7 @@ MainWindow::MainWindow(QWidget *parent)
     //Every time dealMsg is finished, connect dealMsgFinshedSlot()
     connect(writeToFiles,&QThread::finished,this,&MainWindow::FinishWriteToFilesThread);
 
-    connect(udp_recv,&UDP_Recv::SendtoWidget,wave_Widget,&wave_widget::FlashWave,Qt::BlockingQueuedConnection);
-
-    connect(udp_recv,&UDP_Recv::SendtoWidget2,wave_Widget,&wave_widget::FlashWave2,Qt::BlockingQueuedConnection);
-
+    connect(udp_recv,&UDP_Recv::SendtoWidget,wave_Widget,&wave_widget::FlashWave3,Qt::BlockingQueuedConnection);
 }
 
 MainWindow::~MainWindow()

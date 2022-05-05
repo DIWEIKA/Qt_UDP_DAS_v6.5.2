@@ -31,8 +31,7 @@ UDP_Recv::UDP_Recv(MainWindow* mainwindow)
     //预先申请存储空间
     p_echo_net_pack_array.reserve(1024);
     p_echo_net_pack_HEX.reserve(2048);
-
-    //
+//    pack_HEX_32.reserve(32*2048);
 
 
     CHdata2 = make_shared<CirQueue<unsigned char>>(LenoUDP);
@@ -171,11 +170,11 @@ void UDP_Recv::run()
                     pack_count = 0;
                 }
 
-                QMetaMethod signal1 = QMetaMethod::fromSignal(UDP_Recv::SendtoWidget);
+//                QMetaMethod signal1 = QMetaMethod::fromSignal(UDP_Recv::SendtoWidget);
 
-                bool isSignalConnected  = this->isSignalConnected(signal1);
+//                bool isSignalConnected  = this->isSignalConnected(signal1);
 
-                qDebug()<<"isSignalConnected = "<< isSignalConnected <<endl;
+//                qDebug()<<"isSignalConnected = "<< isSignalConnected <<endl;
 
                 //CHData << RECORD_BUF
                 for(int i=0; i<lenoRecv; i++) {
@@ -219,20 +218,31 @@ void UDP_Recv::run()
                 p_echo_net_pack_HEX = p_echo_net_pack_array.toHex().toUpper();
 
                 //p_echo_net_pack_HEX >> pack_HEX_32[]
-                for(int k = 2*pack_count; k<(2*pack_count + net_pack_size*2) ; k++ )
-                    pack_HEX_32[k] = p_echo_net_pack_HEX[k];
+                for(int k = 2*pack_count; k<(2*pack_count + 2048) ; k++ )
+                    pack_HEX_32[k] = p_echo_net_pack_HEX[k-2*pack_count];
 
-                //计数收到的包个数
-                pack_count = pack_count + net_pack_size;
+                //计数收到的包次数
+                pack_count = pack_count + 1024;
 
-                //收到32个包时
-                if(pack_count>net_pack_size*32){
+                //每收到32个包时，称为一个事件
+                if(pack_count>=1024*32){
 
-                    emit SendtoWidget2(pack_HEX_32);
+                    emit_count++;
+
+                    //每触发0次上述事件，emit一次信号
+                    if (emit_count>=0){
+
+                        emit SendtoWidget(pack_HEX_32);
+
+                        emit_count=0;
+
+                        qDebug()<<"Signal emitted ! " <<endl;
+                    }
 
                     pack_count = 0;
 
                     memset(pack_HEX_32,'\0',sizeof(pack_HEX_32)); //清空数组
+//                    pack_HEX_32.clear();
 
                 }
 
