@@ -23,6 +23,7 @@ public:
     QString saveFilename3;
     QString saveFilename4;
     QString saveFilenameAll;
+    QString saveFileDemo;
     QString file1;
     QString file2;
     QString file3;
@@ -33,8 +34,13 @@ public:
     ofstream outfile3;
     ofstream outfile4;
     ofstream outfileAll;
+    ofstream outfileDemo;
+    bool saveFlag = false;
+    bool demoFlag = false;
     int PeakNum=31;
+    qint64 LenoDemo = 4096*1000;
     shared_ptr<CirQueue<unsigned char>> CHdata;
+    shared_ptr<CirQueue<int>> Phdata;
 
 protected:
     //QThreadµÄÐéº¯Êý
@@ -43,6 +49,9 @@ protected:
     void run();
 
 signals:
+
+public slots:
+    void recvPhSlot(int Ph[]);
 
 };
 

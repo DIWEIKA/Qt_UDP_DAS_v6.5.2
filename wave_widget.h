@@ -14,8 +14,8 @@
 #include <ctime>
 
 #define READ_LENGTH 1024*32 //从CHdataX里读取的数据长度
-#define CHDATA_ALL_LENGTH 1024*8 //四个通道的十进制数数据长度
-#define CHDATA_LENGTH 1024*2 //一个通道的十进制数长度
+#define PULSEDATA_ALL_LENGTH 1024*8 //四个通道的十进制数数据长度
+#define PULSEDATA_LENGTH 1024*2 //一个通道的十进制数长度
 #define DISPLAY_LENGTH 256*2 //展示在widget上的数据长度
 #define SaveNumber 40 //存储容器的个数
 
@@ -41,43 +41,44 @@ public:
     QSplineSeries* m_lineSeries;
     int index = 0;
     const int AXIS_MAX_X = DISPLAY_LENGTH, AXIS_MAX_Y = 700;
-    int sizeoCHdata ;
-    int sizeoCHdataDec;
+    int sizeoPulsedata ;
+    int sizeoPulsedataDec;
     qint64 LenoUDP = READ_LENGTH;
+    int ChannelIndex;
 
     QVector<QPointF> pointsSeries;
     QString saveFolder;
     QString saveFilenameAll;
     ifstream infileAll;
-    //ASCII接收
-    char CHdata[READ_LENGTH]= {'\0'};
-    int CHdata_DEC_all[CHDATA_ALL_LENGTH] =  {0};
-    int CHdata_DEC_1[CHDATA_LENGTH]= {0};
-    int CHdata_DEC_2[CHDATA_LENGTH] =  {0};
-    int CHdata_DEC_3[CHDATA_LENGTH] =  {0};
-    int CHdata_DEC_4[CHDATA_LENGTH] =  {0};
+//    //ASCII接收
+//    char Pulsedata[READ_LENGTH]= {'\0'};
+//    int Pulsedata_DEC_all[PULSEDATA_ALL_LENGTH] =  {0};
+//    int Pulsedata_DEC_1[PULSEDATA_LENGTH]= {0};
+//    int Pulsedata_DEC_2[PULSEDATA_LENGTH] =  {0};
+//    int Pulsedata_DEC_3[PULSEDATA_LENGTH] =  {0};
+//    int Pulsedata_DEC_4[PULSEDATA_LENGTH] =  {0};
     //HEX接收
-    char CHdataHEX[READ_LENGTH*2] = {'\0'};
-    int CHdata_DEC_all_HEX[CHDATA_ALL_LENGTH*2] =  {0};
-    int CHdata_DEC_1_HEX[CHDATA_LENGTH*2]= {0};
-    int CHdata_DEC_2_HEX[CHDATA_LENGTH*2] =  {0};
-    int CHdata_DEC_3_HEX[CHDATA_LENGTH*2] =  {0};
-    int CHdata_DEC_4_HEX[CHDATA_LENGTH*2] =  {0};
+    char PulsedataHEX[READ_LENGTH*2] = {'\0'};
+    int Pulsedata_DEC_all_HEX[PULSEDATA_ALL_LENGTH*2] =  {0};
+    int Pulsedata_DEC_1_HEX[PULSEDATA_LENGTH*2]= {0};
+    int Pulsedata_DEC_2_HEX[PULSEDATA_LENGTH*2] =  {0};
+    int Pulsedata_DEC_3_HEX[PULSEDATA_LENGTH*2] =  {0};
+    int Pulsedata_DEC_4_HEX[PULSEDATA_LENGTH*2] =  {0};
 
-    int CHdata_DEC_disp[CHDATA_LENGTH] = {0};
+    int Pulsedata_DEC_disp[PULSEDATA_LENGTH] = {0};
 
     void initWidget();
-    void ReadFromFiles();
     void DisplayWave();
 
 public slots:
-    void FlashWave(char[]);
-    void FlashWave2(QByteArray);
+//    void FlashWave(char[]);
+//    void FlashWave2(QByteArray);
     void FlashWave3(char[]);
 
 private slots:
     void on_btnReset_clicked();
 
+    void on_comboBox_Channel_currentIndexChangedSlot();
 
 private:
     Ui::wave_widget *ui;

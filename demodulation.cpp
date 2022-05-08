@@ -13,7 +13,6 @@ Demodulation::Demodulation(shared_ptr<CirQueue<unsigned char>> CHdataX)
 
 void Demodulation::run()
 {
-
     sizeoCHdata = CHdata->size();
 
     //1. CHdata >> demo_CHdata
@@ -53,6 +52,9 @@ void Demodulation::run()
         //5. 相位解调
         Ph[i]=demoduPh(Vi[i],Vq[i]);
     }
+
+    //6. send a signal to writeToFiles
+    emit sendPhToWrite(Ph);
 }
 
 //读取反正切值查表文件

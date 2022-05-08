@@ -5,6 +5,8 @@ WriteToFiles::WriteToFiles(UDP_Recv* udp_Recv)
     udp_recv = udp_Recv;
 
     CHdata = make_shared<CirQueue<unsigned char>>(udp_recv->LenoUDP);
+
+    Phdata = make_shared<CirQueue<int>>(LenoDemo);
 }
 
 void WriteToFiles::run()
@@ -16,62 +18,68 @@ void WriteToFiles::run()
 
     saveFolder =  string("F:/Desktop/UDPConnect/data/");
 
-    //    saveFilename1 = QString(saveFolder.c_str())+QString("/[CH1][")+QString::number(PeakNum)
-    //            +QString("]")+dateTime.toString("yyyyMMddhhmmss")+ QString(".bin");
-    //    saveFilename2 = QString(saveFolder.c_str())+QString("/[CH2][")+QString::number(PeakNum)
-    //            +QString("]")+dateTime.toString("yyyyMMddhhmmss")+ QString(".bin");
-    //    saveFilename3 = QString(saveFolder.c_str())+QString("/[CH3][")+QString::number(PeakNum)
-    //            +QString("]")+dateTime.toString("yyyyMMddhhmmss")+ QString(".bin");
-    //    saveFilename4 = QString(saveFolder.c_str())+QString("/[CH4][")+QString::number(PeakNum)
-    //            +QString("]")+dateTime.toString("yyyyMMddhhmmss")+ QString(".bin");
     saveFilenameAll = QString(saveFolder.c_str())+QString("[All][")+QString::number(PeakNum)
             +QString("]")+dateTime.toString("yyyyMMddhhmmss")+ QString(".bin");
 
+    saveFileDemo = QString(saveFolder.c_str())+QString("[Demo]")+dateTime.toString("yyyyMMddhhmmss")+ QString(".bin");
 
-    //打开文件
-    //   outfile1.open(saveFilename1.toStdString().data(),ofstream::binary);
-    //   outfile2.open(saveFilename2.toStdString().data(),ofstream::binary);
-    //   outfile3.open(saveFilename3.toStdString().data(), ofstream::binary);
-    //   outfile4.open(saveFilename4.toStdString().data(), ofstream::binary);
-    outfileAll.open(saveFilenameAll.toStdString().data(), ofstream::binary);
+    //存储三通道原始数据
+    if(saveFlag){
+        outfileAll.open(saveFilenameAll.toStdString().data(), ofstream::binary);
 
-    //打开文件失败则结束运行
-    //    if (!outfile1.is_open() || !outfile2.is_open() || !outfile3.is_open() || !outfile4.is_open()) return;
-    if (!outfileAll.is_open()) return;
+        //打开文件失败则结束运行
+        if (!outfileAll.is_open()) return;
 
-    unsigned int sizeoCHdata; //CHdata的长度
+        for(int i = 0; i< SaveNumber; i++){
 
-    for(int i = 0; i< SaveNumber; i++){
+            if(udp_recv->CHdataArray[i]->isEmpty())
+                continue;
+            else
+            {
+                unsigned int sizeoCHdata = udp_recv->CHdataArray[i]->size();
 
-        if(udp_recv->CHdataArray[i]->isEmpty())
-            continue;
-        else
-        {
-            sizeoCHdata = udp_recv->CHdataArray[i]->size();
+                for(unsigned int j=0; j<sizeoCHdata; ++j){
+                    outfileAll.write((const char*)udp_recv->CHdataArray[i]->begin(),sizeof(unsigned char));
+                    udp_recv->CHdataArray[i]->pop();
+                }
 
-//            CHdata = udp_recv->CHdataArray[i];
-
-            for(unsigned int j=0; j<sizeoCHdata; ++j){
-                outfileAll.write((const char*)udp_recv->CHdataArray[i]->begin(),sizeof(unsigned char));
-                udp_recv->CHdataArray[i]->pop();
+                udp_recv->CHdataArray[i]->clear();
             }
-
-            udp_recv->CHdataArray[i]->clear();
         }
+
+        outfileAll.close();
+        qDebug()<<"3 Channels data writing over ! "<<endl;
     }
 
-    qDebug()<<"ofstream writing over ! "<<endl;
+    //存储解调数据
+    if(demoFlag){
+        outfileDemo.open(saveFileDemo.toStdString().data(), ofstream::binary);
 
+        if (!outfileDemo.is_open()) return;
 
-    //close stream
-    //    outfile1.close();
-    //    outfile2.close();
-    //    outfile3.close();
-    //    outfile4.close();
+        unsigned int sizeoPhata = Phdata->size();
 
-    outfileAll.close();
+        for(unsigned int j=0; j<sizeoPhata; ++j){
+            outfileDemo.write((const char*)Phdata->front(),sizeof(int));
+            Phdata->pop();
+        }
+
+        Phdata->clear();
+
+        outfileDemo.close();
+        qDebug()<<"Phase data writing over ! "<<endl;
+    }
 
     qDebug()<< "WriteToFiles Thread is Finished ! "<<endl;
     qDebug()<<"-----------------------------------"<<endl;
+}
+
+void WriteToFiles::recvPhSlot(int Ph[])
+{
+    //ph[] >> Phdata
+    for(int i = 0; i<LenoDemo; i++){
+        int iPhdata = Ph[i];
+        Phdata->push(iPhdata);
+    }
 }
 

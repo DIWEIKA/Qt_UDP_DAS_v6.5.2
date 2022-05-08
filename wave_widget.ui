@@ -41,7 +41,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="comboBox">
+       <widget class="QComboBox" name="comboBox_Channel">
         <item>
          <property name="text">
           <string>1</string>

@@ -16,9 +16,11 @@
 #include <QtDebug>
 #include <vector>
 #include <windows.h>
-#include <writetofiles.h>
-#include <udp_recv.h>
+#include "writetofiles.h"
+#include "udp_recv.h"
 #include "wave_widget.h"
+#include "demodulation.h"
+#include "com_send.h"
 #include "ui_mainwindow.h"
 
 
@@ -32,6 +34,8 @@ QT_END_NAMESPACE
 class WriteToFiles;
 class UDP_Recv;
 class wave_widget;
+class Demodulation;
+class COM_Send;
 
 class MainWindow : public QMainWindow
 {
@@ -47,11 +51,15 @@ public:
     UDP_Recv* udp_recv;
     WriteToFiles* writeToFiles;
     wave_widget *wave_Widget;
+    Demodulation *demodu;
+    COM_Send *com_send;
     bool isSave;
     bool isStart;
     bool isASCII;
     bool isHEX;
+    int AcqMode; //采集卡模式选择
 
+    void setLocalStyleSheet();
     void setLocalMsg();
     void OpenWriteToFilesThread();
     void stopThread();
@@ -73,6 +81,12 @@ private slots:
     void on_checkBox_Hex_clicked();
 
     void on_pushButton_Display_clicked();
+
+    void on_checkBox_Demo_clicked();
+
+    void on_comboBox_Mode_currentIndexChangedSlot();
+
+    void on_pushButton_Send_clicked();
 
 private:
     bool isTimeUpdate;
