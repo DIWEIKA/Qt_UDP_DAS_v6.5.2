@@ -31,7 +31,7 @@ UDP_Recv::UDP_Recv(MainWindow* mainwindow)
     //预先申请存储空间
     p_echo_net_pack_array.reserve(1024);
     p_echo_net_pack_HEX.reserve(2048);
-//    pack_HEX_32.reserve(32*2048);
+    //    pack_HEX_32.reserve(32*2048);
 
 
     CHdata2 = make_shared<CirQueue<unsigned char>>(LenoUDP);
@@ -138,7 +138,7 @@ void UDP_Recv::run()
 
             net_pack_size = 0;
 
-/*----------------ASCII接收-------------------*/
+            /*----------------ASCII接收-------------------*/
             if(isASCII && (!isHEX)){
 
                 //init array
@@ -190,7 +190,7 @@ void UDP_Recv::run()
 
             }
 
-/*----------------HEX接收-------------------*/
+            /*----------------HEX接收-------------------*/
             if((!isASCII) && isHEX){
 
                 lenoRecvHEX = lenoRecv * 2;
@@ -211,8 +211,21 @@ void UDP_Recv::run()
 
                 p_echo_net_pack_HEX = p_echo_net_pack_array.toHex().toUpper();
 
- /*---------------Mode I: 将脉冲波形显示出来------------*/
-                if(mainWindow->AcqMode == 1){
+                qDebug()<<p_echo_net_pack_HEX[128]<<p_echo_net_pack_HEX[129]<<p_echo_net_pack_HEX[130]<<p_echo_net_pack_HEX[131]<<endl;
+
+                char X = '3';
+                char Y = '0';
+
+                //判断32帧数据的帧头，从而定位起点位置.
+                //若某帧第129~144位分别是3030303030303030，则该帧是起点帧
+                if((p_echo_net_pack_HEX[128]== X) && (p_echo_net_pack_HEX[129]== Y) && (p_echo_net_pack_HEX[130]== X) && (p_echo_net_pack_HEX[131]== Y)
+/*                        && p_echo_net_pack_HEX[132]=='3' && p_echo_net_pack_HEX[133]=='0' && p_echo_net_pack_HEX[134]=='3' && p_echo_net_pack_HEX[135]=='0'
+                        && p_echo_net_pack_HEX[136]=='3' && p_echo_net_pack_HEX[137]=='0' && p_echo_net_pack_HEX[138]=='3' && p_echo_net_pack_HEX[139]=='0'
+                        && p_echo_net_pack_HEX[140]=='3' && p_echo_net_pack_HEX[141]=='0' && p_echo_net_pack_HEX[142]=='3' && p_echo_net_pack_HEX[143]=='0'*/ )
+                    isStartFrame = 1;
+
+                /*---------------Mode I: 将脉冲波形显示出来------------*/
+                if((mainWindow->AcqMode == 1) && isStartFrame){
 
                     //p_echo_net_pack_HEX >> pack_HEX_32[]
                     for(int k = 2*pack_count; k<(2*pack_count + 2048) ; k++ )
@@ -226,14 +239,16 @@ void UDP_Recv::run()
 
                         emit_count++;
 
-                        //每触发0次上述事件，emit信号给wave_widget
-                        if (emit_count>=0){
+                        //(用于刷新波形显示的速率)每触发1次上述事件，emit信号给wave_widget
+                        if (emit_count>=50){
 
                             emit SendtoWidget(pack_HEX_32);
 
                             emit_count=0;
 
                             qDebug()<<"Signal emitted ! " <<endl;
+
+                            isStartFrame = 0;
                         }
 
                         pack_count = 0;
@@ -242,8 +257,9 @@ void UDP_Recv::run()
                     }
                 }
 
- /*---------------Mode II: 直接保存收到的数据------------*/
+                /*---------------Mode II: 直接保存收到的数据------------*/
                 if(mainWindow->AcqMode == 2){
+
                     //CHData << p_echo_net_pack_HEX
                     for(int i=0; i<lenoRecvHEX; i++) {
 

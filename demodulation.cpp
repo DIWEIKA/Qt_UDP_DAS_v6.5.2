@@ -13,7 +13,7 @@ Demodulation::Demodulation(shared_ptr<CirQueue<unsigned char>> CHdataX)
 
 void Demodulation::run()
 {
-    sizeoCHdata = CHdata->size();
+    sizeoCHdata = READ_LENGTH;
 
     //1. CHdata >> demo_CHdata
     for(int j=0; j<sizeoCHdata; ++j){
@@ -46,15 +46,18 @@ void Demodulation::run()
 
     //4. get Vi Vq
     for(int i = 0; i<sizeoDemoCHdata; i++){
-        Vi[i] = demo_CHdata_DEC_1[i] + demo_CHdata_DEC_2[i] - 2 * demo_CHdata_DEC_3[i];
-        Vq[i] = -sqrt(3) * (demo_CHdata_DEC_1[i] - demo_CHdata_DEC_2[i]);
+        Vi[i] = (float)(demo_CHdata_DEC_1[i] + demo_CHdata_DEC_2[i] - 2 * demo_CHdata_DEC_3[i]);
+        Vq[i] = (float)(-sqrt(3) * (demo_CHdata_DEC_1[i] - demo_CHdata_DEC_2[i]));
 
         //5. 相位解调
         Ph[i]=demoduPh(Vi[i],Vq[i]);
     }
 
     //6. send a signal to writeToFiles
+    qDebug()<<"emit sendPhToWrite signal !" <<endl;
     emit sendPhToWrite(Ph);
+
+
 }
 
 //读取反正切值查表文件

@@ -55,6 +55,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(udp_recv,&UDP_Recv::SendtoWidget,wave_Widget,&wave_widget::FlashWave3,Qt::BlockingQueuedConnection);
 
     connect(demodu,&Demodulation::sendPhToWrite,writeToFiles,&WriteToFiles::recvPhSlot,Qt::BlockingQueuedConnection);
+
+//    connect(wave_Widget,QOverload<int>::of(&QComboBox::currentIndexChanged),wave_Widget,&wave_widget::on_comboBox_Channel_currentIndexChangedSlot);
+
 }
 
 MainWindow::~MainWindow()
@@ -139,12 +142,36 @@ void MainWindow::on_pushButton_Start_clicked()
     isStart = true;
 
     ui->textEdit_Msg->insertPlainText("Started ! \n");
+
+    if(isHEX) ui->checkBox_ASCII->setDisabled(true);
+
+    if(isASCII) ui->checkBox_Hex->setDisabled(true);
+
+    if(AcqMode == 1){
+        ui->checkBox_Save->setDisabled(true);
+
+        ui->checkBox_Demo->setDisabled(true);
+    }
+
+    if(AcqMode == 2){
+        ui->pushButton_Display->setDisabled(true);
+
+        ui->pushButton_Send->setDisabled(true);
+    }
+
 }
 
 void MainWindow::on_pushButton_Stop_clicked()
 {
     isStart = false;
     isSave = false;
+
+    ui->checkBox_ASCII->setEnabled(true);
+    ui->checkBox_Demo->setEnabled(true);
+    ui->checkBox_Hex->setEnabled(true);
+    ui->checkBox_Save->setEnabled(true);
+    ui->pushButton_Display->setEnabled(true);
+    ui->pushButton_Send->setEnabled(true);
 
     ui->checkBox_ASCII->setChecked(isStart);
     ui->checkBox_Hex->setChecked(isStart);
@@ -165,9 +192,8 @@ void MainWindow::on_pushButton_Clear_clicked()
 
 void MainWindow::on_checkBox_Save_clicked()
 {
-
-    udpTimer->start(1000);
-
+    //设置存储时间间隔
+    udpTimer->start(10000);
 }
 
 void MainWindow::on_checkBox_ASCII_clicked()

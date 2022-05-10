@@ -17,9 +17,9 @@ public:
 
     shared_ptr<CirQueue<unsigned char>> CHdata;
     char demo_CHdata[4096*1000]= {'\0'};
-    int Vi[4096*1000] = {0};
-    int Vq[4096*1000]= {0};
-    int Ph[4096*1000]= {0};
+    float Vi[4096*1000] = {0};
+    float Vq[4096*1000]= {0};
+    float Ph[4096*1000]= {0};
     float atanTable[NUMTABLE]= {0};
     int sizeoCHdata;
     int demo_CHdata_DEC_all[CHDATA_ALL_LENGTH]= {0};
@@ -34,7 +34,7 @@ public:
     float demoduPh(float vi,float vq);
 
 signals:
-    void sendPhToWrite(int ph[]); //将解调的相位信号发送给writeToFiles类
+    void sendPhToWrite(float ph[]); //将解调的相位信号发送给writeToFiles类
 
 protected:
         void run();

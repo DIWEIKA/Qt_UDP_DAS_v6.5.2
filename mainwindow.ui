@@ -19,7 +19,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>11</x>
@@ -130,7 +130,7 @@
       </layout>
      </item>
      <item>
-      <widget class="QPlainTextEdit" name="textEdit_Msg"/>
+      <widget class="QTextBrowser" name="textEdit_Msg"/>
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">

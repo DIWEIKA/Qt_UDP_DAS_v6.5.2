@@ -37,6 +37,7 @@ public:
     bool isStart;
     bool isASCII;
     bool isHEX;
+    bool isStartFrame = 0; //起始帧标识
     QHostAddress clientAddr;
     quint16 clientPort;
     int lenoRecv = 1024;

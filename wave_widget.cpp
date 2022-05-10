@@ -9,8 +9,7 @@ wave_widget::wave_widget()
     //初始化widget
     initWidget();
 
-    connect(ui->comboBox_Channel,QOverload<int>::of(&QComboBox::currentIndexChanged),this,&wave_widget::on_comboBox_Channel_currentIndexChangedSlot);
-
+    ChannelIndex = 0;
 }
 
 wave_widget::~wave_widget()
@@ -49,6 +48,7 @@ void wave_widget::initWidget()
     ui->graphicsView->setChart(m_chart);                           // 将图表对象设置到graphicsView上进行显示
     ui->graphicsView->setRenderHint(QPainter::Antialiasing);       // 设置渲染：抗锯齿，如果不设置那么曲线就显得不平滑
     ui->graphicsView->setRubberBand(QChartView::RectangleRubberBand);   //XY方向同时放大到鼠标画出的矩形大小
+
 }
 
 //HEX发送
@@ -84,27 +84,27 @@ void wave_widget::FlashWave3(char datagramHEX[])
         Pulsedata_DEC_4_HEX[p] = Pulsedata_DEC_all_HEX[k+3];
     }
 
-//    4. Channel select
-    switch (ChannelIndex) {
-    case 0:
-        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_1_HEX,sizeoPulsedataDec);
-        break;
-    case 1:
-        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_2_HEX,sizeoPulsedataDec);
-        break;
-    case 2:
-        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_3_HEX,sizeoPulsedataDec);
-        break;
-    case 3:
-        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_4_HEX,sizeoPulsedataDec);
-        break;
-    default:
-        break;
-    }
+////    4. Channel select
+//    switch (ChannelIndex) {
+//    case 0:
+//        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_1_HEX,sizeoPulsedataDec);
+//        break;
+//    case 1:
+//        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_2_HEX,sizeoPulsedataDec);
+//        break;
+//    case 2:
+//        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_3_HEX,sizeoPulsedataDec);
+//        break;
+//    case 3:
+//        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_4_HEX,sizeoPulsedataDec);
+//        break;
+//    default:
+//        break;
+//    }
 
     //5. Wave Display
     for(int i = 0;i<DISPLAY_LENGTH;i++)
-        m_lineSeries->append(QPointF(i,Pulsedata_DEC_disp[i]));
+        m_lineSeries->append(QPointF(i,Pulsedata_DEC_1_HEX[i]));
 }
 
 
@@ -217,9 +217,9 @@ void wave_widget::on_btnReset_clicked()
     m_axisY->setMax(AXIS_MAX_Y);
 }
 
-void wave_widget::on_comboBox_Channel_currentIndexChangedSlot()
-{
-    ChannelIndex = ui->comboBox_Channel->currentIndex();
-}
+//void wave_widget::on_comboBox_Channel_currentIndexChangedSlot()
+//{
+//    ChannelIndex = ui->comboBox_Channel->currentIndex();
+//}
 
 

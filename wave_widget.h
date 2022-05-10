@@ -2,6 +2,8 @@
 #define WAVE_WIDGET_H
 
 #include <QWidget>
+#include <QMainWindow>
+#include <qmainwindow.h>
 #include <QTimer>
 #include <QChartView>
 #include <QValueAxis>
@@ -16,7 +18,7 @@
 #define READ_LENGTH 1024*32 //从CHdataX里读取的数据长度
 #define PULSEDATA_ALL_LENGTH 1024*8 //四个通道的十进制数数据长度
 #define PULSEDATA_LENGTH 1024*2 //一个通道的十进制数长度
-#define DISPLAY_LENGTH 256*2 //展示在widget上的数据长度
+#define DISPLAY_LENGTH 512*2 //展示在widget上的数据长度
 #define SaveNumber 40 //存储容器的个数
 
 using namespace std;
@@ -40,7 +42,7 @@ public:
     QValueAxis *m_axisX, *m_axisY;
     QSplineSeries* m_lineSeries;
     int index = 0;
-    const int AXIS_MAX_X = DISPLAY_LENGTH, AXIS_MAX_Y = 700;
+    const int AXIS_MAX_X = DISPLAY_LENGTH, AXIS_MAX_Y = 800;
     int sizeoPulsedata ;
     int sizeoPulsedataDec;
     qint64 LenoUDP = READ_LENGTH;
@@ -50,13 +52,13 @@ public:
     QString saveFolder;
     QString saveFilenameAll;
     ifstream infileAll;
-//    //ASCII接收
-//    char Pulsedata[READ_LENGTH]= {'\0'};
-//    int Pulsedata_DEC_all[PULSEDATA_ALL_LENGTH] =  {0};
-//    int Pulsedata_DEC_1[PULSEDATA_LENGTH]= {0};
-//    int Pulsedata_DEC_2[PULSEDATA_LENGTH] =  {0};
-//    int Pulsedata_DEC_3[PULSEDATA_LENGTH] =  {0};
-//    int Pulsedata_DEC_4[PULSEDATA_LENGTH] =  {0};
+    //    //ASCII接收
+    //    char Pulsedata[READ_LENGTH]= {'\0'};
+    //    int Pulsedata_DEC_all[PULSEDATA_ALL_LENGTH] =  {0};
+    //    int Pulsedata_DEC_1[PULSEDATA_LENGTH]= {0};
+    //    int Pulsedata_DEC_2[PULSEDATA_LENGTH] =  {0};
+    //    int Pulsedata_DEC_3[PULSEDATA_LENGTH] =  {0};
+    //    int Pulsedata_DEC_4[PULSEDATA_LENGTH] =  {0};
     //HEX接收
     char PulsedataHEX[READ_LENGTH*2] = {'\0'};
     int Pulsedata_DEC_all_HEX[PULSEDATA_ALL_LENGTH*2] =  {0};
@@ -70,18 +72,21 @@ public:
     void initWidget();
     void DisplayWave();
 
+    Ui::wave_widget *ui;
+
 public slots:
-//    void FlashWave(char[]);
-//    void FlashWave2(QByteArray);
+    //    void FlashWave(char[]);
+    //    void FlashWave2(QByteArray);
     void FlashWave3(char[]);
+//    void on_comboBox_Channel_currentIndexChangedSlot();
 
 private slots:
     void on_btnReset_clicked();
 
-    void on_comboBox_Channel_currentIndexChangedSlot();
+
 
 private:
-    Ui::wave_widget *ui;
+
 };
 
 #endif // WAVE_WIDGET_H

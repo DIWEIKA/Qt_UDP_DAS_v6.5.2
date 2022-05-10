@@ -6,7 +6,7 @@ WriteToFiles::WriteToFiles(UDP_Recv* udp_Recv)
 
     CHdata = make_shared<CirQueue<unsigned char>>(udp_recv->LenoUDP);
 
-    Phdata = make_shared<CirQueue<int>>(LenoDemo);
+    Phdata = make_shared<CirQueue<float>>(CHDATA_LENGTH);
 }
 
 void WriteToFiles::run()
@@ -60,7 +60,7 @@ void WriteToFiles::run()
         unsigned int sizeoPhata = Phdata->size();
 
         for(unsigned int j=0; j<sizeoPhata; ++j){
-            outfileDemo.write((const char*)Phdata->front(),sizeof(int));
+            outfileDemo.write((const char*)Phdata->begin(),sizeof(float));
             Phdata->pop();
         }
 
@@ -74,11 +74,13 @@ void WriteToFiles::run()
     qDebug()<<"-----------------------------------"<<endl;
 }
 
-void WriteToFiles::recvPhSlot(int Ph[])
+void WriteToFiles::recvPhSlot(float Ph[])
 {
+    qDebug()<<"RecvPhSlot Responsed ! "<<endl;
+
     //ph[] >> Phdata
-    for(int i = 0; i<LenoDemo; i++){
-        int iPhdata = Ph[i];
+    for(int i = 0; i<CHDATA_LENGTH; i++){
+        float iPhdata = Ph[i];
         Phdata->push(iPhdata);
     }
 }

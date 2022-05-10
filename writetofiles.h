@@ -40,7 +40,7 @@ public:
     int PeakNum=31;
     qint64 LenoDemo = 4096*1000;
     shared_ptr<CirQueue<unsigned char>> CHdata;
-    shared_ptr<CirQueue<int>> Phdata;
+    shared_ptr<CirQueue<float>> Phdata;
 
 protected:
     //QThreadµÄÐéº¯Êý
@@ -51,7 +51,7 @@ protected:
 signals:
 
 public slots:
-    void recvPhSlot(int Ph[]);
+    void recvPhSlot(float Ph[]);
 
 };
 
