@@ -36,7 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     wave_Widget = new wave_widget();
 
-    demodu = new Demodulation(udp_recv->CHdata2);
+    demodu = new Demodulation(udp_recv);
 
     com_send = new COM_Send(this);
 
@@ -48,13 +48,15 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(udp_recv,&QThread::finished,this,&MainWindow::FinishUDP_RecvThread);
 
-    connect(udpTimer,&QTimer::timeout,this,&MainWindow::OpenWriteToFilesThread);
+    connect(udpTimer,&QTimer::timeout,this,&MainWindow::OpenSaveOrDemoThread);
 
     connect(writeToFiles,&QThread::finished,this,&MainWindow::FinishWriteToFilesThread);
 
+    connect(demodu,&QThread::finished,this,&MainWindow::FinishDemodulationThread);
+
     connect(udp_recv,&UDP_Recv::SendtoWidget,wave_Widget,&wave_widget::FlashWave3,Qt::BlockingQueuedConnection);
 
-    connect(demodu,&Demodulation::sendPhToWrite,writeToFiles,&WriteToFiles::recvPhSlot,Qt::BlockingQueuedConnection);
+//    connect(demodu,&Demodulation::sendDEMOdataToWrite,writeToFiles,&WriteToFiles::recvPhSlot,Qt::BlockingQueuedConnection);
 
 //    connect(wave_Widget,QOverload<int>::of(&QComboBox::currentIndexChanged),wave_Widget,&wave_widget::on_comboBox_Channel_currentIndexChangedSlot);
 
@@ -104,48 +106,55 @@ void MainWindow::setLocalMsg()
 
 void MainWindow::FinishUDP_RecvThread()
 {
-    //quit Thread
     udp_recv->quit();
-
     udp_recv->wait();
-
 }
 
-void MainWindow::OpenWriteToFilesThread()
+void MainWindow::OpenSaveOrDemoThread()
 {
     isSave = ui->checkBox_Save->isChecked();
 
-    if(isSave && isStart){
+    isDemo = ui->checkBox_Demo->isChecked();
 
-        writeToFiles->saveFlag = true;
-
+    if(isSave && isStart)
         writeToFiles->start();
 
-        writeToFiles->demoFlag = ui->checkBox_Demo->isChecked();
-    }
+    if(isDemo && isStart)
+        demodu->start();
 
 }
 
 void MainWindow::FinishWriteToFilesThread()
 {
-    //quit Thread
     writeToFiles->quit();
-
     writeToFiles->wait();
 
-    ui->textEdit_Msg->insertPlainText(" Files have been saved in " + writeToFiles->saveFilenameAll+"\n");
+    ui->textEdit_Msg->insertPlainText(" Save Files have been saved in " + writeToFiles->saveFilenameAll+"\n");   
+}
 
+void MainWindow::FinishDemodulationThread()
+{
+    demodu->quit();
+    demodu->wait();
+
+    ui->textEdit_Msg->insertPlainText("Demodulation have been saved in " + demodu->saveFileDemo+ "\n");
 }
 
 void MainWindow::on_pushButton_Start_clicked()
 {
-    isStart = true;
-
     ui->textEdit_Msg->insertPlainText("Started ! \n");
+
+    if(!udp_recv->isRunning())
+        udp_recv->start();
+
+    isStart = true;
 
     if(isHEX) ui->checkBox_ASCII->setDisabled(true);
 
-    if(isASCII) ui->checkBox_Hex->setDisabled(true);
+    if(isASCII){
+        ui->checkBox_Hex->setDisabled(true);
+        ui->pushButton_Display->setDisabled(true); //ASCII接收时不能显示波形
+    }
 
     if(AcqMode == 1){
         ui->checkBox_Save->setDisabled(true);
@@ -165,6 +174,9 @@ void MainWindow::on_pushButton_Stop_clicked()
 {
     isStart = false;
     isSave = false;
+    isASCII = false;
+    isHEX = false;
+    isDemo = false;
 
     ui->checkBox_ASCII->setEnabled(true);
     ui->checkBox_Demo->setEnabled(true);
@@ -180,6 +192,9 @@ void MainWindow::on_pushButton_Stop_clicked()
     //clear CHdata
     udp_recv->clearCHdata();
 
+    //end udp_recv Thread
+    udp_recv->quit();
+
     ui->textEdit_Msg->insertPlainText("Stopped ! \n");
 }
 
@@ -193,7 +208,7 @@ void MainWindow::on_pushButton_Clear_clicked()
 void MainWindow::on_checkBox_Save_clicked()
 {
     //设置存储时间间隔
-    udpTimer->start(10000);
+    udpTimer->start(15000);
 }
 
 void MainWindow::on_checkBox_ASCII_clicked()
@@ -213,7 +228,7 @@ void MainWindow::on_pushButton_Display_clicked()
 
 void MainWindow::on_checkBox_Demo_clicked()
 {
-    demodu->start();
+     udpTimer->start(15000);
 }
 
 void MainWindow::on_comboBox_Mode_currentIndexChangedSlot()

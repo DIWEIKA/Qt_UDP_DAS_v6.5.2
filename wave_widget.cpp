@@ -25,9 +25,11 @@ void wave_widget::initWidget()
     m_axisX->setTitleText("Time Series");
     m_axisY->setTitleText("Amplitude");
     m_axisX->setMin(0);
-    m_axisY->setMin(-AXIS_MAX_Y);
+    m_axisY->setMin(-200);
     m_axisX->setMax(AXIS_MAX_X);
     m_axisY->setMax(AXIS_MAX_Y);
+    m_axisY->setTickCount(20);
+    m_axisX->setTickCount(20);
 
     m_lineSeries = new QSplineSeries();                             // 创建曲线绘制对象
     m_lineSeries->setPointsVisible(true);                         // 设置数据点可见
@@ -104,7 +106,7 @@ void wave_widget::FlashWave3(char datagramHEX[])
 
     //5. Wave Display
     for(int i = 0;i<DISPLAY_LENGTH;i++)
-        m_lineSeries->append(QPointF(i,Pulsedata_DEC_1_HEX[i]));
+        m_lineSeries->append(QPointF(i,-Pulsedata_DEC_1_HEX[i]));
 }
 
 
@@ -212,7 +214,7 @@ void wave_widget::FlashWave3(char datagramHEX[])
 void wave_widget::on_btnReset_clicked()
 {
     m_axisX->setMin(0);
-    m_axisY->setMin(-AXIS_MAX_Y);
+    m_axisY->setMin(-200);
     m_axisX->setMax(AXIS_MAX_X);
     m_axisY->setMax(AXIS_MAX_Y);
 }

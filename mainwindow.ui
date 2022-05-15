@@ -87,7 +87,7 @@
           </font>
          </property>
          <property name="text">
-          <string>采集卡上位机软件</string>
+          <string>DAS上位机软件</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>

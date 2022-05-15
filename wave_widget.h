@@ -9,6 +9,7 @@
 #include <QValueAxis>
 #include <QLineSeries>
 #include <QSplineSeries>
+#include <QLineSeries>
 #include <fstream>
 #include <sstream>
 #include <mainwindow.h>
@@ -18,8 +19,8 @@
 #define READ_LENGTH 1024*32 //从CHdataX里读取的数据长度
 #define PULSEDATA_ALL_LENGTH 1024*8 //四个通道的十进制数数据长度
 #define PULSEDATA_LENGTH 1024*2 //一个通道的十进制数长度
-#define DISPLAY_LENGTH 512*2 //展示在widget上的数据长度
-#define SaveNumber 40 //存储容器的个数
+#define DISPLAY_LENGTH 256*2 //展示在widget上的数据长度
+#define SaveNumber 100 //存储容器的个数
 
 using namespace std;
 
@@ -40,9 +41,9 @@ public:
     QTimer* m_timer;
     QChart* m_chart;
     QValueAxis *m_axisX, *m_axisY;
-    QSplineSeries* m_lineSeries;
+    QLineSeries* m_lineSeries;
     int index = 0;
-    const int AXIS_MAX_X = DISPLAY_LENGTH, AXIS_MAX_Y = 800;
+    const int AXIS_MAX_X = DISPLAY_LENGTH, AXIS_MAX_Y = 1200;
     int sizeoPulsedata ;
     int sizeoPulsedataDec;
     qint64 LenoUDP = READ_LENGTH;

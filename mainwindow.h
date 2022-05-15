@@ -54,6 +54,7 @@ public:
     Demodulation *demodu;
     COM_Send *com_send;
     bool isSave;
+    bool isDemo;
     bool isStart;
     bool isASCII;
     bool isHEX;
@@ -61,7 +62,7 @@ public:
 
     void setLocalStyleSheet();
     void setLocalMsg();
-    void OpenWriteToFilesThread();
+    void OpenSaveOrDemoThread();
     void stopThread();
 
 
@@ -69,6 +70,7 @@ private slots:
 
     void FinishUDP_RecvThread();
     void FinishWriteToFilesThread();
+    void FinishDemodulationThread();
     void on_pushButton_Start_clicked();
     void on_pushButton_Stop_clicked();
 
@@ -89,7 +91,6 @@ private slots:
     void on_pushButton_Send_clicked();
 
 private:
-    bool isTimeUpdate;
 
 };
 #endif // MAINWINDOW_H

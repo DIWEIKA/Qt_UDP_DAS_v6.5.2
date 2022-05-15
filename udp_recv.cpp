@@ -74,6 +74,67 @@ UDP_Recv::UDP_Recv(MainWindow* mainwindow)
     CHdata39 = make_shared<CirQueue<unsigned char>>(LenoUDP);
     CHdata40 = make_shared<CirQueue<unsigned char>>(LenoUDP);
     CHdata41 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata42 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata43 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata44 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata45 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata46 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata47 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata48 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata49 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata50 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata51 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata52 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata53 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata54 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata55 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata56 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata57 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata58 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata59 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata60 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata61 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata62 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata63 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata64 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata65 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata66 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata67 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata68 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata69 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata70 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata71 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata72 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata73 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata74 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata75 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata76 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata77 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata78 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata79 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata80 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata81 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata82 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata83 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata84 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata85 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata86 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata87 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata88 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata89 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata90 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata91 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata92 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata93 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata94 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata95 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata96 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata97 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata98 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata99 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata100 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+    CHdata101 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+
 
     //init CHdataArray
     CHdataArray[0] =  CHdata2;
@@ -116,6 +177,66 @@ UDP_Recv::UDP_Recv(MainWindow* mainwindow)
     CHdataArray[37] =  CHdata39;
     CHdataArray[38] =  CHdata40;
     CHdataArray[39] =  CHdata41;
+    CHdataArray[40] =  CHdata42;
+    CHdataArray[41] =  CHdata43;
+    CHdataArray[42] =  CHdata44;
+    CHdataArray[43] =  CHdata45;
+    CHdataArray[44] =  CHdata46;
+    CHdataArray[45] =  CHdata47;
+    CHdataArray[46] =  CHdata48;
+    CHdataArray[47] =  CHdata49;
+    CHdataArray[48] =  CHdata50;
+    CHdataArray[49] =  CHdata51;
+    CHdataArray[50] =  CHdata52;
+    CHdataArray[51] =  CHdata53;
+    CHdataArray[52] =  CHdata54;
+    CHdataArray[53] =  CHdata55;
+    CHdataArray[54] =  CHdata56;
+    CHdataArray[55] =  CHdata57;
+    CHdataArray[56] =  CHdata58;
+    CHdataArray[57] =  CHdata59;
+    CHdataArray[58] =  CHdata60;
+    CHdataArray[59] =  CHdata61;
+    CHdataArray[60] =  CHdata62;
+    CHdataArray[61] =  CHdata63;
+    CHdataArray[62] =  CHdata64;
+    CHdataArray[63] =  CHdata65;
+    CHdataArray[64] =  CHdata66;
+    CHdataArray[65] =  CHdata67;
+    CHdataArray[66] =  CHdata68;
+    CHdataArray[67] =  CHdata69;
+    CHdataArray[68] =  CHdata70;
+    CHdataArray[69] =  CHdata71;
+    CHdataArray[70] =  CHdata72;
+    CHdataArray[71] =  CHdata73;
+    CHdataArray[72] =  CHdata74;
+    CHdataArray[73] =  CHdata75;
+    CHdataArray[74] =  CHdata76;
+    CHdataArray[75] =  CHdata77;
+    CHdataArray[76] =  CHdata78;
+    CHdataArray[77] =  CHdata79;
+    CHdataArray[78] =  CHdata80;
+    CHdataArray[79] =  CHdata81;
+    CHdataArray[80] =  CHdata82;
+    CHdataArray[81] =  CHdata83;
+    CHdataArray[82] =  CHdata84;
+    CHdataArray[83] =  CHdata85;
+    CHdataArray[84] =  CHdata86;
+    CHdataArray[85] =  CHdata87;
+    CHdataArray[86] =  CHdata88;
+    CHdataArray[87] =  CHdata89;
+    CHdataArray[88] =  CHdata90;
+    CHdataArray[89] =  CHdata91;
+    CHdataArray[90] =  CHdata92;
+    CHdataArray[91] =  CHdata93;
+    CHdataArray[92] =  CHdata94;
+    CHdataArray[93] =  CHdata95;
+    CHdataArray[94] =  CHdata96;
+    CHdataArray[95] =  CHdata97;
+    CHdataArray[96] =  CHdata98;
+    CHdataArray[97] =  CHdata99;
+    CHdataArray[98] =  CHdata100;
+    CHdataArray[99] =  CHdata101;
 }
 
 void UDP_Recv::clearCHdata()
@@ -146,12 +267,6 @@ void UDP_Recv::run()
 
                 net_pack_size = recvfrom(echo_socket_WIN, p_echo_net_pack, lenoRecv, 0, (sockaddr *)&src_addr_WIN, &src_addr_len);
 
-                if (net_pack_size == SOCKET_ERROR) {
-
-                    qDebug()<<"recvfrom failed with error : "<< WSAGetLastError() <<endl;
-
-                }
-
                 qDebug()<<"Reciving net_pack_size = "<< net_pack_size <<endl;
 
                 //init RECORD_BUF
@@ -159,16 +274,6 @@ void UDP_Recv::run()
 
                 //RECORD_BUF << p_echo_net_pack
                 memcpy(bufPtr,p_echo_net_pack,lenoRecv);
-
-                pack_count = pack_count + net_pack_size;
-
-                //将p_echo_net_pack传给wave_widget
-                if(pack_count>1024000){
-
-                    emit SendtoWidget(p_echo_net_pack);
-
-                    pack_count = 0;
-                }
 
                 //CHData << RECORD_BUF
                 for(int i=0; i<lenoRecv; i++) {
@@ -183,11 +288,9 @@ void UDP_Recv::run()
                         else{
                             CHdataArray[j]->push(usCHDATA);
                             break;}
-
                     }
 
                 }//end for
-
             }
 
             /*----------------HEX接收-------------------*/
@@ -207,7 +310,7 @@ void UDP_Recv::run()
                 p_echo_net_pack_HEX.clear();
 
                 //char* 转 QByteArray
-                p_echo_net_pack_array = QByteArray(p_echo_net_pack,lenoRecv);
+                p_echo_net_pack_array = QByteArray(p_echo_net_pack,lenoRecvHEX);
 
                 p_echo_net_pack_HEX = p_echo_net_pack_array.toHex().toUpper();
 
@@ -240,7 +343,7 @@ void UDP_Recv::run()
                         emit_count++;
 
                         //(用于刷新波形显示的速率)每触发1次上述事件，emit信号给wave_widget
-                        if (emit_count>=50){
+                        if (emit_count>=0){
 
                             emit SendtoWidget(pack_HEX_32);
 

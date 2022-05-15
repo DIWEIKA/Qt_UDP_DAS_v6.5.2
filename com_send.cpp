@@ -9,8 +9,8 @@ COM_Send::COM_Send(MainWindow* Mainwindow)
     myCom->setParity(PAR_NONE); //奇偶校验设置，我们设置为无校验
     myCom->setDataBits(DATA_8);//数据位设置，我们设置为8位数据位
     myCom->setStopBits(STOP_1);//停止位设置，我们设置为1位停止位
-    myCom->setPortName("COM1");
-    myCom->setBaudRate(BAUD38400);
+    myCom->setPortName("COM3"); //设置端口号
+    myCom->setBaudRate(BAUD115200); //设置波特率
 
     filePath = QDir::currentPath()+QString("/peak.txt"); //build所在目录下
 

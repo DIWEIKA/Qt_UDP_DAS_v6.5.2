@@ -1,63 +1,93 @@
 #include "demodulation.h"
 
 //传入udp_recv下的CHdata即可解调
-Demodulation::Demodulation(shared_ptr<CirQueue<unsigned char>> CHdataX)
+Demodulation::Demodulation(UDP_Recv* udp_Recv)
 {
     //init
-    CHdata = make_shared<CirQueue<unsigned char>>(4096*1000);
+    udp_recv = udp_Recv;
 
-    CHdata = CHdataX;
+    DEMOdata = make_shared<CirQueue<float>>(LenoDemo);
 
     readAtanTable(atanTable);
 }
 
 void Demodulation::run()
 {
-    sizeoCHdata = READ_LENGTH;
+ /*------------遍历CHdataArray里的所有容器---------------*/
+    for(int i = 0; i< SaveNumber; i++){
 
-    //1. CHdata >> demo_CHdata
-    for(int j=0; j<sizeoCHdata; ++j){
-        demo_CHdata[j] = (const char)CHdata->front();
-        CHdata->pop();
+        if(udp_recv->CHdataArray[i]->isEmpty())
+            continue;
+        else
+        {
+            //1. 一个容器的CHdata >> demo_CHdata
+            unsigned int sizeoCHdata = udp_recv->CHdataArray[i]->size();
+
+            for(unsigned int j=0; j<sizeoCHdata; ++j){
+                demo_CHdata[j] = *udp_recv->CHdataArray[i]->begin();
+                udp_recv->CHdataArray[i]->pop();
+            }
+
+            udp_recv->CHdataArray[i]->clear();
+
+            //2. demo_CHdata[] >> demo_CHdata_DEC_all[]
+            for(int i = 0; i<READ_LENGTH; i+=4){
+                bool ok;
+                int number_DEC = QString(demo_CHdata[i]).toInt(&ok,16)*0 + QString(demo_CHdata[i+1]).toInt(&ok,16)*256 + QString(demo_CHdata[i+2]).toInt(&ok,16)*16 +QString(demo_CHdata[i+3]).toInt(&ok,16)*1;
+                if(number_DEC>2047)
+                    number_DEC = number_DEC-4096;
+                int j = i/4;
+                demo_CHdata_DEC_all[j] = number_DEC;
+            }
+
+            //3. demo_CHdata_DEC_all[] split into 4 channels
+            for(int k = 0; k<CHDATA_ALL_LENGTH; k+=4){
+                int p = k/4;
+                demo_CHdata_DEC_1[p] = demo_CHdata_DEC_all[k];
+                demo_CHdata_DEC_2[p] = demo_CHdata_DEC_all[k+1];
+                demo_CHdata_DEC_3[p] = demo_CHdata_DEC_all[k+2];
+                demo_CHdata_DEC_4[p] = demo_CHdata_DEC_all[k+3];
+            }
+
+            //4. get Vi Vq
+            for(int i = 0; i<CHDATA_LENGTH; i++){
+                Vi[i] = (float)(demo_CHdata_DEC_1[i] + demo_CHdata_DEC_2[i] - 2 * demo_CHdata_DEC_3[i]);
+                Vq[i] = (float)(-sqrt(3) * (demo_CHdata_DEC_1[i] - demo_CHdata_DEC_2[i]));
+
+                //5. 相位解调
+                Ph[i]=demoduPh(Vi[i],Vq[i]);
+
+                //6.Ph[] >> DEMOdata
+                DEMOdata->push(Ph[i]);
+            }
+
+            //7. clear CHdata
+             udp_recv->CHdataArray[i]->clear();
+        }
     }
 
-    //2. demo_CHdata[] >> demo_CHdata_DEC_all[]
-    for(int i = 0; i<sizeoCHdata; i+=4){
-        bool ok;
-        int number_DEC = QString(demo_CHdata[i]).toInt(&ok,16)*0 + QString(demo_CHdata[i+1]).toInt(&ok,16)*256 + QString(demo_CHdata[i+2]).toInt(&ok,16)*16 +QString(demo_CHdata[i+3]).toInt(&ok,16)*1;
-        if(number_DEC>2047)
-            number_DEC = number_DEC-4096;
-        int j = i/4;
-        demo_CHdata_DEC_all[j] = number_DEC;
+/*------------存储解调数据DEMOdata到本地---------------*/
+    dateTime = QDateTime::currentDateTime();
+
+    saveFileDemo = QString("F:/Desktop/UDPConnect/data/")+QString("[Demo]")+dateTime.toString("yyyyMMddhhmmss")+ QString(".bin");
+
+    outfileDemo.open(saveFileDemo.toStdString().data(), ofstream::binary);
+
+    if (!outfileDemo.is_open()) return;
+
+    int sizeofDEMOdata = DEMOdata->size();
+
+    for(int i = 0; i<sizeofDEMOdata; i++){
+        outfileDemo.write((const char*)DEMOdata->begin(),sizeof(float));
+        DEMOdata->pop();
     }
 
-    sizeoCHdataDec = sizeoCHdata/4;
+    outfileDemo.close();
 
-    //3. demo_CHdata_DEC_all[] split into 4 channels
-    for(int k = 0; k<sizeoCHdataDec; k+=4){
-        int p = k/4;
-        demo_CHdata_DEC_1[p] = demo_CHdata_DEC_all[k];
-        demo_CHdata_DEC_2[p] = demo_CHdata_DEC_all[k+1];
-        demo_CHdata_DEC_3[p] = demo_CHdata_DEC_all[k+2];
-        demo_CHdata_DEC_4[p] = demo_CHdata_DEC_all[k+3];
-    }
+/*-------------显示解调波形--------------*/
 
-    sizeoDemoCHdata = sizeoCHdataDec/4;
-
-    //4. get Vi Vq
-    for(int i = 0; i<sizeoDemoCHdata; i++){
-        Vi[i] = (float)(demo_CHdata_DEC_1[i] + demo_CHdata_DEC_2[i] - 2 * demo_CHdata_DEC_3[i]);
-        Vq[i] = (float)(-sqrt(3) * (demo_CHdata_DEC_1[i] - demo_CHdata_DEC_2[i]));
-
-        //5. 相位解调
-        Ph[i]=demoduPh(Vi[i],Vq[i]);
-    }
-
-    //6. send a signal to writeToFiles
-    qDebug()<<"emit sendPhToWrite signal !" <<endl;
-    emit sendPhToWrite(Ph);
-
-
+    //clear DEMOdata
+    DEMOdata->clear();
 }
 
 //读取反正切值查表文件
