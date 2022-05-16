@@ -21,23 +21,25 @@ void Demodulation::run()
         else
         {
             //1. 一个容器的CHdata >> demo_CHdata
+            demo_CHdata[READ_LENGTH] = {'\0'};
+
             unsigned int sizeoCHdata = udp_recv->CHdataArray[i]->size();
 
             for(unsigned int j=0; j<sizeoCHdata; ++j){
-                demo_CHdata[j] = *udp_recv->CHdataArray[i]->begin();
-                udp_recv->CHdataArray[i]->pop();
+                unsigned char usCHdata = udp_recv->CHdataArray[i]->pop();
+                demo_CHdata[j] = usCHdata;
             }
 
             udp_recv->CHdataArray[i]->clear();
 
             //2. demo_CHdata[] >> demo_CHdata_DEC_all[]
-            for(int i = 0; i<READ_LENGTH; i+=4){
+            for(int m = 0; m<READ_LENGTH; m+=4){
                 bool ok;
-                int number_DEC = QString(demo_CHdata[i]).toInt(&ok,16)*0 + QString(demo_CHdata[i+1]).toInt(&ok,16)*256 + QString(demo_CHdata[i+2]).toInt(&ok,16)*16 +QString(demo_CHdata[i+3]).toInt(&ok,16)*1;
+                int number_DEC = QString(demo_CHdata[m]).toInt(&ok,16)*0 + QString(demo_CHdata[m+1]).toInt(&ok,16)*256 + QString(demo_CHdata[m+2]).toInt(&ok,16)*16 +QString(demo_CHdata[m+3]).toInt(&ok,16)*1;
                 if(number_DEC>2047)
                     number_DEC = number_DEC-4096;
-                int j = i/4;
-                demo_CHdata_DEC_all[j] = number_DEC;
+                int n = m/4;
+                demo_CHdata_DEC_all[n] = number_DEC;
             }
 
             //3. demo_CHdata_DEC_all[] split into 4 channels
@@ -50,18 +52,20 @@ void Demodulation::run()
             }
 
             //4. get Vi Vq
-            for(int i = 0; i<CHDATA_LENGTH; i++){
-                Vi[i] = (float)(demo_CHdata_DEC_1[i] + demo_CHdata_DEC_2[i] - 2 * demo_CHdata_DEC_3[i]);
-                Vq[i] = (float)(-sqrt(3) * (demo_CHdata_DEC_1[i] - demo_CHdata_DEC_2[i]));
+            for(int t = 0; t<CHDATA_LENGTH; t++){
+                Vi[t] = (float)(demo_CHdata_DEC_1[t] + demo_CHdata_DEC_2[t] - 2 * demo_CHdata_DEC_3[t]);
+                Vq[t] = (float)(-sqrt(3) * (demo_CHdata_DEC_1[t] - demo_CHdata_DEC_2[t]));
 
                 //5. 相位解调
-                Ph[i]=demoduPh(Vi[i],Vq[i]);
+                Ph[t]=demoduPh(Vi[t],Vq[t]);
 
                 //6.Ph[] >> DEMOdata
-                DEMOdata->push(Ph[i]);
+                DEMOdata->push(Ph[t]);
             }
 
-            //7. clear CHdata
+            //7. send to demowave_widget
+            emit sendToDemoWave_widget(DEMOdata);
+
              udp_recv->CHdataArray[i]->clear();
         }
     }
@@ -83,8 +87,6 @@ void Demodulation::run()
     }
 
     outfileDemo.close();
-
-/*-------------显示解调波形--------------*/
 
     //clear DEMOdata
     DEMOdata->clear();

@@ -18,7 +18,8 @@
 #include <windows.h>
 #include "writetofiles.h"
 #include "udp_recv.h"
-#include "wave_widget.h"
+#include "pulsewave_widget.h"
+#include "demowave_widget.h"
 #include "demodulation.h"
 #include "com_send.h"
 #include "ui_mainwindow.h"
@@ -33,7 +34,8 @@ QT_END_NAMESPACE
  //使用前向声明
 class WriteToFiles;
 class UDP_Recv;
-class wave_widget;
+class pulsewave_widget;
+class demowave_widget;
 class Demodulation;
 class COM_Send;
 
@@ -50,7 +52,8 @@ public:
     QTimer* udpTimer;
     UDP_Recv* udp_recv;
     WriteToFiles* writeToFiles;
-    wave_widget *wave_Widget;
+    pulsewave_widget *pulsewave_Widget;
+    demowave_widget *demowave_Widget;
     Demodulation *demodu;
     COM_Send *com_send;
     bool isSave;
@@ -82,13 +85,15 @@ private slots:
 
     void on_checkBox_Hex_clicked();
 
-    void on_pushButton_Display_clicked();
+    void on_pushButton_Display_pulse_clicked();
 
     void on_checkBox_Demo_clicked();
 
     void on_comboBox_Mode_currentIndexChangedSlot();
 
     void on_pushButton_Send_clicked();
+
+    void on_pushButton_Display_demo_clicked();
 
 private:
 

@@ -1,9 +1,9 @@
-#include "wave_widget.h"
-#include "ui_wave_widget.h"
+#include "pulsewave_widget.h"
+#include "ui_pulsewave_widget.h"
 
-wave_widget::wave_widget()
+pulsewave_widget::pulsewave_widget()
 {
-    ui = new Ui::wave_widget;
+    ui = new Ui::pulsewave_widget;
     ui->setupUi(this);
 
     //初始化widget
@@ -12,12 +12,12 @@ wave_widget::wave_widget()
     ChannelIndex = 0;
 }
 
-wave_widget::~wave_widget()
+pulsewave_widget::~pulsewave_widget()
 {
     delete ui;
 }
 
-void wave_widget::initWidget()
+void pulsewave_widget::initWidget()
 {
     // 创建横纵坐标轴并设置显示范围
     m_axisX = new QValueAxis();
@@ -28,12 +28,12 @@ void wave_widget::initWidget()
     m_axisY->setMin(-200);
     m_axisX->setMax(AXIS_MAX_X);
     m_axisY->setMax(AXIS_MAX_Y);
-    m_axisY->setTickCount(20);
-    m_axisX->setTickCount(20);
+    m_axisY->setTickCount(15);
+    m_axisX->setTickCount(15);
 
     m_lineSeries = new QSplineSeries();                             // 创建曲线绘制对象
     m_lineSeries->setPointsVisible(true);                         // 设置数据点可见
-    m_lineSeries->setName("Wave Plot");                            // 图例名称
+    m_lineSeries->setName("Pulse Wave Plot");                            // 图例名称
     m_lineSeries->setPen(QPen(Qt::blue,2,Qt::SolidLine));
     m_lineSeries->setUseOpenGL(true);                              //openGL加速
     m_lineSeries->clear();
@@ -54,13 +54,13 @@ void wave_widget::initWidget()
 }
 
 //HEX发送
-void wave_widget::FlashWave3(char datagramHEX[])
+void pulsewave_widget::FlashWave3(char datagramHEX[])
 {
-    qDebug() <<"Flash Wave Slot responsed !"<<endl;
+    qDebug() <<"Flash Pulse Wave Slot responsed !"<<endl;
 
     m_lineSeries->clear();
 
-    sizeoPulsedata = 2048*32;
+    sizeoPulsedata = READ_PULSE_LENGTH;
 
     //1. datagramHEX >> PulsedataHEX[]
     memcpy(PulsedataHEX,datagramHEX,sizeoPulsedata);
@@ -86,29 +86,37 @@ void wave_widget::FlashWave3(char datagramHEX[])
         Pulsedata_DEC_4_HEX[p] = Pulsedata_DEC_all_HEX[k+3];
     }
 
-////    4. Channel select
-//    switch (ChannelIndex) {
-//    case 0:
-//        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_1_HEX,sizeoPulsedataDec);
-//        break;
-//    case 1:
-//        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_2_HEX,sizeoPulsedataDec);
-//        break;
-//    case 2:
-//        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_3_HEX,sizeoPulsedataDec);
-//        break;
-//    case 3:
-//        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_4_HEX,sizeoPulsedataDec);
-//        break;
-//    default:
-//        break;
-//    }
+//    4. Channel select
+    ChannelIndex = ui->comboBox_Channel->currentIndex();
+    switch (ChannelIndex) {
+    case 0:
+        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_1_HEX,PULSEDATA_LENGTH*2);
+        break;
+    case 1:
+        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_2_HEX,PULSEDATA_LENGTH*2);
+        break;
+    case 2:
+        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_3_HEX,PULSEDATA_LENGTH*2);
+        break;
+    case 3:
+        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_4_HEX,PULSEDATA_LENGTH*2);
+        break;
+    default:
+        break;
+    }
 
     //5. Wave Display
-    for(int i = 0;i<DISPLAY_LENGTH;i++)
-        m_lineSeries->append(QPointF(i,-Pulsedata_DEC_1_HEX[i]));
+    for(int i = 0;i<DISPLAY_LENGTH_PULSE;i++)
+        m_lineSeries->append(QPointF(i,Pulsedata_DEC_disp[i]));
 }
 
+void pulsewave_widget::on_btnReset_clicked()
+{
+    m_axisX->setMin(0);
+    m_axisY->setMin(-200);
+    m_axisX->setMax(AXIS_MAX_X);
+    m_axisY->setMax(AXIS_MAX_Y);
+}
 
 ////ASCII发送
 //void wave_widget::FlashWave(char datagram[])
@@ -147,81 +155,4 @@ void wave_widget::FlashWave3(char datagramHEX[])
 //    for(int i = 0;i<DISPLAY_LENGTH;i++)
 //        m_lineSeries->append(QPointF(i,CHdata_DEC_1[i]));
 //}
-
-////（弃用）
-//void wave_widget::FlashWave2(QByteArray datagramHEX)
-//{
-//    qDebug() <<"Slot responsed !"<<endl;
-
-//    m_lineSeries->clear();
-
-//    sizeoCHdata = 2048*32;
-
-//    //1. datagramHEX >> CHdataHEX[]
-//    for(int i = 0; i<sizeoCHdata; i++)
-//        CHdataHEX[i] = datagramHEX[i];
-////    memcpy(CHdataHEX,datagramHEX,65536);
-
-//    //2. CHdataHEX[] >> CHdata_DEC_all[]
-//    for(int i = 0; i<sizeoCHdata; i+=4){
-//        bool ok;
-//        int number_DEC = QString(CHdataHEX[i]).toInt(&ok,16)*0 + QString(CHdataHEX[i+1]).toInt(&ok,16)*256 + QString(CHdataHEX[i+2]).toInt(&ok,16)*16 +QString(CHdataHEX[i+3]).toInt(&ok,16)*1;
-//        if(number_DEC>2047)
-//            number_DEC = number_DEC-4096;
-//        int j = i/4;
-//        CHdata_DEC_all_HEX[j] = number_DEC;
-//    }
-
-//    sizeoCHdataDec = sizeoCHdata/4;
-
-//    //3. CHdata_DEC_all[] split into 4 channels
-//    for(int k = 0; k<sizeoCHdataDec; k+=4){
-//        int p = k/4;
-//        CHdata_DEC_1_HEX[p] = CHdata_DEC_all_HEX[k];
-//        CHdata_DEC_2_HEX[p] = CHdata_DEC_all_HEX[k+1];
-//        CHdata_DEC_3_HEX[p] = CHdata_DEC_all_HEX[k+2];
-//        CHdata_DEC_4_HEX[p] = CHdata_DEC_all_HEX[k+3];
-//    }
-
-//    qDebug() <<"Step 3 over!"<<endl;
-
-//    //4. Channel select (调用ui程序会报错)
-////    int ChannelIndex = ui->comboBox->currentIndex();
-
-////    switch (ChannelIndex) {
-////    case 0:
-////        memcpy(CHdata_DEC_disp,CHdata_DEC_1_HEX,sizeoCHdataDec);
-////        break;
-////    case 1:
-////        memcpy(CHdata_DEC_disp,CHdata_DEC_2_HEX,sizeoCHdataDec);
-////        break;
-////    case 2:
-////        memcpy(CHdata_DEC_disp,CHdata_DEC_3_HEX,sizeoCHdataDec);
-////        break;
-////    case 3:
-////        memcpy(CHdata_DEC_disp,CHdata_DEC_4_HEX,sizeoCHdataDec);
-////        break;
-////    default:
-////        break;
-////    }
-
-
-//    //5. Wave Display
-//    for(int i = 0;i<DISPLAY_LENGTH;i++)
-//        m_lineSeries->append(QPointF(i,CHdata_DEC_1_HEX[i]));
-//}
-
-void wave_widget::on_btnReset_clicked()
-{
-    m_axisX->setMin(0);
-    m_axisY->setMin(-200);
-    m_axisX->setMax(AXIS_MAX_X);
-    m_axisY->setMax(AXIS_MAX_Y);
-}
-
-//void wave_widget::on_comboBox_Channel_currentIndexChangedSlot()
-//{
-//    ChannelIndex = ui->comboBox_Channel->currentIndex();
-//}
-
 

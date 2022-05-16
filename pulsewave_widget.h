@@ -1,5 +1,5 @@
-#ifndef WAVE_WIDGET_H
-#define WAVE_WIDGET_H
+#ifndef PULSEWAVE_WIDGET_H
+#define PULSEWAVE_WIDGET_H
 
 #include <QWidget>
 #include <QMainWindow>
@@ -16,68 +16,63 @@
 #include "udp_recv.h"
 #include <ctime>
 
-#define READ_LENGTH 1024*32 //´ÓCHdataXÀï¶ÁÈ¡µÄÊı¾İ³¤¶È
-#define PULSEDATA_ALL_LENGTH 1024*8 //ËÄ¸öÍ¨µÀµÄÊ®½øÖÆÊıÊı¾İ³¤¶È
-#define PULSEDATA_LENGTH 1024*2 //Ò»¸öÍ¨µÀµÄÊ®½øÖÆÊı³¤¶È
-#define DISPLAY_LENGTH 256*2 //Õ¹Ê¾ÔÚwidgetÉÏµÄÊı¾İ³¤¶È
-#define SaveNumber 100 //´æ´¢ÈİÆ÷µÄ¸öÊı
+#define READ_PULSE_LENGTH 1024*32 //ä»CHdataXé‡Œè¯»å–çš„æ•°æ®é•¿åº¦
+#define PULSEDATA_ALL_LENGTH 1024*8 //å››ä¸ªé€šé“çš„åè¿›åˆ¶æ•°æ•°æ®é•¿åº¦
+#define PULSEDATA_LENGTH 1024*2 //ä¸€ä¸ªé€šé“çš„åè¿›åˆ¶æ•°é•¿åº¦
+#define DISPLAY_LENGTH_PULSE 256*2 //å±•ç¤ºåœ¨widgetä¸Šçš„æ•°æ®é•¿åº¦
+#define SaveNumber 100 //å­˜å‚¨å®¹å™¨çš„ä¸ªæ•°
 
 using namespace std;
 
 QT_CHARTS_USE_NAMESPACE
 
 namespace Ui {
-class wave_widget;
+class pulsewave_widget;
 }
 
-class wave_widget : public QWidget
+class pulsewave_widget : public QWidget
 {
     Q_OBJECT
 
 public:
-    wave_widget();
-    ~wave_widget();
+    pulsewave_widget();
+    ~pulsewave_widget();
 
-    QTimer* m_timer;
     QChart* m_chart;
     QValueAxis *m_axisX, *m_axisY;
     QLineSeries* m_lineSeries;
-    int index = 0;
-    const int AXIS_MAX_X = DISPLAY_LENGTH, AXIS_MAX_Y = 1200;
+    const int AXIS_MAX_X = DISPLAY_LENGTH_PULSE, AXIS_MAX_Y = 1200;
     int sizeoPulsedata ;
     int sizeoPulsedataDec;
-    qint64 LenoUDP = READ_LENGTH;
+    qint64 LenoUDP = READ_PULSE_LENGTH;
     int ChannelIndex;
 
     QVector<QPointF> pointsSeries;
     QString saveFolder;
     QString saveFilenameAll;
     ifstream infileAll;
-    //    //ASCII½ÓÊÕ
+    //    //ASCIIæ¥æ”¶
     //    char Pulsedata[READ_LENGTH]= {'\0'};
     //    int Pulsedata_DEC_all[PULSEDATA_ALL_LENGTH] =  {0};
     //    int Pulsedata_DEC_1[PULSEDATA_LENGTH]= {0};
     //    int Pulsedata_DEC_2[PULSEDATA_LENGTH] =  {0};
     //    int Pulsedata_DEC_3[PULSEDATA_LENGTH] =  {0};
     //    int Pulsedata_DEC_4[PULSEDATA_LENGTH] =  {0};
-    //HEX½ÓÊÕ
-    char PulsedataHEX[READ_LENGTH*2] = {'\0'};
+    //HEXæ¥æ”¶
+    char PulsedataHEX[READ_PULSE_LENGTH*2] = {'\0'};
     int Pulsedata_DEC_all_HEX[PULSEDATA_ALL_LENGTH*2] =  {0};
     int Pulsedata_DEC_1_HEX[PULSEDATA_LENGTH*2]= {0};
     int Pulsedata_DEC_2_HEX[PULSEDATA_LENGTH*2] =  {0};
     int Pulsedata_DEC_3_HEX[PULSEDATA_LENGTH*2] =  {0};
     int Pulsedata_DEC_4_HEX[PULSEDATA_LENGTH*2] =  {0};
-
-    int Pulsedata_DEC_disp[PULSEDATA_LENGTH] = {0};
+    int Pulsedata_DEC_disp[PULSEDATA_LENGTH*2] = {0};
 
     void initWidget();
     void DisplayWave();
 
-    Ui::wave_widget *ui;
+    Ui::pulsewave_widget *ui;
 
 public slots:
-    //    void FlashWave(char[]);
-    //    void FlashWave2(QByteArray);
     void FlashWave3(char[]);
 //    void on_comboBox_Channel_currentIndexChangedSlot();
 
@@ -90,4 +85,4 @@ private:
 
 };
 
-#endif // WAVE_WIDGET_H
+#endif // PULSEWAVE_WIDGET_H

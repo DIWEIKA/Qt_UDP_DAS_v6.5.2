@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1122</width>
-    <height>590</height>
+    <width>1061</width>
+    <height>604</height>
    </rect>
   </property>
   <property name="font">
@@ -18,14 +18,26 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="autoFillBackground">
+   <bool>true</bool>
+  </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="contextMenuPolicy">
+    <enum>Qt::DefaultContextMenu</enum>
+   </property>
+   <property name="layoutDirection">
+    <enum>Qt::LeftToRight</enum>
+   </property>
+   <property name="autoFillBackground">
+    <bool>true</bool>
+   </property>
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>11</x>
-      <y>10</y>
-      <width>1101</width>
-      <height>571</height>
+      <y>22</y>
+      <width>1031</width>
+      <height>561</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -43,13 +55,6 @@
           </size>
          </property>
         </spacer>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>模式选择</string>
-         </property>
-        </widget>
        </item>
        <item>
         <widget class="QComboBox" name="comboBox_Mode">
@@ -83,7 +88,7 @@
          <property name="font">
           <font>
            <family>Microsoft YaHei UI</family>
-           <pointsize>15</pointsize>
+           <pointsize>18</pointsize>
           </font>
          </property>
          <property name="text">
@@ -149,6 +154,15 @@
        </item>
        <item>
         <widget class="QCheckBox" name="checkBox_ASCII">
+         <property name="font">
+          <font>
+           <pointsize>13</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">
+color: rgb(0, 0, 0);</string>
+         </property>
          <property name="text">
           <string>ASCII接收</string>
          </property>
@@ -169,6 +183,15 @@
        </item>
        <item>
         <widget class="QCheckBox" name="checkBox_Hex">
+         <property name="font">
+          <font>
+           <pointsize>13</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">
+color: rgb(0, 0, 0);</string>
+         </property>
          <property name="text">
           <string>HEX接收</string>
          </property>
@@ -189,6 +212,15 @@
        </item>
        <item>
         <widget class="QCheckBox" name="checkBox_Save">
+         <property name="font">
+          <font>
+           <pointsize>13</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">
+color: rgb(0, 0, 0);</string>
+         </property>
          <property name="text">
           <string>存储文件</string>
          </property>
@@ -209,6 +241,15 @@
        </item>
        <item>
         <widget class="QCheckBox" name="checkBox_Demo">
+         <property name="font">
+          <font>
+           <pointsize>13</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">
+color: rgb(0, 0, 0);</string>
+         </property>
          <property name="text">
           <string>解调数据</string>
          </property>
@@ -237,7 +278,7 @@
       </widget>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <layout class="QHBoxLayout" name="horizontalLayout_4">
        <item>
         <spacer name="horizontalSpacer">
          <property name="orientation">
@@ -253,6 +294,12 @@
        </item>
        <item>
         <widget class="QPushButton" name="pushButton_Start">
+         <property name="font">
+          <font>
+           <family>黑体</family>
+           <pointsize>17</pointsize>
+          </font>
+         </property>
          <property name="text">
           <string>开始接收</string>
          </property>
@@ -273,6 +320,12 @@
        </item>
        <item>
         <widget class="QPushButton" name="pushButton_Stop">
+         <property name="font">
+          <font>
+           <family>黑体</family>
+           <pointsize>17</pointsize>
+          </font>
+         </property>
          <property name="text">
           <string>停止接收</string>
          </property>
@@ -291,10 +344,42 @@
          </property>
         </spacer>
        </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="Line" name="line_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QPushButton" name="pushButton_Display">
+        <spacer name="horizontalSpacer_15">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_Display_pulse">
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
          <property name="text">
-          <string>波形显示</string>
+          <string>脉冲波形显示</string>
          </property>
         </widget>
        </item>
@@ -313,6 +398,14 @@
        </item>
        <item>
         <widget class="QPushButton" name="pushButton_Send">
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
          <property name="text">
           <string>发送配置文件</string>
          </property>
@@ -320,6 +413,31 @@
        </item>
        <item>
         <spacer name="horizontalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_Display_demo">
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>解调波形显示</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_16">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>

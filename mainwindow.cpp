@@ -16,6 +16,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     isSave = false;
 
+    isDemo = false;
+
     AcqMode = 1;
 
     //set Style Sheet
@@ -34,7 +36,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     writeToFiles = new WriteToFiles(udp_recv);
 
-    wave_Widget = new wave_widget();
+    pulsewave_Widget = new pulsewave_widget();
+
+    demowave_Widget = new demowave_widget();
 
     demodu = new Demodulation(udp_recv);
 
@@ -54,7 +58,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(demodu,&QThread::finished,this,&MainWindow::FinishDemodulationThread);
 
-    connect(udp_recv,&UDP_Recv::SendtoWidget,wave_Widget,&wave_widget::FlashWave3,Qt::BlockingQueuedConnection);
+    connect(udp_recv,&UDP_Recv::SendtoWidget,pulsewave_Widget,&pulsewave_widget::FlashWave3,Qt::BlockingQueuedConnection);
+
+    connect(demodu,&Demodulation::sendToDemoWave_widget,demowave_Widget,&demowave_widget::FlashWave,Qt::BlockingQueuedConnection);
 
 //    connect(demodu,&Demodulation::sendDEMOdataToWrite,writeToFiles,&WriteToFiles::recvPhSlot,Qt::BlockingQueuedConnection);
 
@@ -153,8 +159,11 @@ void MainWindow::on_pushButton_Start_clicked()
 
     if(isASCII){
         ui->checkBox_Hex->setDisabled(true);
-        ui->pushButton_Display->setDisabled(true); //ASCII接收时不能显示波形
+        ui->pushButton_Display_pulse->setDisabled(true); //ASCII接收时不能显示波形
     }
+
+    if(isSave) ui->checkBox_Demo->setDisabled(true);
+    if(isDemo) ui->checkBox_Save->setDisabled(true);
 
     if(AcqMode == 1){
         ui->checkBox_Save->setDisabled(true);
@@ -163,7 +172,7 @@ void MainWindow::on_pushButton_Start_clicked()
     }
 
     if(AcqMode == 2){
-        ui->pushButton_Display->setDisabled(true);
+        ui->pushButton_Display_pulse->setDisabled(true);
 
         ui->pushButton_Send->setDisabled(true);
     }
@@ -182,12 +191,13 @@ void MainWindow::on_pushButton_Stop_clicked()
     ui->checkBox_Demo->setEnabled(true);
     ui->checkBox_Hex->setEnabled(true);
     ui->checkBox_Save->setEnabled(true);
-    ui->pushButton_Display->setEnabled(true);
+    ui->pushButton_Display_pulse->setEnabled(true);
     ui->pushButton_Send->setEnabled(true);
 
     ui->checkBox_ASCII->setChecked(isStart);
     ui->checkBox_Hex->setChecked(isStart);
     ui->checkBox_Save->setChecked(isSave);
+    ui->checkBox_Demo->setChecked(isDemo);
 
     //clear CHdata
     udp_recv->clearCHdata();
@@ -200,15 +210,14 @@ void MainWindow::on_pushButton_Stop_clicked()
 
 void MainWindow::on_pushButton_Clear_clicked()
 {
-
     ui->textEdit_Msg->clear();
-
 }
 
 void MainWindow::on_checkBox_Save_clicked()
 {
     //设置存储时间间隔
     udpTimer->start(15000);
+    isSave = true;
 }
 
 void MainWindow::on_checkBox_ASCII_clicked()
@@ -221,14 +230,12 @@ void MainWindow::on_checkBox_Hex_clicked()
     isHEX = true;
 }
 
-void MainWindow::on_pushButton_Display_clicked()
-{
-    wave_Widget->show();
-}
+
 
 void MainWindow::on_checkBox_Demo_clicked()
 {
-     udpTimer->start(15000);
+     udpTimer->start(5000); //设置时间间隔为5秒
+     isDemo = true;
 }
 
 void MainWindow::on_comboBox_Mode_currentIndexChangedSlot()
@@ -247,10 +254,21 @@ void MainWindow::on_comboBox_Mode_currentIndexChangedSlot()
     }
 }
 
+void MainWindow::on_pushButton_Display_pulse_clicked()
+{
+    pulsewave_Widget->show();
+}
+
 void MainWindow::on_pushButton_Send_clicked()
 {
     com_send->start();
 
      ui->textEdit_Msg->insertPlainText("Sendding peak.txt ! \n");
+}
+
+
+void MainWindow::on_pushButton_Display_demo_clicked()
+{
+    demowave_Widget->show();
 }
 

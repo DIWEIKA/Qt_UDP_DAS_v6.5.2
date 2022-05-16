@@ -4,9 +4,9 @@
 #include <QThread>
 #include <mainwindow.h>
 
-#define READ_LENGTH 1024*32 //从p_echo_pack_HEX里读取的数据长度
-#define CHDATA_ALL_LENGTH 1024*8 //四个通道的十进制数数据长度
-#define CHDATA_LENGTH 1024*2 //一个通道的十进制数长度
+#define READ_LENGTH 4096*1000 //从CHdata里读取的数据长度
+#define CHDATA_ALL_LENGTH 1024*1000 //四个通道的十进制数数据长度
+#define CHDATA_LENGTH 256*1000 //一个通道的十进制数长度
 #define NUMTABLE 201
 
 class Demodulation : public QThread
@@ -33,12 +33,13 @@ public:
     QDateTime dateTime; //当前系统时间
     QString saveFileDemo;
     ofstream outfileDemo;
-    qint64 LenoDemo = 4096*10000;
+    qint64 LenoDemo = READ_LENGTH;
 
     void readAtanTable(float *roundNum);
     float demoduPh(float vi,float vq);
 
 signals:
+    void sendToDemoWave_widget(shared_ptr<CirQueue<float>>);
 
 protected:
     void run();
