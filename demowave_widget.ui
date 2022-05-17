@@ -26,7 +26,7 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QComboBox" name="comboBox_Channel">
+       <widget class="QComboBox" name="comboBox_Region">
         <property name="font">
          <font>
           <pointsize>12</pointsize>
@@ -34,22 +34,22 @@
         </property>
         <item>
          <property name="text">
-          <string>通道1</string>
+          <string>区域1</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>通道2</string>
+          <string>区域2</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>通道3</string>
+          <string>区域3</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>通道4</string>
+          <string>区域4</string>
          </property>
         </item>
        </widget>

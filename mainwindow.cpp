@@ -230,8 +230,6 @@ void MainWindow::on_checkBox_Hex_clicked()
     isHEX = true;
 }
 
-
-
 void MainWindow::on_checkBox_Demo_clicked()
 {
      udpTimer->start(5000); //设置时间间隔为5秒
@@ -265,7 +263,6 @@ void MainWindow::on_pushButton_Send_clicked()
 
      ui->textEdit_Msg->insertPlainText("Sendding peak.txt ! \n");
 }
-
 
 void MainWindow::on_pushButton_Display_demo_clicked()
 {

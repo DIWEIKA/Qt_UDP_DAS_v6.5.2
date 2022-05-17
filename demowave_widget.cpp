@@ -9,7 +9,21 @@ demowave_widget::demowave_widget(QWidget *parent) :
 
     initWidget();
 
+    readConfigFile();
 
+    initComboBox_Region();
+
+    DemodataArray = new float*[peakNum]; //动态创建二维数组
+    DemodataArray[0]=Demodata_1;
+    DemodataArray[1]=Demodata_2;
+    DemodataArray[2]=Demodata_3;
+    DemodataArray[3]=Demodata_4;
+    DemodataArray[4]=Demodata_5;
+    DemodataArray[5]=Demodata_6;
+    DemodataArray[6]=Demodata_7;
+    DemodataArray[7]=Demodata_8;
+    DemodataArray[8]=Demodata_9;
+    DemodataArray[9]=Demodata_10;
 }
 
 demowave_widget::~demowave_widget()
@@ -52,56 +66,53 @@ void demowave_widget::initWidget()
     ui->graphicsView->setRubberBand(QChartView::RectangleRubberBand);   //XY方向同时放大到鼠标画出的矩形大小
 }
 
-//HEX发送
+void demowave_widget::readConfigFile()
+{
+    QString filePath = QDir::currentPath()+QString("/peak.txt"); //build所在目录下
+    QFile file(filePath);
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qDebug()<<"Can't open the Configration file!"<<endl;
+    }
+   QByteArray configData = file.readAll(); //读取所有数据
+   char peakNumChar = configData[3]; //peakNum存放在第四个位置
+   bool ok;
+   peakNum =  QString(peakNumChar).toInt(&ok,16);
+   qDebug()<<"peakNum: "<<peakNum<<endl;
+}
+
+void demowave_widget::initComboBox_Region()
+{
+    ui->comboBox_Region->clear();
+
+    for(int i=1; i<= peakNum; i++ )
+        ui->comboBox_Region->addItem(QString::asprintf("Region %d",i));
+}
+
+//HEX发送时刷新波形显示
 void demowave_widget::FlashWave(shared_ptr<CirQueue<float>> DEMOdata)
 {
     qDebug() <<"Flash Demodulation Wave Slot responsed !"<<endl;
 
     m_lineSeries->clear();
 
+    int regionNum = peakNum;
+
     int sizeoDemoData = READ_DEMO_LENGTH;
 
-    //DEMOdata[] split into 4 channels
-    for(int k = 0; k<sizeoDemoData; k+=4){
-        int p = k/4;
-        Demodata_1[p] = DEMOdata->pop();
-        Demodata_2[p] = DEMOdata->pop();
-        Demodata_3[p] = DEMOdata->pop();
-        Demodata_4[p] = DEMOdata->pop();
+    //DEMOdata[] split regions
+    for(int k = 0; k<sizeoDemoData; k+=regionNum){
+        int p = k/regionNum;
+        for(int q=0; q<regionNum;q++){
+            DemodataArray[q][p] = DEMOdata->pop();
+        }
     }
 
-    //    Channel select
-    ChannelIndex = ui->comboBox_Channel->currentIndex();
+    //region select
+    RegionIndex = ui->comboBox_Region->currentIndex();
 
-    switch (ChannelIndex) {
-    case 0:{
-        for(int i = 0;i<DISPLAY_LENGTH_DEMO; i++)
-            m_lineSeries->append(QPointF(i,Demodata_1[i]));
-        break;
-    }
-
-    case 1:{
-        for(int i = 0;i<DISPLAY_LENGTH_DEMO; i++)
-            m_lineSeries->append(QPointF(i,Demodata_2[i]));
-        break;
-    }
-
-    case 2:{
-        for(int i = 0;i<DISPLAY_LENGTH_DEMO; i++)
-            m_lineSeries->append(QPointF(i,Demodata_3[i]));
-        break;
-    }
-
-    case 3:{
-        for(int i = 0;i<DISPLAY_LENGTH_DEMO; i++)
-            m_lineSeries->append(QPointF(i,Demodata_4[i]));
-        break;
-    }
-
-    default:
-        break;
-    }
-
+    //dispaly wave
+    for(int i = 0;i<DISPLAY_LENGTH_DEMO; i++)
+        m_lineSeries->append(QPointF(i,DemodataArray[RegionIndex][i]));
 }
 
 void demowave_widget::on_pushButton_reset_clicked()

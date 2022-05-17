@@ -23,12 +23,37 @@ void Demodulation::run()
             //1. 一个容器的CHdata >> demo_CHdata
             demo_CHdata[READ_LENGTH] = {'\0'};
 
-            unsigned int sizeoCHdata = udp_recv->CHdataArray[i]->size();
+            bool isHeadFream = 0;
 
-            for(unsigned int j=0; j<sizeoCHdata; ++j){
-                unsigned char usCHdata = udp_recv->CHdataArray[i]->pop();
-                demo_CHdata[j] = usCHdata;
-            }
+            //判断前四位是否是3030，若不是则继续找，若是则从当前位置开始存入demo_CHdata
+            do{
+                unsigned char usCHdata1 = udp_recv->CHdataArray[i]->pop();
+                if(usCHdata1 == '3' ){
+                    unsigned char usCHdata2 = udp_recv->CHdataArray[i]->pop();
+                    if(usCHdata2 == '0'){
+                        unsigned char usCHdata3 = udp_recv->CHdataArray[i]->pop();
+                        if(usCHdata3 == '3'){
+                            unsigned char usCHdata4 = udp_recv->CHdataArray[i]->pop();
+                            if(usCHdata4 == '0'){
+
+                                unsigned int sizeoCHdata = udp_recv->CHdataArray[i]->size();
+
+                                demo_CHdata[0] = usCHdata1;
+                                demo_CHdata[1] = usCHdata2;
+                                demo_CHdata[2] = usCHdata3;
+                                demo_CHdata[3] = usCHdata4;
+
+                                for(unsigned int j=4; j<sizeoCHdata; ++j){
+                                    unsigned char usCHdata = udp_recv->CHdataArray[i]->pop();
+                                    demo_CHdata[j] = usCHdata;
+                                }
+
+                                  isHeadFream = 1;
+                            }
+                        }
+                    }
+                }
+            }while (isHeadFream==0) ;//isHeadFream == 0时循环，直到不等于0跳出循环
 
             udp_recv->CHdataArray[i]->clear();
 
@@ -56,14 +81,14 @@ void Demodulation::run()
                 Vi[t] = (float)(demo_CHdata_DEC_1[t] + demo_CHdata_DEC_2[t] - 2 * demo_CHdata_DEC_3[t]);
                 Vq[t] = (float)(-sqrt(3) * (demo_CHdata_DEC_1[t] - demo_CHdata_DEC_2[t]));
 
-                //5. 相位解调
+                //5. Demodulate Phase
                 Ph[t]=demoduPh(Vi[t],Vq[t]);
 
                 //6.Ph[] >> DEMOdata
                 DEMOdata->push(Ph[t]);
             }
 
-            //7. send to demowave_widget
+            //7. send DEMOdata to demowave_widget
             emit sendToDemoWave_widget(DEMOdata);
 
              udp_recv->CHdataArray[i]->clear();
@@ -73,7 +98,7 @@ void Demodulation::run()
 /*------------存储解调数据DEMOdata到本地---------------*/
     dateTime = QDateTime::currentDateTime();
 
-    saveFileDemo = QString("F:/Desktop/UDPConnect/data/")+QString("[Demo]")+dateTime.toString("yyyyMMddhhmmss")+ QString(".bin");
+    saveFileDemo = QString("F:/Desktop/Qt_UDP_DAS/data/")+QString("[Demo]")+dateTime.toString("yyyyMMddhhmmss")+ QString(".bin");
 
     outfileDemo.open(saveFileDemo.toStdString().data(), ofstream::binary);
 
@@ -116,7 +141,6 @@ float Demodulation::demoduPh(float vi,float vq){
     float absVq=abs(vq);
     float z=0,z0=0,dz=0,ph0=0,ph=0;
     int numZ0=0;
-
 
     if(absVi>=absVq){
         if(vi>0){//111 110

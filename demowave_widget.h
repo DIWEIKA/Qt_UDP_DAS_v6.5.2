@@ -35,15 +35,25 @@ public:
     QChart* m_chart;
     QValueAxis *m_axisX, *m_axisY;
     QLineSeries* m_lineSeries;
-    int ChannelIndex = 0;
+    int RegionIndex = 0;
     const int AXIS_MAX_X = DISPLAY_LENGTH_DEMO, AXIS_MAX_Y = 10;
+    int peakNum=1;
 
-    float Demodata_1[DEMODATA_LENGTH] = {0};
-    float Demodata_2[DEMODATA_LENGTH] = {0};
+    float **DemodataArray = NULL; //存放Demodata[]的数组(二维数组)
+    float Demodata_1[DEMODATA_LENGTH] = {0}; //region1
+    float Demodata_2[DEMODATA_LENGTH] = {0}; //region2
     float Demodata_3[DEMODATA_LENGTH] = {0};
     float Demodata_4[DEMODATA_LENGTH] = {0};
+    float Demodata_5[DEMODATA_LENGTH] = {0};
+    float Demodata_6[DEMODATA_LENGTH] = {0};
+    float Demodata_7[DEMODATA_LENGTH] = {0};
+    float Demodata_8[DEMODATA_LENGTH] = {0};
+    float Demodata_9[DEMODATA_LENGTH] = {0};
+    float Demodata_10[DEMODATA_LENGTH] = {0};
 
     void initWidget();
+    void readConfigFile();
+    void initComboBox_Region();
 
 public slots:
     void FlashWave(shared_ptr<CirQueue<float>>);
