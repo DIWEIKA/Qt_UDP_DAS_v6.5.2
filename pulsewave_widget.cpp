@@ -19,6 +19,8 @@ pulsewave_widget::~pulsewave_widget()
 
 void pulsewave_widget::initWidget()
 {
+    setWindowTitle(QString("Pulse Wave Display"));
+
     // 创建横纵坐标轴并设置显示范围
     m_axisX = new QValueAxis();
     m_axisY = new QValueAxis();

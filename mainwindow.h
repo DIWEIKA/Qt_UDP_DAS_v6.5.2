@@ -22,6 +22,7 @@
 #include "demowave_widget.h"
 #include "demodulation.h"
 #include "com_send.h"
+#include "demodata_save.h"
 #include "ui_mainwindow.h"
 
 
@@ -38,6 +39,7 @@ class pulsewave_widget;
 class demowave_widget;
 class Demodulation;
 class COM_Send;
+class DemoData_Save;
 
 class MainWindow : public QMainWindow
 {
@@ -50,12 +52,14 @@ public:
     Ui::MainWindow *ui;
 
     QTimer* udpTimer;
+    QTimer* DemoTimer;
     UDP_Recv* udp_recv;
     WriteToFiles* writeToFiles;
     pulsewave_widget *pulsewave_Widget;
     demowave_widget *demowave_Widget;
     Demodulation *demodu;
     COM_Send *com_send;
+    DemoData_Save *demodata_save;
     bool isSave;
     bool isDemo;
     bool isStart;
@@ -65,7 +69,8 @@ public:
 
     void setLocalStyleSheet();
     void setLocalMsg();
-    void OpenSaveOrDemoThread();
+    void OpenSaveThread();
+    void OpenDemoSaveThread();
     void stopThread();
 
 
@@ -74,7 +79,10 @@ private slots:
     void FinishUDP_RecvThread();
     void FinishWriteToFilesThread();
     void FinishDemodulationThread();
+    void FinishDemoData_saveThread();
+
     void on_pushButton_Start_clicked();
+
     void on_pushButton_Stop_clicked();
 
     void on_pushButton_Clear_clicked();

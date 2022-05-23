@@ -33,6 +33,8 @@ demowave_widget::~demowave_widget()
 
 void demowave_widget::initWidget()
 {
+    setWindowTitle(QString("Demodulation Wave Display"));
+
     // 创建横纵坐标轴并设置显示范围
     m_axisX = new QValueAxis();
     m_axisY = new QValueAxis();
@@ -89,9 +91,9 @@ void demowave_widget::initComboBox_Region()
 }
 
 //HEX发送时刷新波形显示
-void demowave_widget::FlashWave(shared_ptr<CirQueue<float>> DEMOdata)
+void demowave_widget::FlashWave(shared_ptr<CirQueue<float>> DEMOdata_flash)
 {
-    qDebug() <<"Flash Demodulation Wave Slot responsed !"<<endl;
+    qDebug() <<"Flash Demodulation Wave Slot responsed !"<<endl;  
 
     m_lineSeries->clear();
 
@@ -103,7 +105,7 @@ void demowave_widget::FlashWave(shared_ptr<CirQueue<float>> DEMOdata)
     for(int k = 0; k<sizeoDemoData; k+=regionNum){
         int p = k/regionNum;
         for(int q=0; q<regionNum;q++){
-            DemodataArray[q][p] = DEMOdata->pop();
+            DemodataArray[q][p] = DEMOdata_flash->pop();
         }
     }
 

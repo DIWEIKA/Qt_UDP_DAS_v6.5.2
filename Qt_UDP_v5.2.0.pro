@@ -11,6 +11,7 @@ CONFIG += c++11
 
 SOURCES += \
     com_send.cpp \
+    demodata_save.cpp \
     demodulation.cpp \
     demowave_widget.cpp \
     main.cpp \
@@ -24,6 +25,7 @@ SOURCES += \
 HEADERS += \
     CirQueue.h \
     com_send.h \
+    demodata_save.h \
     demodulation.h \
     demowave_widget.h \
     mainwindow.h \

@@ -22,6 +22,9 @@ public:
     bool saveFlag = false;
     qint64 LenoDemo = 4096*10000;
     shared_ptr<CirQueue<unsigned char>> CHdata;
+    int peakNum = 0;
+
+    void readConfigFile();
 
 
 protected:

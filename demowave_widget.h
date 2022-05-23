@@ -14,7 +14,7 @@
 
 #define READ_DEMO_LENGTH 4096*8 //从DEMOdata里读取的数据长度
 #define DEMODATA_LENGTH 4096*2 //一个通道的十进制数长度
-#define DISPLAY_LENGTH_DEMO 512*2 //展示在widget上的数据长度
+#define DISPLAY_LENGTH_DEMO 128*2 //展示在widget上的数据长度
 
 using namespace std;
 
@@ -36,7 +36,7 @@ public:
     QValueAxis *m_axisX, *m_axisY;
     QLineSeries* m_lineSeries;
     int RegionIndex = 0;
-    const int AXIS_MAX_X = DISPLAY_LENGTH_DEMO, AXIS_MAX_Y = 10;
+    const int AXIS_MAX_X = DISPLAY_LENGTH_DEMO, AXIS_MAX_Y = 5;
     int peakNum=1;
 
     float **DemodataArray = NULL; //存放Demodata[]的数组(二维数组)

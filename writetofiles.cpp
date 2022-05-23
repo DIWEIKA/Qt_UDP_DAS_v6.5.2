@@ -5,21 +5,34 @@ WriteToFiles::WriteToFiles(UDP_Recv* udp_Recv)
     udp_recv = udp_Recv;
 
     CHdata = make_shared<CirQueue<unsigned char>>(udp_recv->LenoUDP);
+
+    readConfigFile();
+}
+
+void WriteToFiles::readConfigFile()
+{
+    QString filePath = QDir::currentPath()+QString("/peak.txt"); //build所在目录下
+    QFile file(filePath);
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qDebug()<<"Can't open the Configration file!"<<endl;
+    }
+   QByteArray configData = file.readAll(); //读取所有数据
+   char peakNumChar = configData[3]; //peakNum存放在第四个位置
+   bool ok;
+   peakNum =  QString(peakNumChar).toInt(&ok,16);
 }
 
 void WriteToFiles::run()
 {
     qDebug() << "TimeUpdate" << endl;
 
-    //更新当前时间
     dateTime = QDateTime::currentDateTime();
 
-    saveFilenameAll = QString("F:/Desktop/UDPConnect/data/")+QString("[All]")+dateTime.toString("yyyyMMddhhmmss")+ QString(".bin");
+     //文件目录+[4CH]+[peakNum]+时间.bin
+    saveFilenameAll = QString("F:/Desktop/UDPConnect/data/")+QString("[4CH][")+QString::number(peakNum)+QString("]")+dateTime.toString("yyyyMMddhhmmss")+ QString(".bin");
 
-    //存储三通道原始数据
     outfileAll.open(saveFilenameAll.toStdString().data(), ofstream::binary);
 
-    //打开文件失败则结束运行
     if (!outfileAll.is_open()) return;
 
     for(int i = 0; i< SaveNumber; i++){

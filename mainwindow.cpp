@@ -30,9 +30,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     udp_recv->start();
 
-    //Counting 60s
     udpTimer = new QTimer();
     udpTimer->setTimerType(Qt::PreciseTimer);
+
+    DemoTimer = new QTimer();
+    DemoTimer->setTimerType(Qt::PreciseTimer);
 
     writeToFiles = new WriteToFiles(udp_recv);
 
@@ -44,6 +46,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     com_send = new COM_Send(this);
 
+    demodata_save = new DemoData_Save(demodu);
+
     //clear window
     if(ui->textEdit_Msg->isFullScreen())
         ui->textEdit_Msg->clear();
@@ -52,20 +56,19 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(udp_recv,&QThread::finished,this,&MainWindow::FinishUDP_RecvThread);
 
-    connect(udpTimer,&QTimer::timeout,this,&MainWindow::OpenSaveOrDemoThread);
+    connect(udpTimer,&QTimer::timeout,this,&MainWindow::OpenSaveThread);
+
+    connect(DemoTimer,&QTimer::timeout,this,&MainWindow::OpenDemoSaveThread);
 
     connect(writeToFiles,&QThread::finished,this,&MainWindow::FinishWriteToFilesThread);
 
     connect(demodu,&QThread::finished,this,&MainWindow::FinishDemodulationThread);
 
+    connect(demodata_save,&QThread::finished,this,&MainWindow::FinishDemoData_saveThread);
+
     connect(udp_recv,&UDP_Recv::SendtoWidget,pulsewave_Widget,&pulsewave_widget::FlashWave3,Qt::BlockingQueuedConnection);
 
     connect(demodu,&Demodulation::sendToDemoWave_widget,demowave_Widget,&demowave_widget::FlashWave,Qt::BlockingQueuedConnection);
-
-//    connect(demodu,&Demodulation::sendDEMOdataToWrite,writeToFiles,&WriteToFiles::recvPhSlot,Qt::BlockingQueuedConnection);
-
-//    connect(wave_Widget,QOverload<int>::of(&QComboBox::currentIndexChanged),wave_Widget,&wave_widget::on_comboBox_Channel_currentIndexChangedSlot);
-
 }
 
 MainWindow::~MainWindow()
@@ -104,7 +107,7 @@ void MainWindow::setLocalMsg()
     ui->textEdit_Msg->insertPlainText("IpAddress: "+IpAddress.toString()+" Port: 7000 \n");
 
     //设置窗口的标题
-    QString title = QString("Server IP: %1, Port: 7000").arg(IpAddress.toString());
+    QString title = QString("Qt_UDP_DAS");
     setWindowTitle(title);
 
     ui->textEdit_Msg->insertPlainText("Setting Acquisition Card Mode I ! \n");
@@ -116,18 +119,20 @@ void MainWindow::FinishUDP_RecvThread()
     udp_recv->wait();
 }
 
-void MainWindow::OpenSaveOrDemoThread()
+void MainWindow::OpenSaveThread()
 {
     isSave = ui->checkBox_Save->isChecked();
 
-    isDemo = ui->checkBox_Demo->isChecked();
-
     if(isSave && isStart)
         writeToFiles->start();
+}
+
+void MainWindow::OpenDemoSaveThread()
+{
+    isDemo = ui->checkBox_Demo->isChecked();
 
     if(isDemo && isStart)
-        demodu->start();
-
+        demodata_save->start(); //开始解调存储线程
 }
 
 void MainWindow::FinishWriteToFilesThread()
@@ -135,15 +140,21 @@ void MainWindow::FinishWriteToFilesThread()
     writeToFiles->quit();
     writeToFiles->wait();
 
-    ui->textEdit_Msg->insertPlainText(" Save Files have been saved in " + writeToFiles->saveFilenameAll+"\n");   
+    ui->textEdit_Msg->insertPlainText(" Save Files have been saved in " + writeToFiles->saveFilenameAll+"\n");
 }
 
 void MainWindow::FinishDemodulationThread()
 {
     demodu->quit();
     demodu->wait();
+}
 
-    ui->textEdit_Msg->insertPlainText("Demodulation have been saved in " + demodu->saveFileDemo+ "\n");
+void MainWindow::FinishDemoData_saveThread()
+{
+    demodata_save->quit();
+    demodata_save->wait();
+
+    ui->textEdit_Msg->insertPlainText("Demodulation have been saved in " + demodata_save->saveFileDemo+ "\n");
 }
 
 void MainWindow::on_pushButton_Start_clicked()
@@ -215,7 +226,6 @@ void MainWindow::on_pushButton_Clear_clicked()
 
 void MainWindow::on_checkBox_Save_clicked()
 {
-    //设置存储时间间隔
     udpTimer->start(15000);
     isSave = true;
 }
@@ -232,8 +242,11 @@ void MainWindow::on_checkBox_Hex_clicked()
 
 void MainWindow::on_checkBox_Demo_clicked()
 {
-     udpTimer->start(5000); //设置时间间隔为5秒
-     isDemo = true;
+    isDemo = true;
+
+    DemoTimer->start(15000); //解调存储计时
+
+    demodu->start(); //开始解调线程
 }
 
 void MainWindow::on_comboBox_Mode_currentIndexChangedSlot()
@@ -261,7 +274,7 @@ void MainWindow::on_pushButton_Send_clicked()
 {
     com_send->start();
 
-     ui->textEdit_Msg->insertPlainText("Sendding peak.txt ! \n");
+    ui->textEdit_Msg->insertPlainText("Sendding peak.txt ! \n");
 }
 
 void MainWindow::on_pushButton_Display_demo_clicked()
