@@ -210,6 +210,9 @@ void MainWindow::on_pushButton_Stop_clicked()
     ui->checkBox_Save->setChecked(isSave);
     ui->checkBox_Demo->setChecked(isDemo);
 
+    //end demodulation Thread
+    demodu->quit();
+
     //clear CHdata
     udp_recv->clearCHdata();
 
@@ -226,7 +229,7 @@ void MainWindow::on_pushButton_Clear_clicked()
 
 void MainWindow::on_checkBox_Save_clicked()
 {
-    udpTimer->start(15000);
+    udpTimer->start(30000);
     isSave = true;
 }
 
@@ -244,7 +247,7 @@ void MainWindow::on_checkBox_Demo_clicked()
 {
     isDemo = true;
 
-    DemoTimer->start(15000); //解调存储计时
+    DemoTimer->start(30000); //解调存储计时
 
     demodu->start(); //开始解调线程
 }

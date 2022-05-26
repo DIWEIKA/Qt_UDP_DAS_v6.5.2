@@ -34,9 +34,9 @@ void DemoData_Save::run()
 
     int sizeofDEMOdata = m_demodulation->DEMOdata_save->size();
 
-    qDebug()<<"sizeofDEMOdata = "<<sizeofDEMOdata<<endl;
+//    qDebug()<<"sizeofDEMOdata = "<<sizeofDEMOdata<<endl;
 
-    for(unsigned int i = 0; i<sizeofDEMOdata/sizeof(float); i++){ //这里一次写入四个字节，因此写入次数要/4
+    for(int i = 0; i<sizeofDEMOdata; i++){
         outfileDemo.write((const char*)m_demodulation->DEMOdata_save->begin(),sizeof(float));
         m_demodulation->DEMOdata_save->pop();
     }
@@ -44,5 +44,5 @@ void DemoData_Save::run()
     outfileDemo.close();
 
     //clear DEMOdata_save
-    m_demodulation->DEMOdata_save->clear();
+//    m_demodulation->DEMOdata_save->clear();
 }

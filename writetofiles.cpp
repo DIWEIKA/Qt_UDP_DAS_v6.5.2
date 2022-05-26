@@ -29,7 +29,7 @@ void WriteToFiles::run()
     dateTime = QDateTime::currentDateTime();
 
      //文件目录+[4CH]+[peakNum]+时间.bin
-    saveFilenameAll = QString("F:/Desktop/UDPConnect/data/")+QString("[4CH][")+QString::number(peakNum)+QString("]")+dateTime.toString("yyyyMMddhhmmss")+ QString(".bin");
+    saveFilenameAll = QString("F:/Desktop/Qt_UDP_DAS/data/")+QString("[4CH][")+QString::number(peakNum)+QString("]")+dateTime.toString("yyyyMMddhhmmss")+ QString(".bin");
 
     outfileAll.open(saveFilenameAll.toStdString().data(), ofstream::binary);
 
@@ -38,7 +38,7 @@ void WriteToFiles::run()
     for(int i = 0; i< SaveNumber; i++){
 
         if(udp_recv->CHdataArray[i]->isEmpty())
-            continue;
+            break;
         else
         {
             unsigned int sizeoCHdata = udp_recv->CHdataArray[i]->size();
@@ -47,7 +47,7 @@ void WriteToFiles::run()
                 outfileAll.write((const char*)udp_recv->CHdataArray[i]->begin(),sizeof(unsigned char));
                 udp_recv->CHdataArray[i]->pop();
             }
-            udp_recv->CHdataArray[i]->clear();
+//            udp_recv->CHdataArray[i]->clear();
         }
     }
 

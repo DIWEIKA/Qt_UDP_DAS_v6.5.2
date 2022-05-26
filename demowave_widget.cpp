@@ -13,6 +13,16 @@ demowave_widget::demowave_widget(QWidget *parent) :
 
     initComboBox_Region();
 
+//    Demodata_1 = new float[REGION_DATA_LENGTH]();
+//    Demodata_2 = new float[REGION_DATA_LENGTH]();
+//    Demodata_3 = new float[REGION_DATA_LENGTH]();
+//    Demodata_4 = new float[REGION_DATA_LENGTH]();
+//    Demodata_5 = new float[REGION_DATA_LENGTH]();
+//    Demodata_6 = new float[REGION_DATA_LENGTH]();
+//    Demodata_7 = new float[REGION_DATA_LENGTH]();
+//    Demodata_8 = new float[REGION_DATA_LENGTH]();
+//    Demodata_9 = new float[REGION_DATA_LENGTH]();
+
     DemodataArray = new float*[peakNum]; //动态创建二维数组
     DemodataArray[0]=Demodata_1;
     DemodataArray[1]=Demodata_2;
@@ -41,9 +51,9 @@ void demowave_widget::initWidget()
     m_axisX->setTitleText("Time Series");
     m_axisY->setTitleText("Phase (rad)");
     m_axisX->setMin(0);
-    m_axisY->setMin(-AXIS_MAX_Y);
+//    m_axisY->setMin(-AXIS_MAX_Y);
     m_axisX->setMax(AXIS_MAX_X);
-    m_axisY->setMax(AXIS_MAX_Y);
+//    m_axisY->setMax(AXIS_MAX_Y);
     m_axisY->setTickCount(10);
     m_axisX->setTickCount(10);
 
@@ -93,13 +103,17 @@ void demowave_widget::initComboBox_Region()
 //HEX发送时刷新波形显示
 void demowave_widget::FlashWave(shared_ptr<CirQueue<float>> DEMOdata_flash)
 {
-    qDebug() <<"Flash Demodulation Wave Slot responsed !"<<endl;  
+    qDebug() <<"Flash Demodulation Wave Slot responsed !"<<endl;
 
     m_lineSeries->clear();
 
     int regionNum = peakNum;
 
-    int sizeoDemoData = READ_DEMO_LENGTH;
+    int sizeoDemoData = DEMOdata_flash->size();
+
+    //重设sizeoDemoData的长度，使其为regionNum的倍数
+    int N1 = sizeoDemoData/regionNum;
+    sizeoDemoData = N1*peakNum;
 
     //DEMOdata[] split regions
     for(int k = 0; k<sizeoDemoData; k+=regionNum){
@@ -113,8 +127,11 @@ void demowave_widget::FlashWave(shared_ptr<CirQueue<float>> DEMOdata_flash)
     RegionIndex = ui->comboBox_Region->currentIndex();
 
     //dispaly wave
-    for(int i = 0;i<DISPLAY_LENGTH_DEMO; i++)
+    for(int i = 0;i<DISPLAY_LENGTH_DEMO; i++){
         m_lineSeries->append(QPointF(i,DemodataArray[RegionIndex][i]));
+        m_axisY->setRange(DemodataArray[RegionIndex][i]-15,DemodataArray[RegionIndex][i]+15);
+    }
+
 }
 
 void demowave_widget::on_pushButton_reset_clicked()
@@ -123,5 +140,6 @@ void demowave_widget::on_pushButton_reset_clicked()
     m_axisY->setMin(-AXIS_MAX_Y);
     m_axisX->setMax(AXIS_MAX_X);
     m_axisY->setMax(AXIS_MAX_Y);
+
 }
 

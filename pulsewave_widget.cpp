@@ -31,7 +31,7 @@ void pulsewave_widget::initWidget()
     m_axisX->setMax(AXIS_MAX_X);
     m_axisY->setMax(AXIS_MAX_Y);
     m_axisY->setTickCount(15);
-    m_axisX->setTickCount(15);
+    m_axisX->setTickCount(10);
 
     m_lineSeries = new QSplineSeries();                             // 创建曲线绘制对象
     m_lineSeries->setPointsVisible(true);                         // 设置数据点可见
@@ -107,9 +107,9 @@ void pulsewave_widget::FlashWave3(char datagramHEX[])
         break;
     }
 
-    //5. Wave Display
-    for(int i = 0;i<DISPLAY_LENGTH_PULSE;i++)
-        m_lineSeries->append(QPointF(i,Pulsedata_DEC_disp[i]));
+    //5. Wave Display (从8开始 因为起始帧开始部分包含了上一帧的8个点)
+    for(int i = 8;i<DISPLAY_LENGTH_PULSE;i++)
+        m_lineSeries->append(QPointF(i-8,Pulsedata_DEC_disp[i]));
 }
 
 void pulsewave_widget::on_btnReset_clicked()

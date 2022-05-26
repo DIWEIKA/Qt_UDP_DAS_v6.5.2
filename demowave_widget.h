@@ -10,11 +10,12 @@
 #include <QLineSeries>
 #include <QSplineSeries>
 #include <QLineSeries>
+#include <QAbstractAxis>
 #include <mainwindow.h>
 
-#define READ_DEMO_LENGTH 4096*8 //从DEMOdata里读取的数据长度
-#define DEMODATA_LENGTH 4096*2 //一个通道的十进制数长度
-#define DISPLAY_LENGTH_DEMO 128*2 //展示在widget上的数据长度
+#define READ_FLASH_LENGTH 256*1000
+#define REGION_DATA_LENGTH 256*100
+#define DISPLAY_LENGTH_DEMO 150
 
 using namespace std;
 
@@ -40,16 +41,30 @@ public:
     int peakNum=1;
 
     float **DemodataArray = NULL; //存放Demodata[]的数组(二维数组)
-    float Demodata_1[DEMODATA_LENGTH] = {0}; //region1
-    float Demodata_2[DEMODATA_LENGTH] = {0}; //region2
-    float Demodata_3[DEMODATA_LENGTH] = {0};
-    float Demodata_4[DEMODATA_LENGTH] = {0};
-    float Demodata_5[DEMODATA_LENGTH] = {0};
-    float Demodata_6[DEMODATA_LENGTH] = {0};
-    float Demodata_7[DEMODATA_LENGTH] = {0};
-    float Demodata_8[DEMODATA_LENGTH] = {0};
-    float Demodata_9[DEMODATA_LENGTH] = {0};
-    float Demodata_10[DEMODATA_LENGTH] = {0};
+
+    //动态数组
+//    float *Demodata_1; //region1
+//    float *Demodata_2; //region2
+//    float *Demodata_3;
+//    float *Demodata_4;
+//    float *Demodata_5;
+//    float *Demodata_6;
+//    float *Demodata_7;
+//    float *Demodata_8;
+//    float *Demodata_9;
+//    float *Demodata_10;
+
+    //静态数组
+    float Demodata_1[REGION_DATA_LENGTH]={'\0'}; //region1
+    float Demodata_2[REGION_DATA_LENGTH]={'\0'}; //region2
+    float Demodata_3[REGION_DATA_LENGTH]={'\0'};
+    float Demodata_4[REGION_DATA_LENGTH]={'\0'};
+    float Demodata_5[REGION_DATA_LENGTH]={'\0'};
+    float Demodata_6[REGION_DATA_LENGTH]={'\0'};
+    float Demodata_7[REGION_DATA_LENGTH]={'\0'};
+    float Demodata_8[REGION_DATA_LENGTH]={'\0'};
+    float Demodata_9[REGION_DATA_LENGTH]={'\0'};
+    float Demodata_10[REGION_DATA_LENGTH]={'\0'};
 
     void initWidget();
     void readConfigFile();
