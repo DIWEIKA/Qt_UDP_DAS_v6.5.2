@@ -20,6 +20,7 @@ public:
     UDP_Recv* udp_recv;
     shared_ptr<CirQueue<float>> DEMOdata_flash;
     shared_ptr<CirQueue<float>> DEMOdata_save;
+    float DEMOdata_display[2048];
 
     //动态数组
 //    unsigned char *demo_CHdata;
@@ -49,9 +50,10 @@ public:
     int demo_CHdata_DEC_3[CHDATA_LENGTH];
     int demo_CHdata_DEC_4[CHDATA_LENGTH];
 
+    int Freq = 10*1000; //采样率10KHz
     int peakNum;
-    unsigned long LenoDemo = 256*1000;
-    unsigned long LenoDemoSave = 256*10000;
+    unsigned long LenoDemo = 256*100;
+    unsigned long LenoDemoSave = 256*1000;
 
     float* RealPh;
     float* PriorPh;
@@ -64,9 +66,6 @@ public:
     void readAtanTable(float *roundNum);
     float demoduPh(float vi,float vq);
     float Unwrap(float Ph, int i);
-
-signals:
-    void sendToDemoWave_widget(shared_ptr<CirQueue<float>> DEMOdata);
 
 protected:
     void run();

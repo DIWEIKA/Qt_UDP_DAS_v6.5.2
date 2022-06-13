@@ -15,7 +15,6 @@ public:
 
     MainWindow* mainWindow;
 
-
     //winSocket API
     WSADATA wsaData;
     WORD sockVersion;
@@ -45,6 +44,7 @@ public:
     int pack_count = 0;
     int emit_count = 0; //用于计数发送信号的频率
     char pack_HEX_32[2048*32]; //用于存放32帧数据
+    char pack_HEX_Display[2048*32]; //用于显示的32帧数据
 //    QByteArray pack_HEX_32;
 
     shared_ptr<CirQueue<unsigned char>> CHdata2;

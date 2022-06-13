@@ -9,43 +9,37 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     isStart = false;
-
-    isASCII = false;
-
     isHEX = false;
-
     isSave = false;
-
     isDemo = false;
 
     AcqMode = 1;
 
     //set Style Sheet
-    setLocalStyleSheet();
+//    setLocalStyleSheet();
 
     //set Local Message
     setLocalMsg();
 
     udp_recv = new UDP_Recv(this);
-
     udp_recv->start();
 
-    udpTimer = new QTimer();
-    udpTimer->setTimerType(Qt::PreciseTimer);
-
-    DemoTimer = new QTimer();
+    SaveTimer = new QTimer(); // writetofiles Timer
+    SaveTimer->setTimerType(Qt::PreciseTimer);
+    FlashTimer_Pulse = new QTimer(); //Flash pulsewave_widget2 Timer
+    FlashTimer_Pulse->setTimerType(Qt::PreciseTimer);
+    DemoTimer = new QTimer(); //demodualtion Timer
+    DemoTimer->setTimerType(Qt::PreciseTimer);
+    FlashTimer = new QTimer(); //Flash demowave_widget2 Timer
     DemoTimer->setTimerType(Qt::PreciseTimer);
 
     writeToFiles = new WriteToFiles(udp_recv);
-
     pulsewave_Widget = new pulsewave_widget();
-
-    demowave_Widget = new demowave_widget();
-
-    demodu = new Demodulation(udp_recv);
-
+    pulsewave_Widget2 = new pulsewave_widget2(udp_recv);
+    demodu = new Demodulation(udp_recv); 
+    demowave_Widget = new demowave_widget(demodu);
+    demowave_Widget2 = new demowave_widget2(demodu);
     com_send = new COM_Send(this);
-
     demodata_save = new DemoData_Save(demodu);
 
     //clear window
@@ -53,22 +47,20 @@ MainWindow::MainWindow(QWidget *parent)
         ui->textEdit_Msg->clear();
 
     connect(ui->comboBox_Mode, QOverload<int>::of(&QComboBox::currentIndexChanged),this,&MainWindow::on_comboBox_Mode_currentIndexChangedSlot);
-
     connect(udp_recv,&QThread::finished,this,&MainWindow::FinishUDP_RecvThread);
-
-    connect(udpTimer,&QTimer::timeout,this,&MainWindow::OpenSaveThread);
-
+    connect(SaveTimer,&QTimer::timeout,this,&MainWindow::OpenSaveThread);
     connect(DemoTimer,&QTimer::timeout,this,&MainWindow::OpenDemoSaveThread);
-
+//    connect(FlashTimer,&QTimer::timeout,demowave_Widget,&demowave_widget::FlashWave);
+    connect(FlashTimer_Pulse,&QTimer::timeout,pulsewave_Widget2,&pulsewave_widget2::FlashWave);
+    connect(FlashTimer,&QTimer::timeout,demowave_Widget2,&demowave_widget2::FlashWave);
     connect(writeToFiles,&QThread::finished,this,&MainWindow::FinishWriteToFilesThread);
-
     connect(demodu,&QThread::finished,this,&MainWindow::FinishDemodulationThread);
-
     connect(demodata_save,&QThread::finished,this,&MainWindow::FinishDemoData_saveThread);
-
-    connect(udp_recv,&UDP_Recv::SendtoWidget,pulsewave_Widget,&pulsewave_widget::FlashWave3,Qt::BlockingQueuedConnection);
-
-    connect(demodu,&Demodulation::sendToDemoWave_widget,demowave_Widget,&demowave_widget::FlashWave,Qt::BlockingQueuedConnection);
+//    connect(udp_recv,&UDP_Recv::SendtoWidget,pulsewave_Widget,&pulsewave_widget::FlashWave3,Qt::BlockingQueuedConnection);
+//    connect(udp_recv,&UDP_Recv::SendtoWidget,pulsewave_Widget2,&pulsewave_widget2::FlashWave,Qt::BlockingQueuedConnection);
+//    connect(demodu,&Demodulation::sendToDemoWave_widget,demowave_Widget,&demowave_widget::FlashWave,Qt::BlockingQueuedConnection);
+    connect(pulsewave_Widget2,&pulsewave_widget2::PauseWave,this,&MainWindow::PulseWave_pause_slot);
+    connect(pulsewave_Widget2,&pulsewave_widget2::RestartWave,this,&MainWindow::PulseWave_restart_slot);
 }
 
 MainWindow::~MainWindow()
@@ -79,7 +71,7 @@ MainWindow::~MainWindow()
 void MainWindow::setLocalStyleSheet()
 {
     //set Style Sheet
-    QFile file("./my.qss"); //放在build directory下
+    QFile file("C:/Qt_UDP_DAS/my.qss");
 
     file.open(QIODevice::ReadOnly);
 
@@ -166,13 +158,6 @@ void MainWindow::on_pushButton_Start_clicked()
 
     isStart = true;
 
-    if(isHEX) ui->checkBox_ASCII->setDisabled(true);
-
-    if(isASCII){
-        ui->checkBox_Hex->setDisabled(true);
-        ui->pushButton_Display_pulse->setDisabled(true); //ASCII接收时不能显示波形
-    }
-
     if(isSave) ui->checkBox_Demo->setDisabled(true);
     if(isDemo) ui->checkBox_Save->setDisabled(true);
 
@@ -194,30 +179,27 @@ void MainWindow::on_pushButton_Stop_clicked()
 {
     isStart = false;
     isSave = false;
-    isASCII = false;
     isHEX = false;
     isDemo = false;
 
-    ui->checkBox_ASCII->setEnabled(true);
     ui->checkBox_Demo->setEnabled(true);
     ui->checkBox_Hex->setEnabled(true);
     ui->checkBox_Save->setEnabled(true);
     ui->pushButton_Display_pulse->setEnabled(true);
     ui->pushButton_Send->setEnabled(true);
 
-    ui->checkBox_ASCII->setChecked(isStart);
     ui->checkBox_Hex->setChecked(isStart);
     ui->checkBox_Save->setChecked(isSave);
     ui->checkBox_Demo->setChecked(isDemo);
 
-    //end demodulation Thread
-    demodu->quit();
-
     //clear CHdata
     udp_recv->clearCHdata();
-
-    //end udp_recv Thread
     udp_recv->quit();
+
+    if(SaveTimer->isActive()) SaveTimer->stop();
+    if(DemoTimer->isActive()) DemoTimer->stop();
+    if(FlashTimer_Pulse->isActive()) FlashTimer_Pulse->stop();
+    if(FlashTimer->isActive()) FlashTimer->stop();
 
     ui->textEdit_Msg->insertPlainText("Stopped ! \n");
 }
@@ -229,13 +211,9 @@ void MainWindow::on_pushButton_Clear_clicked()
 
 void MainWindow::on_checkBox_Save_clicked()
 {
-    udpTimer->start(30000);
     isSave = true;
-}
 
-void MainWindow::on_checkBox_ASCII_clicked()
-{
-    isASCII = true;
+    if(!SaveTimer->isActive()) SaveTimer->start(30000);
 }
 
 void MainWindow::on_checkBox_Hex_clicked()
@@ -247,7 +225,7 @@ void MainWindow::on_checkBox_Demo_clicked()
 {
     isDemo = true;
 
-    DemoTimer->start(30000); //解调存储计时
+    if(!DemoTimer->isActive()) DemoTimer->start(30000); //解调存储计时
 
     demodu->start(); //开始解调线程
 }
@@ -270,7 +248,9 @@ void MainWindow::on_comboBox_Mode_currentIndexChangedSlot()
 
 void MainWindow::on_pushButton_Display_pulse_clicked()
 {
-    pulsewave_Widget->show();
+    if(!FlashTimer_Pulse->isActive()) FlashTimer_Pulse->start(100); //30ms flash
+
+    pulsewave_Widget2->show();
 }
 
 void MainWindow::on_pushButton_Send_clicked()
@@ -282,6 +262,18 @@ void MainWindow::on_pushButton_Send_clicked()
 
 void MainWindow::on_pushButton_Display_demo_clicked()
 {
-    demowave_Widget->show();
+    if(!FlashTimer->isActive()) FlashTimer->start(30); //30ms flash
+
+    demowave_Widget2->show();
+}
+
+void MainWindow::PulseWave_pause_slot()
+{
+    if(FlashTimer_Pulse->isActive()) FlashTimer_Pulse->stop();
+}
+
+void MainWindow::PulseWave_restart_slot()
+{
+    if(!FlashTimer->isActive()) FlashTimer_Pulse->start(30); //30ms flash
 }
 

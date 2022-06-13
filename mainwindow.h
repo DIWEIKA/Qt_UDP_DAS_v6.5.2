@@ -19,7 +19,9 @@
 #include "writetofiles.h"
 #include "udp_recv.h"
 #include "pulsewave_widget.h"
+#include "pulsewave_widget2.h"
 #include "demowave_widget.h"
+#include "demowave_widget2.h"
 #include "demodulation.h"
 #include "com_send.h"
 #include "demodata_save.h"
@@ -36,7 +38,9 @@ QT_END_NAMESPACE
 class WriteToFiles;
 class UDP_Recv;
 class pulsewave_widget;
+class pulsewave_widget2;
 class demowave_widget;
+class demowave_widget2;
 class Demodulation;
 class COM_Send;
 class DemoData_Save;
@@ -51,19 +55,22 @@ public:
 
     Ui::MainWindow *ui;
 
-    QTimer* udpTimer;
+    QTimer* SaveTimer;
     QTimer* DemoTimer;
+    QTimer* FlashTimer_Pulse;
+    QTimer* FlashTimer;
     UDP_Recv* udp_recv;
     WriteToFiles* writeToFiles;
     pulsewave_widget *pulsewave_Widget;
+    pulsewave_widget2 *pulsewave_Widget2;
     demowave_widget *demowave_Widget;
+    demowave_widget2 *demowave_Widget2;
     Demodulation *demodu;
     COM_Send *com_send;
     DemoData_Save *demodata_save;
     bool isSave;
     bool isDemo;
     bool isStart;
-    bool isASCII;
     bool isHEX;
     int AcqMode; //采集卡模式选择
 
@@ -75,7 +82,6 @@ public:
 
 
 private slots:
-
     void FinishUDP_RecvThread();
     void FinishWriteToFilesThread();
     void FinishDemodulationThread();
@@ -89,8 +95,6 @@ private slots:
 
     void on_checkBox_Save_clicked();
 
-    void on_checkBox_ASCII_clicked();
-
     void on_checkBox_Hex_clicked();
 
     void on_pushButton_Display_pulse_clicked();
@@ -102,6 +106,9 @@ private slots:
     void on_pushButton_Send_clicked();
 
     void on_pushButton_Display_demo_clicked();
+
+    void PulseWave_pause_slot();
+    void PulseWave_restart_slot();
 
 private:
 

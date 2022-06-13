@@ -1,5 +1,6 @@
 QT       += core gui network
 QT += core gui charts
+QT+= widgets printsupport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -14,9 +15,12 @@ SOURCES += \
     demodata_save.cpp \
     demodulation.cpp \
     demowave_widget.cpp \
+    demowave_widget2.cpp \
     main.cpp \
     mainwindow.cpp \
     pulsewave_widget.cpp \
+    pulsewave_widget2.cpp \
+    qcustomplot.cpp \
     qextserialbase.cpp \
     udp_recv.cpp \
     win_qextserialport.cpp \
@@ -28,8 +32,11 @@ HEADERS += \
     demodata_save.h \
     demodulation.h \
     demowave_widget.h \
+    demowave_widget2.h \
     mainwindow.h \
     pulsewave_widget.h \
+    pulsewave_widget2.h \
+    qcustomplot.h \
     qextserialbase.h \
     udp_recv.h \
     win_qextserialport.h \
@@ -37,8 +44,10 @@ HEADERS += \
 
 FORMS += \
     demowave_widget.ui \
+    demowave_widget2.ui \
     mainwindow.ui \
-    pulsewave_widget.ui
+    pulsewave_widget.ui \
+    pulsewave_widget2.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

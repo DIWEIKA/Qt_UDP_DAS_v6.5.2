@@ -1,20 +1,11 @@
-/**
- *  使用QChart、QChartView和QLineSeries显示的折线图，弃用
- * */
-
-#ifndef DEMOWAVE_WIDGET_H
-#define DEMOWAVE_WIDGET_H
+#ifndef DEMOWAVE_WIDGET2_H
+#define DEMOWAVE_WIDGET2_H
 
 #include <QWidget>
 #include <QMainWindow>
 #include <qmainwindow.h>
+#include "qcustomplot.h"
 #include <QTimer>
-#include <QChartView>
-#include <QValueAxis>
-#include <QLineSeries>
-#include <QSplineSeries>
-#include <QLineSeries>
-#include <QAbstractAxis>
 #include <QThread>
 #include <demodulation.h>
 #include <mainwindow.h>
@@ -25,45 +16,26 @@
 
 using namespace std;
 
-QT_CHARTS_USE_NAMESPACE
-
 namespace Ui {
-class demowave_widget;
+class demowave_widget2;
 }
 
 class Demodulation;
 
-class demowave_widget : public QWidget
+class demowave_widget2: public QWidget
 {
-    Q_OBJECT
-
 public:
-    explicit demowave_widget(Demodulation *demodulation);
-    ~demowave_widget();
+    demowave_widget2(Demodulation *demodulation);
+    ~demowave_widget2();
 
+    Ui::demowave_widget2 *ui;
     Demodulation *demodu;
     QTimer* timer_flash;
-    QChart* m_chart;
-    QValueAxis *m_axisX, *m_axisY;
-    QLineSeries* m_lineSeries;
     int RegionIndex = 0;
-    const int AXIS_MAX_X = DISPLAY_LENGTH_DEMO, AXIS_MAX_Y = 5;
     int peakNum=1;
+    QCustomPlot *m_customPlot;
 
     float **DemodataArray = NULL; //存放Demodata[]的数组(二维数组)
-
-    //动态数组
-//    float *Demodata_1; //region1
-//    float *Demodata_2; //region2
-//    float *Demodata_3;
-//    float *Demodata_4;
-//    float *Demodata_5;
-//    float *Demodata_6;
-//    float *Demodata_7;
-//    float *Demodata_8;
-//    float *Demodata_9;
-//    float *Demodata_10;
-
     //静态数组
     float Demodata_1[REGION_DATA_LENGTH]={'\0'}; //region1
     float Demodata_2[REGION_DATA_LENGTH]={'\0'}; //region2
@@ -84,11 +56,8 @@ public slots:
     void FlashWave();
 
 private slots:
-
     void on_pushButton_reset_clicked();
 
-private:
-    Ui::demowave_widget *ui;
 };
 
-#endif // DEMOWAVE_WIDGET_H
+#endif // DEMOWAVE_WIDGET2_H

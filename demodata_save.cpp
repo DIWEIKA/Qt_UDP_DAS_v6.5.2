@@ -9,7 +9,7 @@ DemoData_Save::DemoData_Save(Demodulation* demodulation)
 
 void DemoData_Save::readConfigFile()
 {
-    QString filePath = QDir::currentPath()+QString("/peak.txt"); //build所在目录下
+    QString filePath = QString("C:/Qt_UDP_DAS/peak.txt");
     QFile file(filePath);
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug()<<"Can't open the Configration file!"<<endl;
@@ -38,6 +38,14 @@ void DemoData_Save::run()
 
     for(int i = 0; i<sizeofDEMOdata; i++){
         outfileDemo.write((const char*)m_demodulation->DEMOdata_save->begin(),sizeof(float));
+
+        //如果队列为空，延迟一会，若依然为空，说明没有数据了
+         if(m_demodulation->DEMOdata_save->isEmpty()){
+             sleep(50);
+             if(m_demodulation->DEMOdata_save->isEmpty())
+                 break;
+         }
+
         m_demodulation->DEMOdata_save->pop();
     }
 

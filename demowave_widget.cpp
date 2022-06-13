@@ -1,11 +1,11 @@
 #include "demowave_widget.h"
 #include "ui_demowave_widget.h"
 
-demowave_widget::demowave_widget(QWidget *parent) :
-    QWidget(parent),
+demowave_widget::demowave_widget(Demodulation *demodulation) :
     ui(new Ui::demowave_widget)
 {
     ui->setupUi(this);
+    demodu = demodulation;
 
     initWidget();
 
@@ -80,7 +80,7 @@ void demowave_widget::initWidget()
 
 void demowave_widget::readConfigFile()
 {
-    QString filePath = QDir::currentPath()+QString("/peak.txt"); //build所在目录下
+    QString filePath = QString("C:/Qt_UDP_DAS/peak.txt");
     QFile file(filePath);
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug()<<"Can't open the Configration file!"<<endl;
@@ -89,7 +89,6 @@ void demowave_widget::readConfigFile()
    char peakNumChar = configData[3]; //peakNum存放在第四个位置
    bool ok;
    peakNum =  QString(peakNumChar).toInt(&ok,16);
-   qDebug()<<"peakNum: "<<peakNum<<endl;
 }
 
 void demowave_widget::initComboBox_Region()
@@ -101,7 +100,7 @@ void demowave_widget::initComboBox_Region()
 }
 
 //HEX发送时刷新波形显示
-void demowave_widget::FlashWave(shared_ptr<CirQueue<float>> DEMOdata_flash)
+void demowave_widget::FlashWave()
 {
     qDebug() <<"Flash Demodulation Wave Slot responsed !"<<endl;
 
@@ -109,7 +108,7 @@ void demowave_widget::FlashWave(shared_ptr<CirQueue<float>> DEMOdata_flash)
 
     int regionNum = peakNum;
 
-    int sizeoDemoData = DEMOdata_flash->size();
+    int sizeoDemoData = demodu->DEMOdata_flash->size();
 
     //重设sizeoDemoData的长度，使其为regionNum的倍数
     int N1 = sizeoDemoData/regionNum;
@@ -119,7 +118,8 @@ void demowave_widget::FlashWave(shared_ptr<CirQueue<float>> DEMOdata_flash)
     for(int k = 0; k<sizeoDemoData; k+=regionNum){
         int p = k/regionNum;
         for(int q=0; q<regionNum;q++){
-            DemodataArray[q][p] = DEMOdata_flash->pop();
+            if(demodu->DEMOdata_flash->isEmpty()) QThread::msleep(50);
+            DemodataArray[q][p] = demodu->DEMOdata_flash->pop();
         }
     }
 

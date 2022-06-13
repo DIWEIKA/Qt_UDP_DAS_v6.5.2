@@ -62,10 +62,10 @@ void pulsewave_widget::FlashWave3(char datagramHEX[])
 
     m_lineSeries->clear();
 
-    sizeoPulsedata = READ_PULSE_LENGTH;
+    sizeoPulsedata = READ_PULSE_LENGTH*2;
 
     //1. datagramHEX >> PulsedataHEX[]
-    memcpy(PulsedataHEX,datagramHEX,sizeoPulsedata);
+    memcpy(PulsedataHEX,datagramHEX,sizeof(char)*sizeoPulsedata);
 
     //2. PulsedataHEX[] >> Pulsedata_DEC_all[]
     for(int i = 0; i<sizeoPulsedata; i+=4){
@@ -92,16 +92,20 @@ void pulsewave_widget::FlashWave3(char datagramHEX[])
     ChannelIndex = ui->comboBox_Channel->currentIndex();
     switch (ChannelIndex) {
     case 0:
-        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_1_HEX,PULSEDATA_LENGTH*2);
+//        copy(begin(Pulsedata_DEC_1_HEX),end(Pulsedata_DEC_1_HEX),begin(Pulsedata_DEC_disp));
+        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_1_HEX,sizeof(int)*PULSEDATA_LENGTH*2);
         break;
     case 1:
-        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_2_HEX,PULSEDATA_LENGTH*2);
+//        copy(begin(Pulsedata_DEC_2_HEX),end(Pulsedata_DEC_2_HEX),begin(Pulsedata_DEC_disp));
+        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_2_HEX,sizeof(int)*PULSEDATA_LENGTH*2);
         break;
     case 2:
-        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_3_HEX,PULSEDATA_LENGTH*2);
+//        copy(begin(Pulsedata_DEC_3_HEX),end(Pulsedata_DEC_3_HEX),begin(Pulsedata_DEC_disp));
+        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_3_HEX,sizeof(int)*PULSEDATA_LENGTH*2);
         break;
     case 3:
-        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_4_HEX,PULSEDATA_LENGTH*2);
+//        copy(begin(Pulsedata_DEC_4_HEX),end(Pulsedata_DEC_4_HEX),begin(Pulsedata_DEC_disp));
+        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_4_HEX,sizeof(int)*PULSEDATA_LENGTH*2);
         break;
     default:
         break;

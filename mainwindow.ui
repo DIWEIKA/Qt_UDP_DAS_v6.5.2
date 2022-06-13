@@ -153,35 +153,6 @@
         </spacer>
        </item>
        <item>
-        <widget class="QCheckBox" name="checkBox_ASCII">
-         <property name="font">
-          <font>
-           <pointsize>13</pointsize>
-          </font>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">
-color: rgb(0, 0, 0);</string>
-         </property>
-         <property name="text">
-          <string>ASCII接收</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_8">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
         <widget class="QCheckBox" name="checkBox_Hex">
          <property name="font">
           <font>

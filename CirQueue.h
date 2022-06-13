@@ -1,4 +1,4 @@
-﻿/* @Decription 通过数组实现线程安全循环队列
+/* @Decription 通过数组实现线程安全循环队列
 * 其本质上是一个T类型的数组 比如CHdata就是一个unsigned char类型的数组
 * */
 #pragma once
@@ -113,7 +113,7 @@ void CirQueue<T>::push(T element)
 {
     if (isFull())
     {
-        printf("The Circle Queue Has  Be FULL yuanshiduilie !!\n");
+//        printf("The Circle Queue Has  Be FULL yuanshiduilie !!\n");
         return;
     }
     m_data[m_rear] = element;
@@ -126,7 +126,7 @@ T CirQueue<T>::pop()
 {
     if (isEmpty())
     {
-        printf("The Circle Queue is Empty!!\n");
+//        printf("The Circle Queue is Empty!!\n");
         return m_data[m_front];
     }
     m_front = (m_front + 1) % M_LEN;

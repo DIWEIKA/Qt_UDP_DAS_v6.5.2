@@ -12,7 +12,7 @@ COM_Send::COM_Send(MainWindow* Mainwindow)
     myCom->setPortName("COM3"); //设置端口号
     myCom->setBaudRate(BAUD115200); //设置波特率
 
-    filePath = QDir::currentPath()+QString("/peak.txt"); //build所在目录下
+    filePath = QString("C:/Qt_UDP_DAS/peak.txt"); //build所在目录下
 
     if (filePath.isEmpty())
     {

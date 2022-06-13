@@ -39,7 +39,7 @@ void Recvdata:: dealMsg()
        RECORD_BUF = make_shared<BYTE*>(bufPtr);
 
        //RECORD_BUF << datagram
-       memcpy(*RECORD_BUF,datagram.data(),lenoDatagram);
+       memcpy(*RECORD_BUF,datagram.data(),sizeof(BYTE)*lenoDatagram);
 
        //CHData << RECORD_BUF
        getDatafromByteToFloat();

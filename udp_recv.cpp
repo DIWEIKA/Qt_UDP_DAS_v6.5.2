@@ -33,7 +33,6 @@ UDP_Recv::UDP_Recv(MainWindow* mainwindow)
     p_echo_net_pack_HEX.reserve(2048);
     //    pack_HEX_32.reserve(32*2048);
 
-
     CHdata2 = make_shared<CirQueue<unsigned char>>(LenoUDP);
     CHdata3 = make_shared<CirQueue<unsigned char>>(LenoUDP);
     CHdata4 = make_shared<CirQueue<unsigned char>>(LenoUDP);
@@ -253,48 +252,11 @@ void UDP_Recv::run()
 
         if(isStart){
 
-            isASCII = mainWindow->isASCII;
-
             isHEX = mainWindow->isHEX;
 
             net_pack_size = 0;
 
-            /*----------------ASCII接收-------------------*/
-            if(isASCII && (!isHEX)){
-
-                //init array
-                p_echo_net_pack[0] = '\0';
-
-                net_pack_size = recvfrom(echo_socket_WIN, p_echo_net_pack, lenoRecv, 0, (sockaddr *)&src_addr_WIN, &src_addr_len);
-
-                qDebug()<<"Reciving net_pack_size = "<< net_pack_size <<endl;
-
-                //init RECORD_BUF
-                bufPtr[0] = '\0';
-
-                //RECORD_BUF << p_echo_net_pack
-                memcpy(bufPtr,p_echo_net_pack,lenoRecv);
-
-                //CHData << RECORD_BUF
-                for(int i=0; i<lenoRecv; i++) {
-
-                    unsigned char usCHDATA =(unsigned char)bufPtr[i];
-
-                    for(int j = 0; j<SaveNumber; j++){
-
-                        //如果CHdataj满了，j++；否则存入CHdataj，然后break
-                        if(CHdataArray[j]->isFull())
-                            continue;
-                        else{
-                            CHdataArray[j]->push(usCHDATA);
-                            break;}
-                    }
-
-                }//end for
-            }
-
-            /*----------------HEX接收-------------------*/
-            if((!isASCII) && isHEX){
+            if(isHEX){
 
                 lenoRecvHEX = lenoRecv * 2;
 
@@ -321,10 +283,7 @@ void UDP_Recv::run()
 
                 //判断32帧数据的帧头，从而定位起点位置.
                 //若某帧第129~144位分别是3030303030303030，则该帧是起点帧
-                if((p_echo_net_pack_HEX[128]== X) && (p_echo_net_pack_HEX[129]== Y) && (p_echo_net_pack_HEX[130]== X) && (p_echo_net_pack_HEX[131]== Y)
-/*                        && p_echo_net_pack_HEX[132]=='3' && p_echo_net_pack_HEX[133]=='0' && p_echo_net_pack_HEX[134]=='3' && p_echo_net_pack_HEX[135]=='0'
-                        && p_echo_net_pack_HEX[136]=='3' && p_echo_net_pack_HEX[137]=='0' && p_echo_net_pack_HEX[138]=='3' && p_echo_net_pack_HEX[139]=='0'
-                        && p_echo_net_pack_HEX[140]=='3' && p_echo_net_pack_HEX[141]=='0' && p_echo_net_pack_HEX[142]=='3' && p_echo_net_pack_HEX[143]=='0'*/ )
+                if((p_echo_net_pack_HEX[128]== X) && (p_echo_net_pack_HEX[129]== Y) && (p_echo_net_pack_HEX[130]== X) && (p_echo_net_pack_HEX[131]== Y) )
                     isStartFrame = 1;
 
                 /*---------------Mode I: 将脉冲波形显示出来------------*/
@@ -339,22 +298,12 @@ void UDP_Recv::run()
 
                     //每收到32个包时，称为一个事件
                     if(pack_count>=1024*32){
-
-                        emit_count++;
-
-                        //(用于刷新波形显示的速率)每触发1次上述事件，emit信号给wave_widget
-                        if (emit_count>=0){
-
-                            emit SendtoWidget(pack_HEX_32);
-
-                            emit_count=0;
-
-                            qDebug()<<"Signal emitted ! " <<endl;
-
-                            isStartFrame = 0;
-                        }
-
+                        isStartFrame = 0;
                         pack_count = 0;
+
+                        //pack_HEX_32[] >> pack_HEX_Display[]
+
+                        memcpy(pack_HEX_Display,pack_HEX_32,sizeof(char)*2048*32);
 
                         memset(pack_HEX_32,'\0',sizeof(pack_HEX_32)); //清空数组
                     }

@@ -1,3 +1,7 @@
+/**
+ *  使用QChart、QChartView和QLineSeries显示的折线图，弃用
+ * */
+
 #ifndef PULSEWAVE_WIDGET_H
 #define PULSEWAVE_WIDGET_H
 
