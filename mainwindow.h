@@ -1,8 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+
 #include <QMainWindow>
-#include <winsock2.h>
 #include <QQueue>
 #include "CirQueue.h"
 #include <memory>
@@ -15,6 +15,7 @@
 #include <recvdata.h>
 #include <QtDebug>
 #include <vector>
+#include <winsock2.h>
 #include <windows.h>
 #include "writetofiles.h"
 #include "udp_recv.h"

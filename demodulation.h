@@ -53,7 +53,7 @@ public:
     int Freq = 10*1000; //²ÉÑùÂÊ10KHz
     int peakNum;
     unsigned long LenoDemo = 256*100;
-    unsigned long LenoDemoSave = 256*1000;
+    unsigned long LenoDemoSave = 256*1000*100;
 
     float* RealPh;
     float* PriorPh;

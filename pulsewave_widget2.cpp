@@ -7,6 +7,8 @@ pulsewave_widget2::pulsewave_widget2(UDP_Recv *udp_Recv):
 {
     ui->setupUi(this);
 
+    PulsedataHEX = new char[READ_PULSE_LENGTH*2];//定义动态数组
+
     initWidget();
 }
 
@@ -51,8 +53,6 @@ void pulsewave_widget2::FlashWave()
 {
     qDebug() <<"Flash Pulse Wave Slot responsed !"<<endl;
 
-
-
     //clear history data
     m_customPlot->graph(0)->data()->clear();
 
@@ -82,31 +82,33 @@ void pulsewave_widget2::FlashWave()
         Pulsedata_DEC_4_HEX[p] = Pulsedata_DEC_all_HEX[k+3];
     }
 
+    sizeoDisplaydata = sizeoPulsedataDec/4;
+
     //    4. Channel select
     ChannelIndex = ui->comboBox_Channel->currentIndex();
     switch (ChannelIndex) {
     case 0:
 //        copy(begin(Pulsedata_DEC_1_HEX),end(Pulsedata_DEC_1_HEX),begin(Pulsedata_DEC_disp));
-        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_1_HEX,sizeof(int)*PULSEDATA_LENGTH*2);
+        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_1_HEX,sizeof(int)*sizeoDisplaydata);
         break;
     case 1:
 //        copy(begin(Pulsedata_DEC_2_HEX),end(Pulsedata_DEC_2_HEX),begin(Pulsedata_DEC_disp));
-        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_2_HEX,sizeof(int)*PULSEDATA_LENGTH*2);
+        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_2_HEX,sizeof(int)*sizeoDisplaydata);
         break;
     case 2:
 //        copy(begin(Pulsedata_DEC_3_HEX),end(Pulsedata_DEC_3_HEX),begin(Pulsedata_DEC_disp));
-        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_3_HEX,sizeof(int)*PULSEDATA_LENGTH*2);
+        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_3_HEX,sizeof(int)*sizeoDisplaydata);
         break;
     case 3:
 //        copy(begin(Pulsedata_DEC_4_HEX),end(Pulsedata_DEC_4_HEX),begin(Pulsedata_DEC_disp));
-        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_4_HEX,sizeof(int)*PULSEDATA_LENGTH*2);
+        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_4_HEX,sizeof(int)*sizeoDisplaydata);
         break;
     default:
         break;
     }
 
     //5. Wave Display (从8开始 因为起始帧开始部分包含了上一帧的8个点)
-    for(int i = 8;i<DISPLAY_LENGTH_PULSE;i++){
+    for(int i = 8;i<sizeoDisplaydata;i++){
         QVector<double> x(1),y(1);
         x[0] = i-8;
         y[0]= Pulsedata_DEC_disp[i];

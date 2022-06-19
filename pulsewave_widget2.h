@@ -40,9 +40,10 @@ public:
     QCustomPlot *m_customPlot;
     int sizeoPulsedata ;
     int sizeoPulsedataDec;
+    int sizeoDisplaydata;
     int ChannelIndex=0;
     //HEXΩ” ’
-    char PulsedataHEX[READ_PULSE_LENGTH*2] = {'\0'};
+    char* PulsedataHEX;
     int Pulsedata_DEC_all_HEX[PULSEDATA_ALL_LENGTH*2] =  {0};
     int Pulsedata_DEC_1_HEX[PULSEDATA_LENGTH*2]= {0};
     int Pulsedata_DEC_2_HEX[PULSEDATA_LENGTH*2] =  {0};

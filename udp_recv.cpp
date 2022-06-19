@@ -4,6 +4,9 @@ UDP_Recv::UDP_Recv(MainWindow* mainwindow)
 {
     mainWindow = mainwindow;
 
+    pack_HEX_32 = new char[32*1024*2];
+    pack_HEX_Display = new char[32*1024*2]; //定义动态数组
+
     sockVersion = MAKEWORD(2,2);
     if(WSAStartup(sockVersion, &wsaData) != 0)
     {
@@ -302,10 +305,9 @@ void UDP_Recv::run()
                         pack_count = 0;
 
                         //pack_HEX_32[] >> pack_HEX_Display[]
-
                         memcpy(pack_HEX_Display,pack_HEX_32,sizeof(char)*2048*32);
 
-                        memset(pack_HEX_32,'\0',sizeof(pack_HEX_32)); //清空数组
+                        memset(pack_HEX_32,'\0',sizeof(char)); //清空数组
                     }
                 }
 

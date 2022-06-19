@@ -213,7 +213,7 @@ void MainWindow::on_checkBox_Save_clicked()
 {
     isSave = true;
 
-    if(!SaveTimer->isActive()) SaveTimer->start(30000);
+    if(!SaveTimer->isActive()) SaveTimer->start(60000); //存60s的数据
 }
 
 void MainWindow::on_checkBox_Hex_clicked()
@@ -225,7 +225,7 @@ void MainWindow::on_checkBox_Demo_clicked()
 {
     isDemo = true;
 
-    if(!DemoTimer->isActive()) DemoTimer->start(30000); //解调存储计时
+    if(!DemoTimer->isActive()) DemoTimer->start(60000); //解调存储计时
 
     demodu->start(); //开始解调线程
 }
@@ -248,7 +248,7 @@ void MainWindow::on_comboBox_Mode_currentIndexChangedSlot()
 
 void MainWindow::on_pushButton_Display_pulse_clicked()
 {
-    if(!FlashTimer_Pulse->isActive()) FlashTimer_Pulse->start(100); //30ms flash
+    if(!FlashTimer_Pulse->isActive()) FlashTimer_Pulse->start(10); //10ms 脉冲信号 flash
 
     pulsewave_Widget2->show();
 }
@@ -262,7 +262,7 @@ void MainWindow::on_pushButton_Send_clicked()
 
 void MainWindow::on_pushButton_Display_demo_clicked()
 {
-    if(!FlashTimer->isActive()) FlashTimer->start(30); //30ms flash
+    if(!FlashTimer->isActive()) FlashTimer->start(100); //100ms 解调信号 flash
 
     demowave_Widget2->show();
 }
@@ -274,6 +274,6 @@ void MainWindow::PulseWave_pause_slot()
 
 void MainWindow::PulseWave_restart_slot()
 {
-    if(!FlashTimer->isActive()) FlashTimer_Pulse->start(30); //30ms flash
+    if(!FlashTimer->isActive()) FlashTimer_Pulse->start(10); //10ms 脉冲信号恢复 flash
 }
 
