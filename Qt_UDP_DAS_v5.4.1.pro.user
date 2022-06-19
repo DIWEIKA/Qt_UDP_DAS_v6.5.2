@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 5.0.2, 2022-06-17T16:59:32. -->
+<!-- Written by QtCreator 5.0.2, 2022-06-19T09:55:43. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -244,8 +244,9 @@
     <valuelist type="QVariantList" key="CustomOutputParsers"/>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:G:/Desktop/Qt_UDP_DAS/Qt_UDP_DAS_v5.4.1/Qt_UDP_DAS_v5.4.1.pro</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">G:/Desktop/Qt_UDP_DAS/Qt_UDP_DAS_v5.4.1/Qt_UDP_DAS_v5.4.1.pro</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">Qt_UDP_DAS_v5.4.12</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:G:/Desktop/Qt_UDP_DAS/Qt_UDP_DAS_v5.4.1/Qt_UDP_DAS_v5.4.0/Qt_UDP_DAS_v5.4.1.pro</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">G:/Desktop/Qt_UDP_DAS/Qt_UDP_DAS_v5.4.1/Qt_UDP_DAS_v5.4.0/Qt_UDP_DAS_v5.4.1.pro</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>
