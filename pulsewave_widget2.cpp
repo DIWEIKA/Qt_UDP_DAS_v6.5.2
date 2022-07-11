@@ -112,6 +112,7 @@ void pulsewave_widget2::FlashWave()
         QVector<double> x(1),y(1);
         x[0] = i-8;
         y[0]= Pulsedata_DEC_disp[i];
+        if(y[0]<-10) y[0]=0; //去掉下方的掉点问题
         m_customPlot->graph(0)->addData(x, y);
     }
 
@@ -122,6 +123,11 @@ void pulsewave_widget2::on_btnReset_clicked()
 {
     //自动调整XY轴的范围，以便显示出graph(0)中所有的点
     m_customPlot->graph(0)->rescaleAxes(true);
+
+//    m_customPlot->xAxis->setRangeLower(0);
+//    m_customPlot->xAxis->setRangeUpper(2000);
+    m_customPlot->yAxis->setRangeLower(-10);
+    m_customPlot->yAxis->setRangeUpper(2048);
 
     // 立即刷新图像
     ui->customPlot->replot();

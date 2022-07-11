@@ -19,7 +19,9 @@
 #include <windows.h>
 #include "writetofiles.h"
 #include "udp_recv.h"
+#include "pulsewave_widget.h"
 #include "pulsewave_widget2.h"
+#include "demowave_widget.h"
 #include "demowave_widget2.h"
 #include "demodulation.h"
 #include "com_send.h"

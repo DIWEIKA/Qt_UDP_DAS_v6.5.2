@@ -34,10 +34,10 @@ MainWindow::MainWindow(QWidget *parent)
     DemoTimer->setTimerType(Qt::PreciseTimer);
 
     writeToFiles = new WriteToFiles(udp_recv);
-
+    pulsewave_Widget = new pulsewave_widget();
     pulsewave_Widget2 = new pulsewave_widget2(udp_recv);
     demodu = new Demodulation(udp_recv); 
-
+    demowave_Widget = new demowave_widget(demodu);
     demowave_Widget2 = new demowave_widget2(demodu);
     com_send = new COM_Send(this);
     demodata_save = new DemoData_Save(demodu);
@@ -100,7 +100,7 @@ void MainWindow::setLocalMsg()
 
     //设置窗口的标题
     QString title = QString("Qt_UDP_DAS");
-    setWindowTitle(title);
+//    setWindowTitle(title);
 
     ui->textEdit_Msg->insertPlainText("Setting Acquisition Card Mode I ! \n");
 }

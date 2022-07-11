@@ -14,9 +14,11 @@ SOURCES += \
     com_send.cpp \
     demodata_save.cpp \
     demodulation.cpp \
+    demowave_widget.cpp \
     demowave_widget2.cpp \
     main.cpp \
     mainwindow.cpp \
+    pulsewave_widget.cpp \
     pulsewave_widget2.cpp \
     qcustomplot.cpp \
     qextserialbase.cpp \
@@ -29,8 +31,10 @@ HEADERS += \
     com_send.h \
     demodata_save.h \
     demodulation.h \
+    demowave_widget.h \
     demowave_widget2.h \
     mainwindow.h \
+    pulsewave_widget.h \
     pulsewave_widget2.h \
     qcustomplot.h \
     qextserialbase.h \
@@ -39,8 +43,10 @@ HEADERS += \
     writetofiles.h
 
 FORMS += \
+    demowave_widget.ui \
     demowave_widget2.ui \
     mainwindow.ui \
+    pulsewave_widget.ui \
     pulsewave_widget2.ui
 
 # Default rules for deployment.

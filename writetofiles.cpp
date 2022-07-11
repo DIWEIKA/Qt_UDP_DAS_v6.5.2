@@ -11,16 +11,34 @@ WriteToFiles::WriteToFiles(UDP_Recv* udp_Recv)
 
 void WriteToFiles::readConfigFile()
 {
-    QString filePath = QString("C:/Qt_UDP_DAS/peak.txt");
+    QString filePath = QString("C:/Qt_UDP_DAS/peak.txt"); //build所在目录下
     QFile file(filePath);
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug()<<"Can't open the Configration file!"<<endl;
     }
-   QByteArray configData = file.readAll(); //读取所有数据
-   char peakNumChar_shiwei = configData[3]; //peakNum的十位存放在第四个位置
-   char peakNumChar_gewei = configData[4]; //peakNum的个位存放在第四个位置
-   bool ok;
-   peakNum =  QString(peakNumChar_shiwei).toInt(&ok,16)*10 + QString(peakNumChar_gewei).toInt(&ok,16)*1;
+    QByteArray configData = file.readAll(); //读取所有数据
+    char peakNumChar_3 = configData[3]; //peakNum的百位存放在第四个位置
+    char peakNumChar_4 = configData[4]; //peakNum的十位存放在第五个位置
+    char peakNumChar_5 = configData[5]; //peakNum的个位存放在第六个位置
+    char peakNumChar_6 = configData[6]; //换行符
+//    peakNum = 48;
+
+
+    //peakNum是个位数
+    if(peakNumChar_4 == '\n'){
+        bool ok;
+        peakNum = QString(peakNumChar_3).toInt(&ok,16)*1;
+    }
+    //peakNum是十位数
+    else if(peakNumChar_5 == '\n'){
+        bool ok;
+        peakNum = QString(peakNumChar_3).toInt(&ok,16)*10 + QString(peakNumChar_4).toInt(&ok,16)*1;
+    }
+    //peakNum是百位数
+    else if(peakNumChar_6 == '\n'){
+        bool ok;
+        peakNum = QString(peakNumChar_3).toInt(&ok,16)*100 + QString(peakNumChar_4).toInt(&ok,16)*10 + QString(peakNumChar_5).toInt(&ok,16)*1;
+    }
 }
 
 void WriteToFiles::run()
@@ -49,14 +67,14 @@ void WriteToFiles::run()
 
                 //如果队列为空，延迟一会，若依然为空，说明没有数据了
                  if(udp_recv->CHdataArray[i]->isEmpty()){
-                     sleep(50);
+                     msleep(50);
                      if(udp_recv->CHdataArray[i]->isEmpty())
                          break;
                  }
 
                 udp_recv->CHdataArray[i]->pop();
             }
-//            udp_recv->CHdataArray[i]->clear();
+
         }
     }
 

@@ -9,16 +9,8 @@ DemoData_Save::DemoData_Save(Demodulation* demodulation)
 
 void DemoData_Save::readConfigFile()
 {
-    QString filePath = QString("C:/Qt_UDP_DAS/peak.txt");
-    QFile file(filePath);
-    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qDebug()<<"Can't open the Configration file!"<<endl;
-    }
-    QByteArray configData = file.readAll(); //读取所有数据
-    char peakNumChar_shiwei = configData[3]; //peakNum的十位存放在第四个位置
-    char peakNumChar_gewei = configData[4]; //peakNum的个位存放在第四个位置
-    bool ok;
-    peakNum =  QString(peakNumChar_shiwei).toInt(&ok,16)*10 + QString(peakNumChar_gewei).toInt(&ok,16)*1;
+    peakNum = m_demodulation->peakNum;
+
 }
 
 void DemoData_Save::run()
