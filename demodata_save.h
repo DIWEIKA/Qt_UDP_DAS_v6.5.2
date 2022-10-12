@@ -10,7 +10,7 @@ class DemoData_Save : public QThread
 {
     Q_OBJECT
 public:
-    explicit DemoData_Save(Demodulation* demodulation);
+    DemoData_Save(Demodulation* demodulation);
 
     Demodulation* m_demodulation;
 
@@ -18,8 +18,6 @@ public:
     QString saveFileDemo;
     ofstream outfileDemo;
     int peakNum;
-
-    void readConfigFile();
 
 signals:
 

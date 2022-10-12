@@ -7,9 +7,14 @@ pulsewave_widget2::pulsewave_widget2(UDP_Recv *udp_Recv):
 {
     ui->setupUi(this);
 
-    PulsedataHEX = new char[READ_PULSE_LENGTH*2];//定义动态数组
+    PulsedataHEX = new char[READ_PULSE_LENGTH*2];
 
     initWidget();
+}
+
+pulsewave_widget2::~pulsewave_widget2()
+{
+    FreeMemory();
 }
 
 void pulsewave_widget2::initWidget()
@@ -20,7 +25,15 @@ void pulsewave_widget2::initWidget()
 
     //每条曲线都会独占一个graph()
     m_customPlot->addGraph();
-    m_customPlot->graph(0)->setPen(QPen(Qt::blue)); // 曲线的颜色
+
+    //设置画笔QPen
+    QPen pen;
+    pen.setWidth(4);//线宽
+    pen.setStyle(Qt::PenStyle::SolidLine);//实线
+    pen.setColor(Qt::blue); //颜色
+
+    //给图层添加画笔
+    m_customPlot->graph(0)->setPen(pen);
     m_customPlot->graph(0)->setBrush(QBrush(QColor(0, 0, 255, 20))); // 曲线与X轴包围区的颜色
 
     m_customPlot->xAxis->setRangeLower(0);
@@ -46,6 +59,12 @@ void pulsewave_widget2::initWidget()
     m_customPlot->selectionRect()->setPen(QPen(Qt::black,1,Qt::DashLine));//设置选框的样式：虚线
     m_customPlot->selectionRect()->setBrush(QBrush(QColor(0,0,100,50)));//设置选框的样式：半透明浅蓝
     m_customPlot->setSelectionRectMode(QCP::SelectionRectMode::srmZoom);
+
+    //确定鼠标点击的精度
+    ui->customPlot->setSelectionTolerance(1);
+
+    //标记点信号槽
+    connect(ui->customPlot,&QCustomPlot::mouseRelease, this, &pulsewave_widget2::slot_MouseRelease);
 
 }
 
@@ -84,7 +103,7 @@ void pulsewave_widget2::FlashWave()
 
     sizeoDisplaydata = sizeoPulsedataDec/4;
 
-    //    4. Channel select
+    //4. Channel select
     ChannelIndex = ui->comboBox_Channel->currentIndex();
     switch (ChannelIndex) {
     case 0:
@@ -107,16 +126,22 @@ void pulsewave_widget2::FlashWave()
         break;
     }
 
-    //5. Wave Display (从8开始 因为起始帧开始部分包含了上一帧的8个点)
-    for(int i = 8;i<sizeoDisplaydata;i++){
+    //5. Wave Display /* (从8开始 因为起始帧开始部分包含了上一帧的8个点)*/
+    for(int i = 0;i<sizeoDisplaydata-1;i++){
         QVector<double> x(1),y(1);
-        x[0] = i-8;
+        x[0] = i/*-8*/;
         y[0]= Pulsedata_DEC_disp[i];
         if(y[0]<-10) y[0]=0; //去掉下方的掉点问题
+        if(Pulsedata_DEC_disp[i]>0 && Pulsedata_DEC_disp[i-1]==0 && Pulsedata_DEC_disp[i+1]==0) y[0]=0; //去掉上方的掉点问题
         m_customPlot->graph(0)->addData(x, y);
     }
 
     ui->customPlot->replot();
+}
+
+void pulsewave_widget2::FreeMemory()
+{
+    delete[] PulsedataHEX;
 }
 
 void pulsewave_widget2::on_btnReset_clicked()
@@ -141,5 +166,24 @@ void pulsewave_widget2::on_pushButton_pause_clicked()
 void pulsewave_widget2::on_pushButton_restart_clicked()
 {
     emit RestartWave();
+}
+
+//获取鼠标选中点的数值
+void pulsewave_widget2::slot_MouseRelease(QMouseEvent *e)
+{
+    //排除非左鼠标键
+        if (e->button() != Qt::LeftButton){ return; }
+
+    //获取点击的点坐标
+        QPointF ChickedPoint = e->pos();
+    //排除区间外鼠标点
+        if(!ui->customPlot->viewport().contains(e->pos())){return;}
+    //将像素坐标转换为轴值
+         double currentx = ui->customPlot->xAxis->pixelToCoord(ChickedPoint.x());
+         double currenty = ui->customPlot->yAxis->pixelToCoord(ChickedPoint.y());
+    //使用QToolTip输出值，
+        QToolTip::showText(mapToGlobal(e->pos()),QString("x:%1, y:%2").arg(currentx).arg(currenty),this);
+
+
 }
 

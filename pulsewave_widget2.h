@@ -13,7 +13,7 @@
 #include "udp_recv.h"
 #include <ctime>
 
-#define READ_PULSE_LENGTH 1024*32 //从CHdataX里读取的数据长度
+#define READ_PULSE_LENGTH 1024*32 //从pack_HEX_Display里读取的数据长度
 #define PULSEDATA_ALL_LENGTH 1024*8 //四个通道的十进制数数据长度
 #define PULSEDATA_LENGTH 1024*2 //一个通道的十进制数长度
 #define DISPLAY_LENGTH_PULSE 256*2 //展示在widget上的数据长度
@@ -32,12 +32,19 @@ class pulsewave_widget2 : public QWidget
     Q_OBJECT
 public:
     pulsewave_widget2(UDP_Recv *udp_Recv);
+    ~pulsewave_widget2();
+
     void initWidget();
     void FlashWave();
+    void FreeMemory();
 
     Ui::pulsewave_widget2 *ui;
     UDP_Recv *udp_recv;
     QCustomPlot *m_customPlot;
+    QCPItemText *textLabel;
+    QCPItemLine *arrow;
+    QCPItemTracer *m_sameTimeTracer;
+    QCPItemText *m_sameTimeTextTip;
     int sizeoPulsedata ;
     int sizeoPulsedataDec;
     int sizeoDisplaydata;
@@ -59,6 +66,7 @@ private slots:
     void on_btnReset_clicked();
     void on_pushButton_pause_clicked();
     void on_pushButton_restart_clicked();
+    void slot_MouseRelease(QMouseEvent*);
 };
 
 #endif // PULSEWAVE_WIDGET2_H

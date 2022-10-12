@@ -1,12 +1,19 @@
 #include "udp_recv.h"
 
-UDP_Recv::UDP_Recv(MainWindow* mainwindow)
+UDP_Recv::UDP_Recv(MainWindow* mainwindow):
+    mainWindow(mainwindow),
+    net_pack_size(0),
+    isStartFrame(0),
+    Freq(mainWindow->Freq), //采样率
+    peakNum(mainWindow->peakNum), //峰值点数
+    lenoRecv(1024), //接受一帧的数据长度
+    lenoRecvHEX(lenoRecv*2),
+    LenoUDP(Freq*peakNum*4*4),//一个存储容器的大小: 采样率 * 峰值点数 * 4通道 * 4个char转化为一个float(1s数据量)
+    pack_count(0),
+    pack_HEX_32(new char[32*1024*2]),
+    pack_HEX_Display(new char[32*1024*2]),
+    CHdatax(new char[2048])
 {
-    mainWindow = mainwindow;
-
-    pack_HEX_32 = new char[32*1024*2];
-    pack_HEX_Display = new char[32*1024*2]; //定义动态数组
-
     sockVersion = MAKEWORD(2,2);
     if(WSAStartup(sockVersion, &wsaData) != 0)
     {
@@ -36,6 +43,8 @@ UDP_Recv::UDP_Recv(MainWindow* mainwindow)
     p_echo_net_pack_HEX.reserve(2048);
     //    pack_HEX_32.reserve(32*2048);
 
+    CHdata1 = make_shared<CirQueue<unsigned char>>(LenoUDP); //存放用于解调的数据
+    //CHdata2~101存放保存至本地的数据
     CHdata2 = make_shared<CirQueue<unsigned char>>(LenoUDP);
     CHdata3 = make_shared<CirQueue<unsigned char>>(LenoUDP);
     CHdata4 = make_shared<CirQueue<unsigned char>>(LenoUDP);
@@ -138,7 +147,7 @@ UDP_Recv::UDP_Recv(MainWindow* mainwindow)
     CHdata101 = make_shared<CirQueue<unsigned char>>(LenoUDP);
 
 
-    //init CHdataArray
+//    init CHdataArray
     CHdataArray[0] =  CHdata2;
     CHdataArray[1] =  CHdata3;
     CHdataArray[2] =  CHdata4;
@@ -241,10 +250,21 @@ UDP_Recv::UDP_Recv(MainWindow* mainwindow)
     CHdataArray[99] =  CHdata101;
 }
 
+UDP_Recv::~UDP_Recv()
+{
+    FreeMemory();
+}
+
 void UDP_Recv::clearCHdata()
 {
     for(int i = 0; i<SaveNumber; i++)
         CHdataArray[i]->clear();
+}
+
+void UDP_Recv::FreeMemory()
+{
+    delete[] pack_HEX_32;
+    delete[] pack_HEX_Display;
 }
 
 void UDP_Recv::run()
@@ -260,8 +280,6 @@ void UDP_Recv::run()
             net_pack_size = 0;
 
             if(isHEX){
-
-                lenoRecvHEX = lenoRecv * 2;
 
                 //define a new char[]
                 p_echo_net_pack[0] = '\0';
@@ -279,14 +297,17 @@ void UDP_Recv::run()
 
                 p_echo_net_pack_HEX = p_echo_net_pack_array.toHex().toUpper();
 
-                qDebug()<<p_echo_net_pack_HEX[128]<<p_echo_net_pack_HEX[129]<<p_echo_net_pack_HEX[130]<<p_echo_net_pack_HEX[131]<<endl;
+                qDebug()<<p_echo_net_pack_HEX[0]<<p_echo_net_pack_HEX[1]<<p_echo_net_pack_HEX[2]<<p_echo_net_pack_HEX[3]<<endl;
 
-                char X = '3';
-                char Y = '0';
+                const char X = '6';
+                const char Y = '0';
 
                 //判断32帧数据的帧头，从而定位起点位置.
-                //若某帧第129~144位分别是3030303030303030，则该帧是起点帧
-                if((p_echo_net_pack_HEX[128]== X) && (p_echo_net_pack_HEX[129]== Y) && (p_echo_net_pack_HEX[130]== X) && (p_echo_net_pack_HEX[131]== Y) )
+                //若某帧第1~16位分别是6666666666666666，则该帧是起点帧
+                if((p_echo_net_pack_HEX[0]== X) && (p_echo_net_pack_HEX[1]== X) && (p_echo_net_pack_HEX[2]== X) && (p_echo_net_pack_HEX[3]== X)
+                        && (p_echo_net_pack_HEX[4]== X) && (p_echo_net_pack_HEX[5]== X) && (p_echo_net_pack_HEX[6]== X) && (p_echo_net_pack_HEX[7]== X)
+                        && (p_echo_net_pack_HEX[8]== X) && (p_echo_net_pack_HEX[9]== X) && (p_echo_net_pack_HEX[10]== X) && (p_echo_net_pack_HEX[11]== X)
+                        && (p_echo_net_pack_HEX[12]== X) && (p_echo_net_pack_HEX[13]== X) && (p_echo_net_pack_HEX[14]== X) && (p_echo_net_pack_HEX[15]== X) && (p_echo_net_pack_HEX[16]== Y))
                     isStartFrame = 1;
 
                 /*---------------Mode I: 将脉冲波形显示出来------------*/
@@ -311,29 +332,40 @@ void UDP_Recv::run()
                     }
                 }
 
-                /*---------------Mode II: 直接保存收到的数据------------*/
+                /*---------------Mode II: 直接保存收到的峰值点原始数据------------*/
                 if(mainWindow->AcqMode == 2){
 
-                    //CHData << p_echo_net_pack_HEX
                     for(int i=0; i<lenoRecvHEX; i++) {
 
+                        //CHData << p_echo_net_pack_HEX
                         unsigned char usCHDATA =(unsigned char)p_echo_net_pack_HEX[i];
 
-                        for(int j = 0; j<SaveNumber; j++){
+                        CHdata1->push(usCHDATA);
+
+                        for(int j = 0; j<100; j++){
 
                             //如果CHdataj没满，存入CHdataj，跳出循环；否则存入CHdataj+1
                             if(!CHdataArray[j]->isFull()){
 
-                                CHdataArray[j]->push(usCHDATA);
+                                CHdataArray[j]->push((unsigned char)p_echo_net_pack_HEX[i]);
 
                                 break;
                             }
                             else
                                 continue;
-                        }
+
+                        }//end for
 
                     }//end for
-                }
+                }//end if
+
+
+//                if(mainWindow->AcqMode == 2){
+//                    for(int i=0; i<lenoRecvHEX; i++) {
+//                        CHdatax[i] =p_echo_net_pack_HEX[i];
+//                    }
+//                }
+
             } //end if
 
         } //end if

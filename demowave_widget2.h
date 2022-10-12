@@ -33,9 +33,13 @@ public:
     Ui::demowave_widget2 *ui;
     Demodulation *demodu;
     QTimer* timer_flash;
-    int RegionIndex = 0;
-    int peakNum=1;
-    QCustomPlot *m_customPlot;
+    int RegionIndex;
+    int peakNum;
+    QVector<QString> Region; //存放区域label的容器
+    QVector<QString> Sampledots; //存放采样点label的容器
+    QCustomPlot *m_customPlot; //解调波形的布局
+    QCustomPlot *m_heatmapPlot; //瀑布图的布局
+    QCPColorMap *heatmap; //瀑布图
 
     //存放Demodata[]的数组(二维数组) 二维数组最大为20000*20000*4Bytes(总容量不能超过2GBytes)
     float **DemodataArray = new float*[MAXREGION];
@@ -142,8 +146,10 @@ public:
     float Demodata_100[REGION_DATA_LENGTH]={'\0'};//region100
 
     void initWidget();
-    void readConfigFile();
     void initComboBox_Region();
+    QVector<double> labelPositions(const QVector<QString> &labels, double offset);
+
+    void FreeMemory();
 
 public slots:
     void FlashWave();

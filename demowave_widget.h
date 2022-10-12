@@ -41,6 +41,7 @@ public:
     explicit demowave_widget(Demodulation *demodulation);
     ~demowave_widget();
 
+    Ui::demowave_widget *ui;
     Demodulation *demodu;
     QTimer* timer_flash;
     QChart* m_chart;
@@ -88,7 +89,7 @@ private slots:
     void on_pushButton_reset_clicked();
 
 private:
-    Ui::demowave_widget *ui;
+
 };
 
 #endif // DEMOWAVE_WIDGET_H

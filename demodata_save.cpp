@@ -1,17 +1,13 @@
 #include "demodata_save.h"
 
 DemoData_Save::DemoData_Save(Demodulation* demodulation)
+    :m_demodulation(demodulation),
+    peakNum(m_demodulation->peakNum)
 {
-    m_demodulation = demodulation;
 
-    readConfigFile();
 }
 
-void DemoData_Save::readConfigFile()
-{
-    peakNum = m_demodulation->peakNum;
 
-}
 
 void DemoData_Save::run()
 {
@@ -34,7 +30,7 @@ void DemoData_Save::run()
 
         //如果队列为空，延迟一会，若依然为空，说明没有数据了
          if(m_demodulation->DEMOdata_save->isEmpty()){
-             msleep(50);
+             msleep(10);
              if(m_demodulation->DEMOdata_save->isEmpty())
                  break;
          }

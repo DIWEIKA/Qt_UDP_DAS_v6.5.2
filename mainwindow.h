@@ -19,9 +19,7 @@
 #include <windows.h>
 #include "writetofiles.h"
 #include "udp_recv.h"
-#include "pulsewave_widget.h"
 #include "pulsewave_widget2.h"
-#include "demowave_widget.h"
 #include "demowave_widget2.h"
 #include "demodulation.h"
 #include "com_send.h"
@@ -56,30 +54,36 @@ public:
 
     Ui::MainWindow *ui;
 
-    QTimer* SaveTimer;
-    QTimer* DemoTimer;
-    QTimer* FlashTimer_Pulse;
-    QTimer* FlashTimer;
-    UDP_Recv* udp_recv;
-    WriteToFiles* writeToFiles;
-    pulsewave_widget *pulsewave_Widget;
-    pulsewave_widget2 *pulsewave_Widget2;
-    demowave_widget *demowave_Widget;
-    demowave_widget2 *demowave_Widget2;
-    Demodulation *demodu;
-    COM_Send *com_send;
-    DemoData_Save *demodata_save;
     bool isSave;
     bool isDemo;
     bool isStart;
     bool isHEX;
-    int AcqMode; //采集卡模式选择
+    int AcqMode;
+    int Freq;
+    int peakNum;
+    int demoFlashTime;
+    int pulseFlashTime;
+    int demoFlashFreq;
+    int pulseFlashFreq;
+
+    UDP_Recv* udp_recv;
+    QTimer* SaveTimer;
+    QTimer* FlashTimer_Pulse;
+    QTimer* DemoTimer;
+    QTimer* FlashTimer;
+    WriteToFiles* writeToFiles;
+    pulsewave_widget2 *pulsewave_Widget2;
+    Demodulation *demodu;
+    demowave_widget2 *demowave_Widget2;
+    COM_Send *com_send;
+    DemoData_Save *demodata_save;
 
     void setLocalStyleSheet();
     void setLocalMsg();
     void OpenSaveThread();
     void OpenDemoSaveThread();
     void stopThread();
+    void readConfigFile();
 
 
 private slots:

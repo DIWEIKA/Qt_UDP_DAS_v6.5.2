@@ -10,7 +10,7 @@ class COM_Send : public QThread
 {
     Q_OBJECT
 public:
-    explicit COM_Send(MainWindow*);
+    COM_Send(MainWindow*);
 
     MainWindow* mainWindow;
     Win_QextSerialPort* myCom;

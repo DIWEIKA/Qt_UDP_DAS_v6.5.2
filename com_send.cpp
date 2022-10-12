@@ -4,12 +4,12 @@ COM_Send::COM_Send(MainWindow* Mainwindow)
 {
     mainWindow = Mainwindow;
 
-    myCom = new Win_QextSerialPort("COM4",QextSerialBase::EventDriven);
+    myCom = new Win_QextSerialPort("COM3",QextSerialBase::EventDriven); //设置本地端口
 
     myCom->setParity(PAR_NONE); //奇偶校验设置，我们设置为无校验
     myCom->setDataBits(DATA_8);//数据位设置，我们设置为8位数据位
     myCom->setStopBits(STOP_1);//停止位设置，我们设置为1位停止位
-    myCom->setPortName("COM4"); //设置端口号
+    myCom->setPortName("COM3"); //设置本地端口号
     myCom->setBaudRate(BAUD115200); //设置波特率
 
     filePath = QString("C:/Qt_UDP_DAS/peak.txt"); //build所在目录下
@@ -56,10 +56,11 @@ void COM_Send::run()
     myCom->open(QIODevice::ReadWrite);
 
     if(myCom->isOpen()){
-        mainWindow->ui->textEdit_Msg->insertPlainText(QString("Open COM Successful! ")+"\n");
 
         //4. peakData >> myCom
         myCom->write(peakData);
+
+        mainWindow->ui->textEdit_Msg->insertPlainText(QString("Send to COM Successful! ")+"\n");
     }
 
     else

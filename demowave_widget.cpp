@@ -3,9 +3,9 @@
 
 demowave_widget::demowave_widget(Demodulation *demodulation) :
     ui(new Ui::demowave_widget)
+    ,demodu(demodulation)
 {
     ui->setupUi(this);
-    demodu = demodulation;
 
     initWidget();
 
@@ -80,15 +80,7 @@ void demowave_widget::initWidget()
 
 void demowave_widget::readConfigFile()
 {
-    QString filePath = QString("C:/Qt_UDP_DAS/peak.txt");
-    QFile file(filePath);
-    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qDebug()<<"Can't open the Configration file!"<<endl;
-    }
-   QByteArray configData = file.readAll(); //读取所有数据
-   char peakNumChar = configData[3]; //peakNum存放在第四个位置
-   bool ok;
-   peakNum =  QString(peakNumChar).toInt(&ok,16);
+
 }
 
 void demowave_widget::initComboBox_Region()

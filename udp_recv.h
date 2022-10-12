@@ -5,13 +5,13 @@
 #include <winsock2.h>
 #include <mainwindow.h>
 
-#define SaveNumber 100 //定义的CHdata的数量
 
 class UDP_Recv : public QThread
 {
     Q_OBJECT
 public:
-    explicit UDP_Recv(MainWindow* mainwindow);
+    UDP_Recv(MainWindow* mainwindow);
+    ~UDP_Recv();
 
     MainWindow* mainWindow;
 
@@ -23,30 +23,27 @@ public:
     sockaddr_in src_addr_WIN;
     int src_addr_len = sizeof(src_addr_WIN);
     int net_pack_size;
-    int net_pack_size_HEX;    
     QByteArray p_echo_net_pack_HEX;
     QByteArray p_echo_net_pack_array;
     char p_echo_net_pack[1024];
-    char p_echo_net_pack_HEX_data[2048];
-    char bufPtr[1024];
-    char bufPtrHEX[2048];
-    shared_ptr<char*> RECORD_BUF;
-
     bool isStart;
-    bool isASCII;
     bool isHEX;
-    bool isStartFrame = 0; //起始帧标识
+    bool isStartFrame;
+    int Freq;
+    int peakNum;
     QHostAddress clientAddr;
     quint16 clientPort;
-    int lenoRecv = 1024;
-    qint64 lenoRecvHEX;
-    qint64 LenoUDP = 4096*1000; //1s发送的数据个数(Bytes)
-    int pack_count = 0;
-    int emit_count = 0; //用于计数发送信号的频率
+    int lenoRecv;
+    int lenoRecvHEX;
+    int LenoUDP;
+    int pack_count;
     char* pack_HEX_32; //用于存放32帧数据
     char* pack_HEX_Display; //用于显示的32帧数据
-//    QByteArray pack_HEX_32;
 
+    shared_ptr<CirQueue<unsigned char>> CHdata1; //存放待解调数据
+    char* CHdatax; //存放待解调数据
+
+    //CHdata2~101存放保存至本地的四通道原始数据
     shared_ptr<CirQueue<unsigned char>> CHdata2;
     shared_ptr<CirQueue<unsigned char>> CHdata3;
     shared_ptr<CirQueue<unsigned char>> CHdata4;
@@ -148,16 +145,17 @@ public:
     shared_ptr<CirQueue<unsigned char>> CHdata100;
     shared_ptr<CirQueue<unsigned char>> CHdata101;
 
-    shared_ptr<CirQueue<unsigned char>> CHdataArray[SaveNumber]; //存放CHdata的数组
+    shared_ptr<CirQueue<unsigned char>> CHdataArray[100]; //存放保存至本地的四通道原始数据
 
     void clearCHdata();
+
+    void FreeMemory();
 
 protected:
     void run();
 
 signals:
-    void SendtoWidget(char datagram[]);
-//    void SendtoWidget2(QByteArray datagramHEX);
+
 };
 
 #endif // UDP_RECV_H

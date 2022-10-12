@@ -12,19 +12,15 @@ class UDP_Recv;
 class WriteToFiles : public QThread
 {
 public:
-    WriteToFiles(UDP_Recv* udp_Recv);
+    WriteToFiles(UDP_Recv* udp_Recv, int peaknum);
+
     UDP_Recv* udp_recv;
-    bool isTimeUpdate;
     QDateTime dateTime; //当前系统时间
     QString saveFilenameAll;
     QString fileAll;
     ofstream outfileAll;
-    bool saveFlag = false;
-    qint64 LenoDemo = 4096*10000;
-    shared_ptr<CirQueue<unsigned char>> CHdata;
-    int peakNum = 0;
-
-    void readConfigFile();
+    bool saveFlag;
+    int peakNum;
 
 
 protected:

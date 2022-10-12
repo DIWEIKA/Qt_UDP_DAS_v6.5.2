@@ -1,15 +1,18 @@
 #include "demowave_widget2.h"
 #include "ui_demowave_widget2.h"
 
+QSharedPointer<QCPAxisTickerText> xTicker(new QCPAxisTickerText);
+QSharedPointer<QCPAxisTickerText> yTicker(new QCPAxisTickerText);
+
 demowave_widget2::demowave_widget2(Demodulation *demodulation):
-    ui(new Ui::demowave_widget2)
+    ui(new Ui::demowave_widget2),
+    demodu(demodulation),
+    RegionIndex(0),
+    peakNum(demodu->peakNum)
 {
     ui->setupUi(this);
-    demodu = demodulation;
 
     initWidget();
-
-    readConfigFile();
 
     initComboBox_Region();
 
@@ -118,17 +121,28 @@ demowave_widget2::demowave_widget2(Demodulation *demodulation):
 demowave_widget2::~demowave_widget2()
 {
     delete ui;
+    delete[] DemodataArray;
 }
 
 void demowave_widget2::initWidget()
 {
     setWindowTitle(QString("Demodulation Wave Display"));
 
+
+    /*--------------------------解调波形显示-------------------------------*/
     m_customPlot = ui->customPlot;
 
     //每条曲线都会独占一个graph()
     m_customPlot->addGraph();
-    m_customPlot->graph(0)->setPen(QPen(Qt::blue)); // 曲线的颜色
+
+    //设置画笔QPen
+    QPen pen;
+    pen.setWidth(4);//线宽
+    pen.setStyle(Qt::PenStyle::SolidLine);//实线
+    pen.setColor(Qt::blue); //颜色
+
+    //给图层添加画笔
+    m_customPlot->graph(0)->setPen(pen);
     m_customPlot->graph(0)->setBrush(QBrush(QColor(0, 0, 255, 20))); // 曲线与X轴包围区的颜色
 
     // 边框右侧和上侧均显示刻度线，但不显示刻度值:
@@ -141,26 +155,75 @@ void demowave_widget2::initWidget()
     //    connect(m_customPlot->xAxis, &QCPAxis::rangeChanged(QCPRange), m_customPlot->xAxis2, &QCPAxis::setRange(QCPRange));
     //    connect(m_customPlot->yAxis, &QCPAxis::rangeChanged(QCPRange), m_customPlot->yAxis2, &QCPAxis::setRange(QCPRange));
 
-//    //自动调整XY轴的范围，以便显示出graph(0)中所有的点（下面会单独讲到这个函数）
-//    m_customPlot->graph(0)->rescaleAxes(true);
-
     // 支持鼠标拖拽轴的范围、滚动缩放轴的范围，左键点选图层（每条曲线独占一个图层）
     m_customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
 
-}
+    /*---------------------------瀑布图-----------------------------------*/
+    m_heatmapPlot = ui->HeatmapPlot;
 
-void demowave_widget2::readConfigFile()
-{
+    heatmap = new QCPColorMap(m_heatmapPlot->xAxis,m_heatmapPlot->yAxis);
 
-   peakNum =  demodu->peakNum;
+    //设置轴的显示，这里使用文字轴
+    xTicker->setSubTickCount(1);
+    yTicker->setSubTickCount(1);
+    m_heatmapPlot->xAxis->setTicker(xTicker);
+    m_heatmapPlot->yAxis->setTicker(yTicker);
+    m_heatmapPlot->xAxis->grid()->setPen(Qt::NoPen);
+    m_heatmapPlot->yAxis->grid()->setPen(Qt::NoPen);
+    m_heatmapPlot->xAxis->grid()->setSubGridVisible(true);
+    m_heatmapPlot->yAxis->grid()->setSubGridVisible(true);
+    m_heatmapPlot->xAxis->setSubTicks(true);
+    m_heatmapPlot->yAxis->setSubTicks(true);
+    m_heatmapPlot->xAxis->setTickLength(0);
+    m_heatmapPlot->yAxis->setTickLength(0);
+    m_heatmapPlot->xAxis->setSubTickLength(6);
+    m_heatmapPlot->yAxis->setSubTickLength(6);
+
+    QCPColorScale *colorScale = new QCPColorScale(m_heatmapPlot);  // 构造一个色条
+    colorScale->setType(QCPAxis::atBottom);   // 水平显示
+    m_heatmapPlot->plotLayout()->addElement(1, 0, colorScale); // 在颜色图下面显示
+    heatmap->setColorScale(colorScale);
+    QCPColorGradient gradient;  // 色条使用的颜色渐变
+    gradient.loadPreset(QCPColorGradient::gpJet); //设置颜色渐变的预设
+//    gradient.setColorStopAt(0.0, QColor("#f6efa6"));   // 设置色条开始时的颜色
+//    gradient.setColorStopAt(1.0, QColor("#bf444c"));  // 设置色条结束时的颜色
+    heatmap->setGradient(gradient);
+    heatmap->rescaleDataRange();        // 自动计算数据范围，数据范围决定了哪些数据值映射到QCPColorGradient的颜色渐变当中
+//    heatmap->setDataRange(QCPRange(0, 10));     // 为了保持与echart的例子一致，我们这里手动设置数据范围
+    heatmap->setInterpolate(false);         // 为了显示小方块，我们禁用插值
+
+    // 保持色条与轴矩形边距一致
+    QCPMarginGroup *marginGroup = new QCPMarginGroup(m_heatmapPlot);
+    m_heatmapPlot->axisRect()->setMarginGroup(QCP::msLeft | QCP::msRight, marginGroup);
+    colorScale->setMarginGroup(QCP::msLeft | QCP::msRight, marginGroup);
+
+
 }
 
 void demowave_widget2::initComboBox_Region()
 {
     ui->comboBox_Region->clear();
 
-    for(int i=1; i<= peakNum; i++ )
+    for(int i=1; i<= peakNum; i++ ){
+
         ui->comboBox_Region->addItem(QString::asprintf("Region %d",i));
+
+        Region.push_back(QString::asprintf("Region %d",i)); //区域的labels
+    }
+}
+
+//返回labels对应的位置
+QVector<double> demowave_widget2::labelPositions(const QVector<QString> &labels, double offset)
+{
+    QVector<double> result(labels.size());
+        for (int i = 0; i < labels.size(); ++i)
+            result[i] = i + offset;
+        return result;
+}
+
+void demowave_widget2::FreeMemory()
+{
+    delete[] DemodataArray;
 }
 
 //刷新波形显示
@@ -168,8 +231,6 @@ void demowave_widget2::FlashWave()
 {
     qDebug() <<"Flash Demodulation Wave Slot responsed !"<<endl;
 
-    //clear DEMOdata_flash first, then waiting. （解决实时性）
-    demodu->DEMOdata_flash->clear();
     QThread::msleep(50);
 
     //clear plot data
@@ -181,13 +242,15 @@ void demowave_widget2::FlashWave()
 
     //重设sizeoDemoData的长度，使其为regionNum的倍数
     int N1 = sizeoDemoData/regionNum;
-    sizeoDemoData = N1*peakNum;
+    sizeoDemoData = N1*regionNum;
+
+//     int sizeoDemoData = regionNum*256; //固定显示的长度
 
     //DEMOdata[] split regions
     for(int k = 0; k<sizeoDemoData; k+=regionNum){
         int p = k/regionNum;
         for(int q=0; q<regionNum;q++){
-            if(demodu->DEMOdata_flash->isEmpty()) QThread::msleep(50);
+//            if(demodu->DEMOdata_flash->isEmpty()) QThread::msleep(50);
             DemodataArray[q][p] = demodu->DEMOdata_flash->pop();
         }
     }
@@ -196,16 +259,45 @@ void demowave_widget2::FlashWave()
     RegionIndex = ui->comboBox_Region->currentIndex();
 
     //dispaly wave
-    for(int i = 0;i<N1; i++){
+    double yMax = DemodataArray[RegionIndex][0], yMin = DemodataArray[RegionIndex][0];
+
+    for(int i = 0; i<N1; i++){
         QVector<double> x(1),y(1);
         x[0] = i;
         y[0]= DemodataArray[RegionIndex][i];
-        m_customPlot->graph(0)->addData(x, y);
+        m_customPlot->graph(0)->addData(x, y); //画图
+
+        //get the Max of y, the Min of y
+        if (y[0]>yMax) yMax = y[0];
+        if (y[0]<yMin) yMin = y[0];
     }
 
     m_customPlot->graph(0)->rescaleAxes(true);
+    m_customPlot->yAxis->setRangeLower(yMin-5);
+    m_customPlot->yAxis->setRangeUpper(yMax+5);
+    m_customPlot->replot(); //刷新
 
-    ui->customPlot->replot();
+//    //display heatmap（瀑布图）
+//    for(int p=0; p<peakNum; p++){
+//        for(int q=0; q<N1; q++){
+//            QVector<double> x(1),y(1),z(1);
+//            x[0]=p;
+//            y[0]=q;
+//            z[0]=DemodataArray[RegionIndex][q];
+//            if(z[0]!=0) heatmap->data()->setCell(x[0],y[0],z[0]); //如果z不为0，画图
+////            else heatmap->data()->setAlpha(x[0],y[0],0); //z为0，设置为透明
+
+//            Sampledots.push_back(QString::asprintf("%d",q)); //采样点的labels
+//        }
+//    }
+
+//    xTicker->setTicks(labelPositions(Region, 0.5), Region); //横轴设置区域的label
+//    yTicker->setTicks(labelPositions(Sampledots,0.5),Sampledots); //纵轴设置采样点的label
+
+//    m_heatmapPlot->xAxis->setRange(0, peakNum);
+//    m_heatmapPlot->yAxis->setRange(0, N1);
+//    m_heatmapPlot->replot(); //刷新
+
 }
 
 void demowave_widget2::on_pushButton_reset_clicked()

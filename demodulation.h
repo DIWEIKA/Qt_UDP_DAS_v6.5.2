@@ -4,10 +4,12 @@
 #include <QThread>
 #include <mainwindow.h>
 
-#define READ_LENGTH 4096*1000
-#define CHDATA_ALL_LENGTH 1024*1000
-#define CHDATA_LENGTH 256*1000
+#define READ_LENGTH 16*300
+#define CHDATA_ALL_LENGTH 4*300
+#define CHDATA_LENGTH 1*300
 #define NUMTABLE 201
+#define FILTERODR 6
+#define LPFILTERODR 10
 
 class UDP_Recv;
 
@@ -15,12 +17,15 @@ class Demodulation : public QThread
 {
     Q_OBJECT
 public:
-    explicit Demodulation(UDP_Recv* udp_Recv);
+    Demodulation(UDP_Recv* udp_Recv,int DemoFlashTime, int DemoFlashFreq, int freq, int peaknum);
+    ~Demodulation();
 
     UDP_Recv* udp_recv;
     shared_ptr<CirQueue<float>> DEMOdata_flash;
     shared_ptr<CirQueue<float>> DEMOdata_save;
+//    CirQueue<float> DEMOdata_save2;
     float DEMOdata_display[2048];
+    char* demo_CHdatax= new char[2048];
 
     //动态数组
 //    unsigned char *demo_CHdata;
@@ -37,23 +42,24 @@ public:
 //    int *demo_CHdata_DEC_4;
 
     //静态数组
-    unsigned char demo_CHdata[READ_LENGTH];
+    char demo_CHdata[READ_LENGTH];
     float Vi[CHDATA_LENGTH];
     float Vq[CHDATA_LENGTH];
     float Ph[CHDATA_LENGTH];
     float atanTable[NUMTABLE];
     int sizeoCHdata;
     int sizeoCHdataDec;
-    int demo_CHdata_DEC_all[CHDATA_ALL_LENGTH];
-    int demo_CHdata_DEC_1[CHDATA_LENGTH];
-    int demo_CHdata_DEC_2[CHDATA_LENGTH];
-    int demo_CHdata_DEC_3[CHDATA_LENGTH];
-    int demo_CHdata_DEC_4[CHDATA_LENGTH];
+    const static int FrameLen = 2048; //最大区域数目
+    int demo_CHdata_DEC_all[FrameLen/4];
+    int demo_CHdata_DEC_1[FrameLen/16];
+    int demo_CHdata_DEC_2[FrameLen/16];
+    int demo_CHdata_DEC_3[FrameLen/16];
+    int demo_CHdata_DEC_4[FrameLen/16];
 
-    int Freq = 10*1000; //采样率10KHz
+    int demoFlashTime;
+    int demoFlashFreq;
+    int Freq;
     int peakNum;
-    unsigned long LenoDemo = 256*100;
-    unsigned long LenoDemoSave = 256*1000*100;
 
     float* RealPh;
     float* PriorPh;
@@ -62,10 +68,24 @@ public:
 
     int count = 0;
 
-    void readConfigFile();
     void readAtanTable(float *roundNum);
     float demoduPh(float vi,float vq);
     float Unwrap(float Ph, int i);
+
+    float (*RealPhReg)[FILTERODR];
+    float (*RealPhOut)[FILTERODR];
+//    float (*FilterReg)[LPFILTERODR];
+    float *HPFilterCoeff;
+//    float *LPFilterCoeff;
+    unsigned long *cnt; //滤波执行计数
+    float *FirstRealPh;
+    int *FirstIn_n;
+
+    void FreeMemory();
+
+    void ReadFilterCoeff(float *HPFcoeff/*,float *LPFcoeff*/);
+
+    void Hpfilter(int i);
 
 protected:
     void run();
