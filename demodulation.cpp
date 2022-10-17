@@ -71,51 +71,35 @@ void Demodulation::run()
             //判断前16位是否是6666666666666666，若不是则继续找;
             //若是则从当前位置开始存入一个6666666666666666到6666666666666666之间的长度，即一个峰值点的数据到demo_CHdata中
             do{
-                   if(udp_recv->CHdata2->isEmpty())  msleep(100);
-//                unsigned char usCHdata1 = udp_recv->CHdata1->pop();
+//                   if(udp_recv->CHdata1->isEmpty())  msleep(100);
                 if(udp_recv->CHdata1->pop() == '6' ){
-//                    if(udp_recv->CHdata2->isEmpty())  msleep(10);
-//                    unsigned char usCHdata2 = udp_recv->CHdata1->pop();
+//                    if(udp_recv->CHdata1->isEmpty())  msleep(10);
                     if(udp_recv->CHdata1->pop() == '6' ){
-//                       if(udp_recv->CHdata2->isEmpty())  msleep(10);
-//                        unsigned char usCHdata3 = udp_recv->CHdata1->pop();
+//                       if(udp_recv->CHdata1->isEmpty())  msleep(10);
                         if(udp_recv->CHdata1->pop() == '6' ){
-//                             if(udp_recv->CHdata2->isEmpty())  msleep(6);
-//                            unsigned char usCHdata4 = udp_recv->CHdata1->pop();
+//                             if(udp_recv->CHdata1->isEmpty())  msleep(6);
                             if(udp_recv->CHdata1->pop() == '6' ){
-//                                unsigned char usCHdata5 = udp_recv->CHdata1->pop();
-                                if(udp_recv->CHdata1->pop() == '6' ){
-                                    //                      if(udp_recv->CHdata2->isEmpty())  msleep(10);
-//                                    unsigned char usCHdata6 = udp_recv->CHdata1->pop();
-                                    if(udp_recv->CHdata1->pop() == '6' ){
-                                        //                          if(udp_recv->CHdata2->isEmpty())  msleep(10);
-//                                        unsigned char usCHdata7 = udp_recv->CHdata1->pop();
-                                        if(udp_recv->CHdata1->pop() == '6' ){
-                                            //                              if(udp_recv->CHdata2->isEmpty())  msleep(10);
-//                                            unsigned char usCHdata8 = udp_recv->CHdata1->pop();
-                                            if(udp_recv->CHdata1->pop() == '6' ){
-//                                                unsigned char usCHdata9 = udp_recv->CHdata1->pop();
-                                                if(udp_recv->CHdata1->pop() == '6' ){
-                                                    //                      if(udp_recv->CHdata2->isEmpty())  msleep(10);
-//                                                    unsigned char usCHdata10 = udp_recv->CHdata1->pop();
-                                                    if(udp_recv->CHdata1->pop() == '6' ){
-                                                        //                          if(udp_recv->CHdata2->isEmpty())  msleep(10);
-//                                                        unsigned char usCHdata11 = udp_recv->CHdata1->pop();
-                                                        if(udp_recv->CHdata1->pop() == '6' ){
-                                                            //                              if(udp_recv->CHdata2->isEmpty())  msleep(10);
-//                                                            unsigned char usCHdata12 = udp_recv->CHdata1->pop();
-                                                            if(udp_recv->CHdata1->pop() == '6' ){
-//                                                                unsigned char usCHdata13 = udp_recv->CHdata1->pop();
-                                                                if(udp_recv->CHdata1->pop() == '6' ){
-                                                                    //                      if(udp_recv->CHdata2->isEmpty())  msleep(10);
-//                                                                    unsigned char usCHdata14 = udp_recv->CHdata1->pop();
-                                                                    if(udp_recv->CHdata1->pop() == '6' ){
-                                                                        //                          if(udp_recv->CHdata2->isEmpty())  msleep(10);
-//                                                                        unsigned char usCHdata15 = udp_recv->CHdata1->pop();
-                                                                        if(udp_recv->CHdata1->pop() == '6' ){
-                                                                            //                              if(udp_recv->CHdata2->isEmpty())  msleep(10);
-//                                                                            unsigned char usCHdata16 = udp_recv->CHdata1->pop();
-                                                                            if(udp_recv->CHdata1->pop() == '6' ){
+//                                if(udp_recv->CHdata1->pop() == '6' ){
+////                                     if(udp_recv->CHdata1->isEmpty())  msleep(10);
+//                                    if(udp_recv->CHdata1->pop() == '6' ){
+////                                         if(udp_recv->CHdata1->isEmpty())  msleep(10);
+//                                        if(udp_recv->CHdata1->pop() == '6' ){
+////                                             if(udp_recv->CHdata1->isEmpty())  msleep(10);
+//                                            if(udp_recv->CHdata1->pop() == '6' ){
+//                                                if(udp_recv->CHdata1->pop() == '6' ){
+////                                                if(udp_recv->CHdata1->isEmpty())  msleep(10);
+//                                                    if(udp_recv->CHdata1->pop() == '6' ){
+////                                                         if(udp_recv->CHdata1->isEmpty())  msleep(10);
+//                                                        if(udp_recv->CHdata1->pop() == '6' ){
+////                                                             if(udp_recv->CHdata1->isEmpty())  msleep(10);
+//                                                            if(udp_recv->CHdata1->pop() == '6' ){
+//                                                                if(udp_recv->CHdata1->pop() == '6' ){
+////                                                                     if(udp_recv->CHdata1->isEmpty())  msleep(10);
+//                                                                    if(udp_recv->CHdata1->pop() == '6' ){
+////                                                                        if(udp_recv->CHdata1->isEmpty())  msleep(10);
+//                                                                        if(udp_recv->CHdata1->pop() == '6' ){
+////                                                                             if(udp_recv->CHdata1->isEmpty())  msleep(10);
+//                                                                            if(udp_recv->CHdata1->pop() == '6' ){
 
                                                                                 sizeoCHdata = peakNum*16; //两个6666666666666666之间的长度
 
@@ -123,21 +107,21 @@ void Demodulation::run()
                                                                                 demo_CHdata[1] = '6';
                                                                                 demo_CHdata[2] = '6';
                                                                                 demo_CHdata[3] = '6';
-                                                                                demo_CHdata[4] = '6';
-                                                                                demo_CHdata[5] = '6';
-                                                                                demo_CHdata[6] = '6';
-                                                                                demo_CHdata[7] = '6';
-                                                                                demo_CHdata[8] = '6';
-                                                                                demo_CHdata[9] = '6';
-                                                                                demo_CHdata[10] = '6';
-                                                                                demo_CHdata[11] = '6';
-                                                                                demo_CHdata[12] = '6';
-                                                                                demo_CHdata[13] = '6';
-                                                                                demo_CHdata[14] = '6';
-                                                                                demo_CHdata[15] = '6';
+//                                                                                demo_CHdata[4] = '6';
+//                                                                                demo_CHdata[5] = '6';
+//                                                                                demo_CHdata[6] = '6';
+//                                                                                demo_CHdata[7] = '6';
+//                                                                                demo_CHdata[8] = '6';
+//                                                                                demo_CHdata[9] = '6';
+//                                                                                demo_CHdata[10] = '6';
+//                                                                                demo_CHdata[11] = '6';
+//                                                                                demo_CHdata[12] = '6';
+//                                                                                demo_CHdata[13] = '6';
+//                                                                                demo_CHdata[14] = '6';
+//                                                                                demo_CHdata[15] = '6';
 
                                                                                 //从16开始存读sizeoCHdata长度
-                                                                                for( int j=16; j<sizeoCHdata; ++j){
+                                                                                for( int j=4; j<sizeoCHdata; ++j){
                                                                                          if(udp_recv->CHdata1->isEmpty())  msleep(10);
 //                                                                                    unsigned char usCHdata = udp_recv->CHdata1->pop();
                                                                                     demo_CHdata[j] = udp_recv->CHdata1->pop();
@@ -146,18 +130,18 @@ void Demodulation::run()
                                                                                 isHeadFream = 1;
 
                                                                                 qDebug()<<"Found 6666666666666666!!"<<endl;
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
+//                                                                            }
+//                                                                        }
+//                                                                    }
+//                                                                }
+//                                                            }
+//                                                        }
+//                                                    }
+//                                                }
+//                                            }
+//                                        }
+//                                    }
+//                                }
                             }
                         }
                     }

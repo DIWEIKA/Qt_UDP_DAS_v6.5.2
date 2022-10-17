@@ -6,7 +6,7 @@
 #include "ui_mainwindow.h"
 #include "mainwindow.h"
 
-class  WriteToFiles;
+class WriteToFiles;
 class UDP_Recv;
 
 class WriteToFiles : public QThread

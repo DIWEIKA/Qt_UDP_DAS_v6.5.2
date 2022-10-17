@@ -14,7 +14,7 @@
 #define READ_FLASH_LENGTH 256*1000
 #define REGION_DATA_LENGTH 256*100
 #define DISPLAY_LENGTH_DEMO 100
-#define MAXREGION 100
+#define MAXREGION 100 //最大区域数
 
 using namespace std;
 

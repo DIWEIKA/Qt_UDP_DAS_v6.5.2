@@ -5,6 +5,7 @@
 #include <winsock2.h>
 #include <mainwindow.h>
 
+enum {SaveNum = 65}; //存储容器的个数
 
 class UDP_Recv : public QThread
 {
@@ -109,43 +110,43 @@ public:
     shared_ptr<CirQueue<unsigned char>> CHdata64;
     shared_ptr<CirQueue<unsigned char>> CHdata65;
     shared_ptr<CirQueue<unsigned char>> CHdata66;
-    shared_ptr<CirQueue<unsigned char>> CHdata67;
-    shared_ptr<CirQueue<unsigned char>> CHdata68;
-    shared_ptr<CirQueue<unsigned char>> CHdata69;
-    shared_ptr<CirQueue<unsigned char>> CHdata70;
-    shared_ptr<CirQueue<unsigned char>> CHdata71;
-    shared_ptr<CirQueue<unsigned char>> CHdata72;
-    shared_ptr<CirQueue<unsigned char>> CHdata73;
-    shared_ptr<CirQueue<unsigned char>> CHdata74;
-    shared_ptr<CirQueue<unsigned char>> CHdata75;
-    shared_ptr<CirQueue<unsigned char>> CHdata76;
-    shared_ptr<CirQueue<unsigned char>> CHdata77;
-    shared_ptr<CirQueue<unsigned char>> CHdata78;
-    shared_ptr<CirQueue<unsigned char>> CHdata79;
-    shared_ptr<CirQueue<unsigned char>> CHdata80;
-    shared_ptr<CirQueue<unsigned char>> CHdata81;
-    shared_ptr<CirQueue<unsigned char>> CHdata82;
-    shared_ptr<CirQueue<unsigned char>> CHdata83;
-    shared_ptr<CirQueue<unsigned char>> CHdata84;
-    shared_ptr<CirQueue<unsigned char>> CHdata85;
-    shared_ptr<CirQueue<unsigned char>> CHdata86;
-    shared_ptr<CirQueue<unsigned char>> CHdata87;
-    shared_ptr<CirQueue<unsigned char>> CHdata88;
-    shared_ptr<CirQueue<unsigned char>> CHdata89;
-    shared_ptr<CirQueue<unsigned char>> CHdata90;
-    shared_ptr<CirQueue<unsigned char>> CHdata91;
-    shared_ptr<CirQueue<unsigned char>> CHdata92;
-    shared_ptr<CirQueue<unsigned char>> CHdata93;
-    shared_ptr<CirQueue<unsigned char>> CHdata94;
-    shared_ptr<CirQueue<unsigned char>> CHdata95;
-    shared_ptr<CirQueue<unsigned char>> CHdata96;
-    shared_ptr<CirQueue<unsigned char>> CHdata97;
-    shared_ptr<CirQueue<unsigned char>> CHdata98;
-    shared_ptr<CirQueue<unsigned char>> CHdata99;
-    shared_ptr<CirQueue<unsigned char>> CHdata100;
-    shared_ptr<CirQueue<unsigned char>> CHdata101;
+//    shared_ptr<CirQueue<unsigned char>> CHdata67;
+//    shared_ptr<CirQueue<unsigned char>> CHdata68;
+//    shared_ptr<CirQueue<unsigned char>> CHdata69;
+//    shared_ptr<CirQueue<unsigned char>> CHdata70;
+//    shared_ptr<CirQueue<unsigned char>> CHdata71;
+//    shared_ptr<CirQueue<unsigned char>> CHdata72;
+//    shared_ptr<CirQueue<unsigned char>> CHdata73;
+//    shared_ptr<CirQueue<unsigned char>> CHdata74;
+//    shared_ptr<CirQueue<unsigned char>> CHdata75;
+//    shared_ptr<CirQueue<unsigned char>> CHdata76;
+//    shared_ptr<CirQueue<unsigned char>> CHdata77;
+//    shared_ptr<CirQueue<unsigned char>> CHdata78;
+//    shared_ptr<CirQueue<unsigned char>> CHdata79;
+//    shared_ptr<CirQueue<unsigned char>> CHdata80;
+//    shared_ptr<CirQueue<unsigned char>> CHdata81;
+//    shared_ptr<CirQueue<unsigned char>> CHdata82;
+//    shared_ptr<CirQueue<unsigned char>> CHdata83;
+//    shared_ptr<CirQueue<unsigned char>> CHdata84;
+//    shared_ptr<CirQueue<unsigned char>> CHdata85;
+//    shared_ptr<CirQueue<unsigned char>> CHdata86;
+//    shared_ptr<CirQueue<unsigned char>> CHdata87;
+//    shared_ptr<CirQueue<unsigned char>> CHdata88;
+//    shared_ptr<CirQueue<unsigned char>> CHdata89;
+//    shared_ptr<CirQueue<unsigned char>> CHdata90;
+//    shared_ptr<CirQueue<unsigned char>> CHdata91;
+//    shared_ptr<CirQueue<unsigned char>> CHdata92;
+//    shared_ptr<CirQueue<unsigned char>> CHdata93;
+//    shared_ptr<CirQueue<unsigned char>> CHdata94;
+//    shared_ptr<CirQueue<unsigned char>> CHdata95;
+//    shared_ptr<CirQueue<unsigned char>> CHdata96;
+//    shared_ptr<CirQueue<unsigned char>> CHdata97;
+//    shared_ptr<CirQueue<unsigned char>> CHdata98;
+//    shared_ptr<CirQueue<unsigned char>> CHdata99;
+//    shared_ptr<CirQueue<unsigned char>> CHdata100;
+//    shared_ptr<CirQueue<unsigned char>> CHdata101;
 
-    shared_ptr<CirQueue<unsigned char>> CHdataArray[100]; //存放保存至本地的四通道原始数据
+    shared_ptr<CirQueue<unsigned char>> CHdataArray[SaveNum]; //存放保存至本地的四通道原始数据
 
     void clearCHdata();
 

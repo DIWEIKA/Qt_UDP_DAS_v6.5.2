@@ -44,6 +44,7 @@ class Demodulation;
 class COM_Send;
 class DemoData_Save;
 
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -53,6 +54,8 @@ public:
     ~MainWindow();
 
     Ui::MainWindow *ui;
+
+
 
     bool isSave;
     bool isDemo;

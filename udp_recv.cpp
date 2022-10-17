@@ -110,41 +110,41 @@ UDP_Recv::UDP_Recv(MainWindow* mainwindow):
     CHdata64 = make_shared<CirQueue<unsigned char>>(LenoUDP);
     CHdata65 = make_shared<CirQueue<unsigned char>>(LenoUDP);
     CHdata66 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata67 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata68 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata69 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata70 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata71 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata72 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata73 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata74 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata75 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata76 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata77 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata78 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata79 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata80 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata81 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata82 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata83 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata84 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata85 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata86 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata87 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata88 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata89 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata90 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata91 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata92 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata93 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata94 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata95 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata96 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata97 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata98 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata99 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata100 = make_shared<CirQueue<unsigned char>>(LenoUDP);
-    CHdata101 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata67 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata68 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata69 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata70 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata71 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata72 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata73 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata74 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata75 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata76 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata77 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata78 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata79 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata80 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata81 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata82 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata83 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata84 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata85 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata86 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata87 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata88 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata89 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata90 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata91 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata92 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata93 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata94 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata95 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata96 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata97 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata98 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata99 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata100 = make_shared<CirQueue<unsigned char>>(LenoUDP);
+//    CHdata101 = make_shared<CirQueue<unsigned char>>(LenoUDP);
 
 
 //    init CHdataArray
@@ -213,41 +213,41 @@ UDP_Recv::UDP_Recv(MainWindow* mainwindow):
     CHdataArray[62] =  CHdata64;
     CHdataArray[63] =  CHdata65;
     CHdataArray[64] =  CHdata66;
-    CHdataArray[65] =  CHdata67;
-    CHdataArray[66] =  CHdata68;
-    CHdataArray[67] =  CHdata69;
-    CHdataArray[68] =  CHdata70;
-    CHdataArray[69] =  CHdata71;
-    CHdataArray[70] =  CHdata72;
-    CHdataArray[71] =  CHdata73;
-    CHdataArray[72] =  CHdata74;
-    CHdataArray[73] =  CHdata75;
-    CHdataArray[74] =  CHdata76;
-    CHdataArray[75] =  CHdata77;
-    CHdataArray[76] =  CHdata78;
-    CHdataArray[77] =  CHdata79;
-    CHdataArray[78] =  CHdata80;
-    CHdataArray[79] =  CHdata81;
-    CHdataArray[80] =  CHdata82;
-    CHdataArray[81] =  CHdata83;
-    CHdataArray[82] =  CHdata84;
-    CHdataArray[83] =  CHdata85;
-    CHdataArray[84] =  CHdata86;
-    CHdataArray[85] =  CHdata87;
-    CHdataArray[86] =  CHdata88;
-    CHdataArray[87] =  CHdata89;
-    CHdataArray[88] =  CHdata90;
-    CHdataArray[89] =  CHdata91;
-    CHdataArray[90] =  CHdata92;
-    CHdataArray[91] =  CHdata93;
-    CHdataArray[92] =  CHdata94;
-    CHdataArray[93] =  CHdata95;
-    CHdataArray[94] =  CHdata96;
-    CHdataArray[95] =  CHdata97;
-    CHdataArray[96] =  CHdata98;
-    CHdataArray[97] =  CHdata99;
-    CHdataArray[98] =  CHdata100;
-    CHdataArray[99] =  CHdata101;
+//    CHdataArray[65] =  CHdata67;
+//    CHdataArray[66] =  CHdata68;
+//    CHdataArray[67] =  CHdata69;
+//    CHdataArray[68] =  CHdata70;
+//    CHdataArray[69] =  CHdata71;
+//    CHdataArray[70] =  CHdata72;
+//    CHdataArray[71] =  CHdata73;
+//    CHdataArray[72] =  CHdata74;
+//    CHdataArray[73] =  CHdata75;
+//    CHdataArray[74] =  CHdata76;
+//    CHdataArray[75] =  CHdata77;
+//    CHdataArray[76] =  CHdata78;
+//    CHdataArray[77] =  CHdata79;
+//    CHdataArray[78] =  CHdata80;
+//    CHdataArray[79] =  CHdata81;
+//    CHdataArray[80] =  CHdata82;
+//    CHdataArray[81] =  CHdata83;
+//    CHdataArray[82] =  CHdata84;
+//    CHdataArray[83] =  CHdata85;
+//    CHdataArray[84] =  CHdata86;
+//    CHdataArray[85] =  CHdata87;
+//    CHdataArray[86] =  CHdata88;
+//    CHdataArray[87] =  CHdata89;
+//    CHdataArray[88] =  CHdata90;
+//    CHdataArray[89] =  CHdata91;
+//    CHdataArray[90] =  CHdata92;
+//    CHdataArray[91] =  CHdata93;
+//    CHdataArray[92] =  CHdata94;
+//    CHdataArray[93] =  CHdata95;
+//    CHdataArray[94] =  CHdata96;
+//    CHdataArray[95] =  CHdata97;
+//    CHdataArray[96] =  CHdata98;
+//    CHdataArray[97] =  CHdata99;
+//    CHdataArray[98] =  CHdata100;
+//    CHdataArray[99] =  CHdata101;
 }
 
 UDP_Recv::~UDP_Recv()
@@ -257,7 +257,7 @@ UDP_Recv::~UDP_Recv()
 
 void UDP_Recv::clearCHdata()
 {
-    for(int i = 0; i<SaveNumber; i++)
+    for(int i = 0; i<SaveNum; i++)
         CHdataArray[i]->clear();
 }
 
@@ -303,11 +303,11 @@ void UDP_Recv::run()
                 const char Y = '0';
 
                 //判断32帧数据的帧头，从而定位起点位置.
-                //若某帧第1~16位分别是6666666666666666，则该帧是起点帧
-                if((p_echo_net_pack_HEX[0]== X) && (p_echo_net_pack_HEX[1]== X) && (p_echo_net_pack_HEX[2]== X) && (p_echo_net_pack_HEX[3]== X)
-                        && (p_echo_net_pack_HEX[4]== X) && (p_echo_net_pack_HEX[5]== X) && (p_echo_net_pack_HEX[6]== X) && (p_echo_net_pack_HEX[7]== X)
-                        && (p_echo_net_pack_HEX[8]== X) && (p_echo_net_pack_HEX[9]== X) && (p_echo_net_pack_HEX[10]== X) && (p_echo_net_pack_HEX[11]== X)
-                        && (p_echo_net_pack_HEX[12]== X) && (p_echo_net_pack_HEX[13]== X) && (p_echo_net_pack_HEX[14]== X) && (p_echo_net_pack_HEX[15]== X) && (p_echo_net_pack_HEX[16]== Y))
+                //若某帧第9~24位分别是6666666666666666，则该帧是起点帧
+                if((p_echo_net_pack_HEX[8]== X) && (p_echo_net_pack_HEX[9]== X) && (p_echo_net_pack_HEX[10]== X) && (p_echo_net_pack_HEX[11]== X)
+                        && (p_echo_net_pack_HEX[12]== X) && (p_echo_net_pack_HEX[13]== X) && (p_echo_net_pack_HEX[14]== X) && (p_echo_net_pack_HEX[15]== X)
+                        && (p_echo_net_pack_HEX[16]== X) && (p_echo_net_pack_HEX[17]== X) && (p_echo_net_pack_HEX[18]== X) && (p_echo_net_pack_HEX[19]== X)
+                        && (p_echo_net_pack_HEX[20]== X) && (p_echo_net_pack_HEX[21]== X) && (p_echo_net_pack_HEX[22]== X) && (p_echo_net_pack_HEX[23]== X) && (p_echo_net_pack_HEX[24]== Y))
                     isStartFrame = 1;
 
                 /*---------------Mode I: 将脉冲波形显示出来------------*/
@@ -342,7 +342,7 @@ void UDP_Recv::run()
 
                         CHdata1->push(usCHDATA);
 
-                        for(int j = 0; j<100; j++){
+                        for(int j = 0; j<SaveNum; j++){
 
                             //如果CHdataj没满，存入CHdataj，跳出循环；否则存入CHdataj+1
                             if(!CHdataArray[j]->isFull()){

@@ -257,6 +257,7 @@ void demowave_widget2::FlashWave()
 
     //region select
     RegionIndex = ui->comboBox_Region->currentIndex();
+//    qDebug()<<"RegionIndex:"<<RegionIndex<<endl;
 
     //dispaly wave
     double yMax = DemodataArray[RegionIndex][0], yMin = DemodataArray[RegionIndex][0];
@@ -273,8 +274,8 @@ void demowave_widget2::FlashWave()
     }
 
     m_customPlot->graph(0)->rescaleAxes(true);
-    m_customPlot->yAxis->setRangeLower(yMin-5);
-    m_customPlot->yAxis->setRangeUpper(yMax+5);
+    m_customPlot->yAxis->setRangeLower(yMin-2);
+    m_customPlot->yAxis->setRangeUpper(yMax+2);
     m_customPlot->replot(); //Ë¢ÐÂ
 
 //    //display heatmap£¨ÆÙ²¼Í¼£©

@@ -24,7 +24,7 @@
 #define PULSEDATA_ALL_LENGTH 1024*8 //四个通道的十进制数数据长度
 #define PULSEDATA_LENGTH 1024*2 //一个通道的十进制数长度
 #define DISPLAY_LENGTH_PULSE 256*2 //展示在widget上的数据长度
-#define SaveNumber 100 //存储容器的个数
+
 
 using namespace std;
 
