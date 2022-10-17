@@ -288,22 +288,22 @@ float Demodulation::Unwrap(float ph, int i)
     PriorPh[i] = ph;
     PriorK[i] = K[i];
 
-//    if(FirstIn_n[i] == 0)
-//    {
-//        FirstRealPh[i] = RealPh[i];
-//        FirstIn_n[i] = 1;
-//    }
+    if(FirstIn_n[i] == 0)
+    {
+        FirstRealPh[i] = RealPh[i];
+        FirstIn_n[i] = 1;
+    }
 
-//    RealPh[i] -= FirstRealPh[i];
+    RealPh[i] -= FirstRealPh[i];
 
-//    //调用高通滤波函数
-//    Hpfilter(i);
+    //调用高通滤波函数
+    Hpfilter(i);
 
-//    float HPRealPh = RealPhOut[i][2];
+    float HPRealPh = RealPhOut[i][2];
 
-//    return HPRealPh; //返回滤波后数据
+    return HPRealPh; //返回滤波后数据
 
-    return RealPh[i];
+//    return RealPh[i]; //返回滤波前数据
 }
 
 void Demodulation::FreeMemory()
