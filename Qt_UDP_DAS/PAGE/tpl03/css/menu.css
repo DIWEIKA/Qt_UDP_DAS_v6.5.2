@@ -1,0 +1,67 @@
+@charset "utf-8";
+/* CSS Document */
+ 
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+ 
+/* *x选择器：选择所有元素 */
+* {
+  box-sizing: border-box;
+}
+ 
+/* 使用Flexbox创建一个列布局 
+flex 的定义和用法
+1.flex 属性用于设置或检索弹性盒模型对象的子元素如何分配空间。
+2.flex 属性是 flex-grow、flex-shrink 和 flex-basis 属性的简写属性。
+注意：如果元素不是弹性盒模型对象的子元素，则 flex 属性不起作用。
+*/
+.row {
+  display: flex;
+}
+ 
+/* 左列(菜单) */
+.left {
+  flex: 15%; /*让所有弹性盒模型对象的子元素的长度为15%，且忽略它们内部的内容*/
+  padding: 15px 0;
+}
+ 
+.left h2 {
+  padding-left: 8px;
+}
+ 
+/* 右侧(内容) */
+.right {
+  flex: 85%; /*让所有弹性盒模型对象的子元素的长度为85%，且忽略它们内部的内容*/
+  padding: 15px;
+}
+ 
+/* 搜索框 */
+#mySearch {
+  width: 100%;
+  font-size: 18px;
+  padding: 11px;
+  border:1px solid #ddd;
+}
+ 
+/* 左侧导航 */
+#myMenu {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+ 
+/*左侧导航标签*/
+#myMenu li a {
+  background-color: #BBBBBB;
+  padding: 12px;
+  text-decoration: none;
+  font-size: 18px;
+  color: black;
+  display: block
+}
+ 
+/*左侧导航标签效果*/
+#myMenu li a:hover {
+  background-color: #eee;
+}

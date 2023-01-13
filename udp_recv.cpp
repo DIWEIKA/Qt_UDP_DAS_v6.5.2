@@ -8,7 +8,7 @@ UDP_Recv::UDP_Recv(MainWindow* mainwindow):
     peakNum(mainWindow->peakNum), //峰值点数
     lenoRecv(1024), //接受一帧的数据长度
     lenoRecvHEX(lenoRecv*2),
-    LenoUDP(Freq*peakNum*4*4),//一个存储容器的大小: 采样率 * 峰值点数 * 4通道 * 4个char转化为一个float(1s数据量)
+    LenoUDP(Freq*peakNum*4*4*200),//一个存储容器的大小: 采样率 * 峰值点数 * 4通道 * 4个char转化为一个float(1s数据量) * 100
     pack_count(0),
     pack_HEX_32(new char[32*1024*2]),
     pack_HEX_Display(new char[32*1024*2]),
@@ -27,7 +27,7 @@ UDP_Recv::UDP_Recv(MainWindow* mainwindow):
     addr_WIN.sin_family = AF_INET;
     addr_WIN.sin_port = htons(7000);
     addr_WIN.sin_addr.S_un.S_addr = INADDR_ANY;
-    if(bind(echo_socket_WIN, (sockaddr *)&addr_WIN, sizeof(addr_WIN)) == SOCKET_ERROR)
+    if(::bind(echo_socket_WIN, (sockaddr *)&addr_WIN, sizeof(addr_WIN)) == SOCKET_ERROR)
     {
         printf("bind error !");
         closesocket(echo_socket_WIN);
@@ -275,11 +275,7 @@ void UDP_Recv::run()
 
         if(isStart){
 
-            isHEX = mainWindow->isHEX;
-
             net_pack_size = 0;
-
-            if(isHEX){
 
                 //define a new char[]
                 p_echo_net_pack[0] = '\0';
@@ -297,7 +293,7 @@ void UDP_Recv::run()
 
                 p_echo_net_pack_HEX = p_echo_net_pack_array.toHex().toUpper();
 
-                qDebug()<<p_echo_net_pack_HEX[0]<<p_echo_net_pack_HEX[1]<<p_echo_net_pack_HEX[2]<<p_echo_net_pack_HEX[3]<<endl;
+//                qDebug()<<p_echo_net_pack_HEX[0]<<p_echo_net_pack_HEX[1]<<p_echo_net_pack_HEX[2]<<p_echo_net_pack_HEX[3]<<endl;
 
                 const char X = '6';
                 const char Y = '0';
@@ -365,8 +361,6 @@ void UDP_Recv::run()
 //                        CHdatax[i] =p_echo_net_pack_HEX[i];
 //                    }
 //                }
-
-            } //end if
 
         } //end if
     }

@@ -16,12 +16,12 @@ COM_Send::COM_Send(MainWindow* Mainwindow)
 
     if (filePath.isEmpty())
     {
-        mainWindow->ui->textEdit_Msg->insertPlainText(QString("Warning! Empty File! ")+"\n");
+//        mainWindow->ui->textEdit_Msg->insertPlainText(QString("Warning! Empty File! ")+"\n");
         return;
     }
 
     //文件路径显示到发送框
-    mainWindow->ui->textEdit_Msg->insertPlainText(QString("Configeration File Directory: ")+filePath+"\n");
+//    mainWindow->ui->textEdit_Msg->insertPlainText(QString("Configeration File Directory: ")+filePath+"\n");
 }
 
 void COM_Send::run()
@@ -31,13 +31,13 @@ void COM_Send::run()
 
     if (!configFile->exists())
     {
-        mainWindow->ui->textEdit_Msg->insertPlainText(QString("Warning! File is Not Exist! ")+"\n");
+//        mainWindow->ui->textEdit_Msg->insertPlainText(QString("Warning! File is Not Exist! ")+"\n");
         return;
     }
 
     if (!configFile->open(QIODevice::ReadOnly))
     {
-        mainWindow->ui->textEdit_Msg->insertPlainText(QString("Warning! File Open Failed! ")+"\n");
+//        mainWindow->ui->textEdit_Msg->insertPlainText(QString("Warning! File Open Failed! ")+"\n");
         return;
     }
 
@@ -48,7 +48,7 @@ void COM_Send::run()
 
     if (peakData.isEmpty())
     {
-        mainWindow->ui->textEdit_Msg->insertPlainText(QString("Warning! File Content is Empty! ")+"\n");
+//        mainWindow->ui->textEdit_Msg->insertPlainText(QString("Warning! File Content is Empty! ")+"\n");
         return;
     }
 
@@ -60,11 +60,11 @@ void COM_Send::run()
         //4. peakData >> myCom
         myCom->write(peakData);
 
-        mainWindow->ui->textEdit_Msg->insertPlainText(QString("Send to COM Successful! ")+"\n");
+//        mainWindow->ui->textEdit_Msg->insertPlainText(QString("Send to COM Successful! ")+"\n");
     }
 
     else
-        mainWindow->ui->textEdit_Msg->insertPlainText(QString("Open COM Failed! ")+"\n");
+//        mainWindow->ui->textEdit_Msg->insertPlainText(QString("Open COM Failed! ")+"\n");
 
     qDebug() << "com_send Thread is over " << endl;
 }

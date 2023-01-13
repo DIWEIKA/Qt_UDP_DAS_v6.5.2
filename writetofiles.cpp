@@ -19,13 +19,10 @@ void WriteToFiles::run()
     QString mm = dateTime.toString("mm");
     bool odk;
     int m1 = mm.toInt(&odk,10);
-//    qDebug()<<"m1 = "<<m1<<endl;
     int m2 = m1-1;
     if(m2<0) m2 = 59;
-//    qDebug() <<"m2 = "<<m2<<endl;
     QString mm2 = QString::number(m2,10);
     if(m2 < 10) mm2 = QString("0") + mm2;
-//    qDebug() <<"mm2:"<<mm2<<endl;
 
     //文件目录+[4CH]+[peakNum]+时间.txt
     saveFilenameAll = QString("D:/Qt_UDP_DAS/data/")+QString("[4CH][")+QString::number(peakNum)+QString("]")

@@ -89,7 +89,7 @@ private slots:
 private:
 
 signals:
-    timeout();
+//    timeout();
 
 };
 

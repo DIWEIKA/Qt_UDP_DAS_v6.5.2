@@ -113,7 +113,7 @@ void CirQueue<T>::push(T element)
 {
     if (isFull())
     {
-//        printf("The Circle Queue Has  Be FULL yuanshiduilie !!\n");
+        printf("The Circle Queue Has  Be FULL yuanshiduilie !!\n");
         return;
     }
     m_data[m_rear] = element;
@@ -126,7 +126,7 @@ T CirQueue<T>::pop()
 {
     if (isEmpty())
     {
-//        printf("The Circle Queue is Empty!!\n");
+        printf("The Circle Queue is Empty!!\n");
         return m_data[m_front];
     }
     m_front = (m_front + 1) % M_LEN;

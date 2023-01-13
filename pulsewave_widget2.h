@@ -26,6 +26,7 @@ class pulsewave_widget2;
 using namespace std;
 
 class UDP_Recv;
+class WebClass;
 
 class pulsewave_widget2 : public QWidget
 {
@@ -34,13 +35,17 @@ public:
     pulsewave_widget2(UDP_Recv *udp_Recv);
     ~pulsewave_widget2();
 
-    void initWidget();
+    void setHtmlPages();
     void FlashWave();
     void FreeMemory();
 
     Ui::pulsewave_widget2 *ui;
+
+    QWebEngineView *m_pulsewave_widget;
+    QWebChannel *webChannel2;
+    WebClass *webobj2;
+
     UDP_Recv *udp_recv;
-    QCustomPlot *m_customPlot;
     QCPItemText *textLabel;
     QCPItemLine *arrow;
     QCPItemTracer *m_sameTimeTracer;
@@ -59,14 +64,12 @@ public:
     int Pulsedata_DEC_disp[PULSEDATA_LENGTH*2] = {0};
 
 signals:
-    void PauseWave();
-    void RestartWave();
+    void send_mainwindow_btn_pause();
+    void send_mainwindow_btn_restart();
 
 private slots:
-    void on_btnReset_clicked();
-    void on_pushButton_pause_clicked();
-    void on_pushButton_restart_clicked();
-    void slot_MouseRelease(QMouseEvent*);
+    void PulseWave_pause_slot();
+    void PulseWave_restart_slot();
 };
 
 #endif // PULSEWAVE_WIDGET2_H

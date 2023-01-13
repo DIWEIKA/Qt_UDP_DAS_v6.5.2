@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title></title>
+</head>
+
+<body>
+    <script src="qwebchannel.js"></script>
+
+    <script type="text/javascript">
+        new QWebChannel(qt.webChannelTransport,
+            function (channel) {
+                var webobj = channel.objects.webobj;
+                window.foo = webobj;
+                webobj.content = 1;
+                webobj.jscallme();
+            });
+    </script>
+
+</body>
+
+</html>

@@ -1,8 +1,9 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-
+#include <QApplication>
 #include <QMainWindow>
+#include <QCloseEvent>
 #include <QQueue>
 #include "CirQueue.h"
 #include <memory>
@@ -25,7 +26,10 @@
 #include "com_send.h"
 #include "demodata_save.h"
 #include "ui_mainwindow.h"
-
+#include <QtWebEngineWidgets>
+#include <QtWebChannel>
+#include <webclass.h>
+#include <fft.h>
 
 typedef unsigned char BYTE;
 
@@ -43,7 +47,8 @@ class demowave_widget2;
 class Demodulation;
 class COM_Send;
 class DemoData_Save;
-
+class webclass;
+class FFT;
 
 class MainWindow : public QMainWindow
 {
@@ -55,7 +60,9 @@ public:
 
     Ui::MainWindow *ui;
 
-
+    QWebEngineView* m_mainwindow_widget;
+    QWebChannel *webChannel;
+    WebClass *webobj;
 
     bool isSave;
     bool isDemo;
@@ -66,9 +73,11 @@ public:
     int peakNum;
     int demoFlashTime;
     int pulseFlashTime;
-    int demoFlashFreq;
-    int pulseFlashFreq;
+//    double demoFlashFreq;
+    double pulseFlashFreq;
+    int cnt;
 
+    QTimer* MsgTimer;
     UDP_Recv* udp_recv;
     QTimer* SaveTimer;
     QTimer* FlashTimer_Pulse;
@@ -80,13 +89,16 @@ public:
     demowave_widget2 *demowave_Widget2;
     COM_Send *com_send;
     DemoData_Save *demodata_save;
+    FFT *m_fft;
+    QTimer* fftTimer;
 
-    void setLocalStyleSheet();
+    void setHtmlPages();
     void setLocalMsg();
     void OpenSaveThread();
     void OpenDemoSaveThread();
     void stopThread();
     void readConfigFile();
+    void OpenFFTThread();
 
 
 private slots:
@@ -94,6 +106,7 @@ private slots:
     void FinishWriteToFilesThread();
     void FinishDemodulationThread();
     void FinishDemoData_saveThread();
+    void FinishFFT_Thread();
 
     void on_pushButton_Start_clicked();
 
@@ -101,15 +114,13 @@ private slots:
 
     void on_pushButton_Clear_clicked();
 
-    void on_checkBox_Save_clicked();
-
-    void on_checkBox_Hex_clicked();
+    void on_checkBox_Save_clicked(bool _isSave);
 
     void on_pushButton_Display_pulse_clicked();
 
-    void on_checkBox_Demo_clicked();
+    void on_checkBox_Demo_clicked(bool _isDemo);
 
-    void on_comboBox_Mode_currentIndexChangedSlot();
+    void on_comboBox_Mode_currentIndexChangedSlot(int _AcqMode);
 
     void on_pushButton_Send_clicked();
 
@@ -119,6 +130,7 @@ private slots:
     void PulseWave_restart_slot();
 
 private:
+    void closeEvent( QCloseEvent * event);
 
 };
 #endif // MAINWINDOW_H

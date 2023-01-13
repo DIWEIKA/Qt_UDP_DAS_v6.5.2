@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport"
+		content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title>分布式声音传感上位机</title>
+	<link rel="stylesheet" type="text/css" href="css/DemoWaveDisplay.css" />
+	<script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.4.1/dist/echarts.min.js"></script>
+	<script src="jQuery.js"></script>
+	<script src="qwebchannel.js"></script>
+	<script src="echarts.js"></script>
+	<script src="echarts.min.js"></script>
+	<script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.4.1/dist/echarts.min.js"></script>
+
+	<script>
+
+
+		var region_num = 4; //区域数
+
+		//接收Qt传过来的区域数
+		function get_region_num(str) {
+			region_num = str["region_num"];
+		}
+
+		//根据region_num改变downlist里的option
+		function change_downlist_region() {
+
+			for (var i = 1; i <= region_num; ++i) {
+				var obj = document.getElementById("downlist_region");
+				//添加一个选项
+				obj.options.add(new Option("Region " + i, i));
+			}
+		}
+
+		//传递当前option的值给Qt
+		function region_select() {
+			var s_region = $('select option:selected').val() - 1; //传递option的value
+
+			console.log(s_region);
+
+			new QWebChannel(qt.webChannelTransport,
+				function (channel) {
+					var webobj = channel.objects.webobj4;
+					window.foo = webobj;
+					webobj.content = s_region;
+					webobj.js_combobox_region_indexchanged();
+				});
+		}
+	</script>
+
+</head>
+
+<body id="body" onload="change_downlist_region()">
+	<header id="header">
+		<h3 class="header-title">解调波形显示</h3>
+	</header>
+
+	<!-- 页面缩放设置分辨率 -->
+	<script type="text/javascript">
+		// body宽高
+		let cw = 1280, ch = 720
+		let body = document.getElementById('demowave_view')
+		body.style.width = `${cw}px`
+		body.style.height = `${ch}px`
+
+		// 对body进行缩放
+		function windowResize() {
+			// 窗口宽高
+			let w = window.innerWidth, h = window.innerHeight
+			// 缩放比例
+			let r = w / cw < h / ch ? w / cw : h / ch
+
+			body.style.transform = `scale( ${r})`
+			// 因为scale是以body的原中心点为基准进行缩放，所以缩放之后需要调整外边距，使其位于窗口的中心位置
+			body.style.marginLeft = (-(cw - r * cw) / 2 + (w - r * cw) / 2) + 'px'
+			body.style.marginTop = (-(ch - r * ch) / 2 + (h - r * ch) / 2) + 'px'
+			body.style.marginBottom = (-(h > ch ? h : ch - r * ch)) + 'px'
+			body.style.marginRight = (-(w > cw ? w : cw - r * cw)) + 'px'
+		}
+
+		windowResize()
+		// 监听窗口尺寸变化
+		window.addEventListener('resize', windowResize);
+
+	</script>
+
+	<div id="container">
+		<div id="flexCon">
+			<div class="region_div">
+				<select class="downlist_region" name="downlist_region" id="downlist_region" onchange="region_select()">
+					<!-- <option>Region 1</option>
+					<option>Region 2</option>
+					<option>Region 3</option>
+					<option>Region 4</option> -->
+				</select>
+				<button onclick="button_reset_clicked()" class="button_reset"> 复位图像</button>
+			</div>
+
+			<div class="flex-row">
+				<!-- <div class="flex-cell flex-cell-c"> -->
+				<!-- <div class="chart-wrapper"> -->
+				<h3 class="chart-title1">解调波形显示</h3>
+				<div class="demowave-div" id="demowave_view"></div>
+				<!-- </div> -->
+				<!-- </div> -->
+			</div>
+
+			<div class="flex-row">
+				<!-- <div class="flex-cell flex-cell-r"> -->
+				<!-- <div class="chart-wrapper"> -->
+				<!-- <h3 class="chart-title3">FFT</h3> -->
+				<!-- <div class="chart-div chart-done"> -->
+				<!-- <div class="chart-loader"> -->
+				<div class="fft-div" id="fft_heatmap"></div>
+				<!-- </div> -->
+				<!-- </div> -->
+				<!-- </div> -->
+				<!-- </div> -->
+			</div>
+
+			<!-- <div class="flex-row">
+				
+				<h3 class="chart-title2">传感区域瀑布图</h3>
+				
+				<div class="heat-map"></div>
+				
+			</div> -->
+
+
+		</div>
+	</div>
+
+
+	<script>
+
+		function button_stop_clicked() {
+			console.log("button_stop_clicked");
+		}
+
+		function button_restart_clicked() {
+			console.log("button_restart_clicked");
+		}
+
+		function button_reset_clicked() {
+			console.log("button_reset_clicked");
+		}
+	</script>
+
+	<script type="text/javascript">
+
+		function demowave_flash(str) {
+
+			var dom = document.getElementById("demowave_view");
+			var myChart = echarts.init(dom, null, {
+				renderer: 'canvas',
+				useDirtyRect: false
+			});
+			// var app = {};
+
+			var option;
+			let xdata = [];
+			let ydata = [];
+			var N1;
+			N1 = str["N1"];
+			// ydata = str["demo_wave"];
+
+			for (let i = 0; i < N1; i++) {
+				xdata.push([i]);
+			}
+			option = {
+				tooltip: {
+					trigger: 'axis',
+					position: function (pt) {
+						return [pt[0], '10%'];
+					}
+				},
+				// title: {
+				// 	left: 'center',
+				// 	text: '通道1'
+				// },
+				toolbox: {
+					feature: {
+						dataZoom: {
+							yAxisIndex: 'none'
+						},
+						restore: {},
+						saveAsImage: {}
+					}
+				},
+				xAxis: {
+					type: 'category',
+					boundaryGap: false,
+					data: xdata,
+				},
+				yAxis: {
+					type: 'value',
+					// boundaryGap: [0, '100%'],
+					splitLine: {
+						show: false
+					}
+				},
+				// dataZoom: [
+				// 	{
+				// 		type: 'inside',
+				// 		start: 0,
+				// 		end: 10
+				// 	},
+				// 	{
+				// 		start: 0,
+				// 		end: 10
+				// 	}
+				// ],
+				series: [
+					{
+						name: 'Fake Data',
+						type: 'line',
+						symbol: 'none',
+						sampling: 'lttb',
+						itemStyle: {
+							color: 'yellow',
+						},
+						// areaStyle: {
+						// 	color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+						// 		{
+						// 			offset: 0,
+						// 			color: 'rgb(139, 58, 169)'
+						// 		},
+						// 		{
+						// 			offset: 1,
+						// 			color: 'rgb(139, 58, 169)'
+						// 		}
+						// 	])
+						// },
+						data: str["demo_wave"]
+					}
+				]
+			};
+
+			if (option && typeof option === 'object') {
+				myChart.setOption(option);
+			}
+
+			window.addEventListener('resize', myChart.resize);
+		}
+
+
+		function fft_heatmap_flash(str) {
+			var dom = document.getElementById('fft_heatmap');
+			var myChart2 = echarts.init(dom, null, {
+				renderer: 'canvas',
+				useDirtyRect: false
+			});
+			var app = {};
+			var N1 = 150; //横轴的长度
+			var N2 = 100; //纵轴的长度(频点个数)
+			var N3 = 0; //起始频率
+
+			var option;
+
+			// prettier-ignore
+			let freq = [];
+			//10kHz使用
+			for (var i = N3; i < (N2 + N3); ++i) {
+				freq.push((4.8*i).toFixed(1));
+			}
+
+			// //20kHz使用
+			// for (var i = N3; i < (N2 + N3); ++i) {
+			// 	freq.push(4.88*i);
+			// }
+
+			let time = [];
+			for (var i = 0; i < N1; ++i) {
+				time.push(2 * i);
+			}
+
+
+			let itemX = [];
+			let data = [];
+
+			let fft_data_1 = [];
+			let fft_data_2 = [];
+			let fft_data_3 = [];
+			let fft_data_4 = [];
+			let fft_data_5 = [];
+			let fft_data_6 = [];
+			let fft_data_7 = [];
+			let fft_data_8 = [];
+			let fft_data_9 = [];
+			let fft_data_10 = [];
+			let fft_data_11 = [];
+			let fft_data_12 = [];
+			let fft_data_13 = [];
+			let fft_data_14 = [];
+			let fft_data_15 = [];
+			let fft_data_16 = [];
+			let fft_data_17 = [];
+			let fft_data_18 = [];
+			let fft_data_19 = [];
+			let fft_data_20 = [];
+			let fft_data_21 = [];
+			let fft_data_22 = [];
+			let fft_data_23 = [];
+			let fft_data_24 = [];
+			let fft_data_25 = [];
+			let fft_data_26 = [];
+			let fft_data_27 = [];
+			let fft_data_28 = [];
+			let fft_data_29 = [];
+			let fft_data_30 = [];
+			let fft_data_31 = [];
+			let fft_data_32 = [];
+			let fft_data_33 = [];
+			let fft_data_34 = [];
+			let fft_data_35 = [];
+			let fft_data_36 = [];
+			let fft_data_37 = [];
+			let fft_data_38 = [];
+			let fft_data_39 = [];
+			let fft_data_40 = [];
+			let fft_data_41 = [];
+			let fft_data_42 = [];
+			let fft_data_43 = [];
+			let fft_data_44 = [];
+			let fft_data_45 = [];
+			let fft_data_46 = [];
+			let fft_data_47 = [];
+			let fft_data_48 = [];
+			let fft_data_49 = [];
+			let fft_data_50 = [];
+			let fft_data_51 = [];
+			let fft_data_52 = [];
+			let fft_data_53 = [];
+			let fft_data_54 = [];
+			let fft_data_55 = [];
+			let fft_data_56 = [];
+			let fft_data_57 = [];
+			let fft_data_58 = [];
+			let fft_data_59 = [];
+			let fft_data_60 = [];
+			let fft_data_61 = [];
+			let fft_data_62 = [];
+			let fft_data_63 = [];
+			let fft_data_64 = [];
+			let fft_data_65 = [];
+			let fft_data_66 = [];
+			let fft_data_67 = [];
+			let fft_data_68 = [];
+			let fft_data_69 = [];
+			let fft_data_70 = [];
+			let fft_data_71 = [];
+			let fft_data_72 = [];
+			let fft_data_73 = [];
+			let fft_data_74 = [];
+			let fft_data_75 = [];
+			let fft_data_76 = [];
+			let fft_data_77 = [];
+			let fft_data_78 = [];
+			let fft_data_79 = [];
+			let fft_data_80 = [];
+			let fft_data_81 = [];
+			let fft_data_82 = [];
+			let fft_data_83 = [];
+			let fft_data_84 = [];
+			let fft_data_85 = [];
+			let fft_data_86 = [];
+			let fft_data_87 = [];
+			let fft_data_88 = [];
+			let fft_data_89 = [];
+			let fft_data_90 = [];
+			let fft_data_91 = [];
+			let fft_data_92 = [];
+			let fft_data_93 = [];
+			let fft_data_94 = [];
+			let fft_data_95 = [];
+			let fft_data_96 = [];
+			let fft_data_97 = [];
+			let fft_data_98 = [];
+			let fft_data_99 = [];
+			let fft_data_100 = [];
+			let fft_data_101 = [];
+			let fft_data_102 = [];
+			let fft_data_103 = [];
+			let fft_data_104 = [];
+			let fft_data_105 = [];
+			let fft_data_106 = [];
+			let fft_data_107 = [];
+			let fft_data_108 = [];
+			let fft_data_109 = [];
+			let fft_data_110 = [];
+			let fft_data_111 = [];
+			let fft_data_112 = [];
+			let fft_data_113 = [];
+			let fft_data_114 = [];
+			let fft_data_115 = [];
+			let fft_data_116 = [];
+			let fft_data_117 = [];
+			let fft_data_118 = [];
+			let fft_data_119 = [];
+			let fft_data_120 = [];
+			let fft_data_121 = [];
+			let fft_data_122 = [];
+			let fft_data_123 = [];
+			let fft_data_124 = [];
+			let fft_data_125 = [];
+			let fft_data_126 = [];
+			let fft_data_127 = [];
+			let fft_data_128 = [];
+			let fft_data_129 = [];
+			let fft_data_130 = [];
+			let fft_data_131 = [];
+			let fft_data_132 = [];
+			let fft_data_133 = [];
+			let fft_data_134 = [];
+			let fft_data_135 = [];
+			let fft_data_136 = [];
+			let fft_data_137 = [];
+			let fft_data_138 = [];
+			let fft_data_139 = [];
+			let fft_data_140 = [];
+			let fft_data_141 = [];
+			let fft_data_142 = [];
+			let fft_data_143 = [];
+			let fft_data_144 = [];
+			let fft_data_145 = [];
+			let fft_data_146 = [];
+			let fft_data_147 = [];
+			let fft_data_148 = [];
+			let fft_data_149 = [];
+			let fft_data_150 = [];
+
+			fft_data_1 = str["fft_data_1"];
+			fft_data_2 = str["fft_data_2"];
+			fft_data_3 = str["fft_data_3"];
+			fft_data_4 = str["fft_data_4"];
+			fft_data_5 = str["fft_data_5"];
+			fft_data_6 = str["fft_data_6"];
+			fft_data_7 = str["fft_data_7"];
+			fft_data_8 = str["fft_data_8"];
+			fft_data_9 = str["fft_data_9"];
+			fft_data_10 = str["fft_data_10"];
+			fft_data_11 = str["fft_data_11"];
+			fft_data_12 = str["fft_data_12"];
+			fft_data_13 = str["fft_data_13"];
+			fft_data_14 = str["fft_data_14"];
+			fft_data_15 = str["fft_data_15"];
+			fft_data_16 = str["fft_data_16"];
+			fft_data_17 = str["fft_data_17"];
+			fft_data_18 = str["fft_data_18"];
+			fft_data_19 = str["fft_data_19"];
+			fft_data_20 = str["fft_data_20"];
+			fft_data_21 = str["fft_data_21"];
+			fft_data_22 = str["fft_data_22"];
+			fft_data_23 = str["fft_data_23"];
+			fft_data_24 = str["fft_data_24"];
+			fft_data_25 = str["fft_data_25"];
+			fft_data_26 = str["fft_data_26"];
+			fft_data_27 = str["fft_data_27"];
+			fft_data_28 = str["fft_data_28"];
+			fft_data_29 = str["fft_data_29"];
+			fft_data_30 = str["fft_data_30"];
+
+			fft_data_31 = str["fft_data_31"];
+			fft_data_32 = str["fft_data_32"];
+			fft_data_33 = str["fft_data_33"];
+			fft_data_34 = str["fft_data_34"];
+			fft_data_35 = str["fft_data_35"];
+			fft_data_36 = str["fft_data_36"];
+			fft_data_37 = str["fft_data_37"];
+			fft_data_38 = str["fft_data_38"];
+			fft_data_39 = str["fft_data_39"];
+			fft_data_40 = str["fft_data_40"];
+			fft_data_41 = str["fft_data_41"];
+			fft_data_42 = str["fft_data_42"];
+			fft_data_43 = str["fft_data_43"];
+			fft_data_44 = str["fft_data_44"];
+			fft_data_45 = str["fft_data_45"];
+			fft_data_46 = str["fft_data_46"];
+			fft_data_47 = str["fft_data_47"];
+			fft_data_48 = str["fft_data_48"];
+			fft_data_49 = str["fft_data_49"];
+
+			fft_data_50 = str["fft_data_50"];
+			fft_data_51 = str["fft_data_51"];
+			fft_data_52 = str["fft_data_52"];
+			fft_data_53 = str["fft_data_53"];
+			fft_data_54 = str["fft_data_54"];
+			fft_data_55 = str["fft_data_55"];
+			fft_data_56 = str["fft_data_56"];
+			fft_data_57 = str["fft_data_57"];
+			fft_data_58 = str["fft_data_58"];
+			fft_data_59 = str["fft_data_59"];
+			fft_data_60 = str["fft_data_60"];
+			fft_data_61 = str["fft_data_61"];
+			fft_data_62 = str["fft_data_62"];
+			fft_data_63 = str["fft_data_63"];
+			fft_data_64 = str["fft_data_64"];
+			fft_data_65 = str["fft_data_65"];
+			fft_data_66 = str["fft_data_66"];
+			fft_data_67 = str["fft_data_67"];
+			fft_data_68 = str["fft_data_68"];
+			fft_data_69 = str["fft_data_69"];
+
+			fft_data_70 = str["fft_data_70"];
+			fft_data_71 = str["fft_data_71"];
+			fft_data_72 = str["fft_data_72"];
+			fft_data_73 = str["fft_data_73"];
+			fft_data_74 = str["fft_data_74"];
+			fft_data_75 = str["fft_data_75"];
+			fft_data_76 = str["fft_data_76"];
+			fft_data_77 = str["fft_data_77"];
+			fft_data_78 = str["fft_data_78"];
+			fft_data_79 = str["fft_data_79"];
+			fft_data_80 = str["fft_data_80"];
+			fft_data_81 = str["fft_data_81"];
+			fft_data_82 = str["fft_data_82"];
+			fft_data_83 = str["fft_data_83"];
+			fft_data_84 = str["fft_data_84"];
+			fft_data_85 = str["fft_data_85"];
+			fft_data_86 = str["fft_data_86"];
+			fft_data_87 = str["fft_data_87"];
+			fft_data_88 = str["fft_data_88"];
+			fft_data_89 = str["fft_data_89"];
+
+			fft_data_90 = str["fft_data_90"];
+			fft_data_91 = str["fft_data_91"];
+			fft_data_92 = str["fft_data_92"];
+			fft_data_93 = str["fft_data_93"];
+			fft_data_94 = str["fft_data_94"];
+			fft_data_95 = str["fft_data_95"];
+			fft_data_96 = str["fft_data_96"];
+			fft_data_97 = str["fft_data_97"];
+			fft_data_98 = str["fft_data_98"];
+			fft_data_99 = str["fft_data_99"];
+			fft_data_100 = str["fft_data_100"];
+			fft_data_101 = str["fft_data_101"];
+			fft_data_102 = str["fft_data_102"];
+			fft_data_103 = str["fft_data_103"];
+			fft_data_104 = str["fft_data_104"];
+			fft_data_105 = str["fft_data_105"];
+			fft_data_106 = str["fft_data_106"];
+			fft_data_107 = str["fft_data_107"];
+			fft_data_108 = str["fft_data_108"];
+			fft_data_109 = str["fft_data_109"];
+
+			fft_data_100 = str["fft_data_100"];
+			fft_data_101 = str["fft_data_101"];
+			fft_data_102 = str["fft_data_102"];
+			fft_data_103 = str["fft_data_103"];
+			fft_data_104 = str["fft_data_104"];
+			fft_data_105 = str["fft_data_105"];
+			fft_data_106 = str["fft_data_106"];
+			fft_data_107 = str["fft_data_107"];
+			fft_data_108 = str["fft_data_108"];
+			fft_data_109 = str["fft_data_109"];
+			fft_data_110 = str["fft_data_110"];
+			fft_data_111 = str["fft_data_111"];
+			fft_data_112 = str["fft_data_112"];
+			fft_data_113 = str["fft_data_113"];
+			fft_data_114 = str["fft_data_114"];
+			fft_data_115 = str["fft_data_115"];
+			fft_data_116 = str["fft_data_116"];
+			fft_data_117 = str["fft_data_117"];
+			fft_data_118 = str["fft_data_118"];
+			fft_data_119 = str["fft_data_119"];
+
+			fft_data_120 = str["fft_data_120"];
+			fft_data_121 = str["fft_data_121"];
+			fft_data_122 = str["fft_data_122"];
+			fft_data_123 = str["fft_data_123"];
+			fft_data_124 = str["fft_data_124"];
+			fft_data_125 = str["fft_data_125"];
+			fft_data_126 = str["fft_data_126"];
+			fft_data_127 = str["fft_data_127"];
+			fft_data_128 = str["fft_data_128"];
+			fft_data_129 = str["fft_data_129"];
+			fft_data_130 = str["fft_data_130"];
+			fft_data_131 = str["fft_data_131"];
+			fft_data_132 = str["fft_data_132"];
+			fft_data_133 = str["fft_data_133"];
+			fft_data_134 = str["fft_data_134"];
+			fft_data_135 = str["fft_data_135"];
+			fft_data_136 = str["fft_data_136"];
+			fft_data_137 = str["fft_data_137"];
+			fft_data_138 = str["fft_data_138"];
+			fft_data_139 = str["fft_data_139"];
+			fft_data_140 = str["fft_data_140"];
+
+			fft_data_141 = str["fft_data_141"];
+			fft_data_142 = str["fft_data_142"];
+			fft_data_143 = str["fft_data_143"];
+			fft_data_144 = str["fft_data_144"];
+			fft_data_145 = str["fft_data_145"];
+			fft_data_146 = str["fft_data_146"];
+			fft_data_147 = str["fft_data_147"];
+			fft_data_148 = str["fft_data_148"];
+			fft_data_149 = str["fft_data_149"];
+			fft_data_150 = str["fft_data_150"];
+
+			// var N3=0;var N2=400;
+			// for (var j = N3; j < ((N2+N3)); ++j) { 
+			// 	data.push([0, j, fft_data_1[j-N3]]);
+			// }
+
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([0, j, fft_data_1[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([1, j, fft_data_2[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([2, j, fft_data_3[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([3, j, fft_data_4[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([4, j, fft_data_5[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([5, j, fft_data_6[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([6, j, fft_data_7[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([7, j, fft_data_8[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([8, j, fft_data_9[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([9, j, fft_data_10[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([10, j, fft_data_11[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([11, j, fft_data_12[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([12, j, fft_data_13[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([13, j, fft_data_14[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([14, j, fft_data_15[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([15, j, fft_data_16[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([16, j, fft_data_17[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([17, j, fft_data_18[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([18, j, fft_data_19[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([19, j, fft_data_20[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([20, j, fft_data_21[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([21, j, fft_data_22[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([22, j, fft_data_23[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([23, j, fft_data_24[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([24, j, fft_data_25[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([25, j, fft_data_26[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([26, j, fft_data_27[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([27, j, fft_data_28[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([28, j, fft_data_29[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([29, j, fft_data_30[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([30, j, fft_data_31[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([31, j, fft_data_32[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([32, j, fft_data_33[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([33, j, fft_data_34[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([34, j, fft_data_35[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([35, j, fft_data_36[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([36, j, fft_data_37[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([37, j, fft_data_38[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([38, j, fft_data_39[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([39, j, fft_data_40[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([40, j, fft_data_41[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([41, j, fft_data_42[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([42, j, fft_data_43[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([43, j, fft_data_44[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([44, j, fft_data_45[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([45, j, fft_data_46[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([46, j, fft_data_47[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([47, j, fft_data_48[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([48, j, fft_data_49[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([49, j, fft_data_50[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([50, j, fft_data_51[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([51, j, fft_data_52[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([52, j, fft_data_53[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([53, j, fft_data_54[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([54, j, fft_data_55[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([55, j, fft_data_56[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([56, j, fft_data_57[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([57, j, fft_data_58[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([58, j, fft_data_59[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([59, j, fft_data_60[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([60, j, fft_data_61[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([61, j, fft_data_62[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([62, j, fft_data_63[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([63, j, fft_data_64[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([64, j, fft_data_65[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([65, j, fft_data_66[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([66, j, fft_data_67[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([67, j, fft_data_68[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([68, j, fft_data_69[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([69, j, fft_data_70[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([70, j, fft_data_71[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([71, j, fft_data_72[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([72, j, fft_data_73[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([73, j, fft_data_74[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([74, j, fft_data_75[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([75, j, fft_data_76[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([76, j, fft_data_77[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([77, j, fft_data_78[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([78, j, fft_data_79[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([79, j, fft_data_80[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([80, j, fft_data_81[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([81, j, fft_data_82[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([82, j, fft_data_83[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([83, j, fft_data_84[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([84, j, fft_data_85[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([85, j, fft_data_86[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([86, j, fft_data_87[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([87, j, fft_data_88[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([88, j, fft_data_89[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([89, j, fft_data_90[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([90, j, fft_data_91[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([91, j, fft_data_92[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([92, j, fft_data_93[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([93, j, fft_data_94[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([94, j, fft_data_95[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([95, j, fft_data_96[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([96, j, fft_data_97[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([97, j, fft_data_98[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([98, j, fft_data_99[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([99, j, fft_data_100[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([100, j, fft_data_101[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([101, j, fft_data_102[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([102, j, fft_data_103[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([103, j, fft_data_104[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([104, j, fft_data_105[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([105, j, fft_data_106[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([106, j, fft_data_107[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([107, j, fft_data_108[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([108, j, fft_data_109[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([109, j, fft_data_110[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([110, j, fft_data_111[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([111, j, fft_data_112[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([112, j, fft_data_113[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([113, j, fft_data_114[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([114, j, fft_data_115[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([115, j, fft_data_116[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([116, j, fft_data_117[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([117, j, fft_data_118[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([118, j, fft_data_119[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([119, j, fft_data_120[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([120, j, fft_data_121[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([121, j, fft_data_122[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([122, j, fft_data_123[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([123, j, fft_data_124[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([124, j, fft_data_125[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([125, j, fft_data_126[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([126, j, fft_data_127[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([127, j, fft_data_128[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([128, j, fft_data_129[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([129, j, fft_data_130[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([130, j, fft_data_131[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([131, j, fft_data_132[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([132, j, fft_data_133[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([133, j, fft_data_134[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([134, j, fft_data_135[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([135, j, fft_data_136[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([136, j, fft_data_137[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([137, j, fft_data_138[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([138, j, fft_data_139[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([139, j, fft_data_140[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([140, j, fft_data_141[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([141, j, fft_data_142[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([142, j, fft_data_143[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([143, j, fft_data_144[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([144, j, fft_data_145[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([145, j, fft_data_146[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([146, j, fft_data_147[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([147, j, fft_data_148[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([148, j, fft_data_149[j - N3]]);
+			}
+			for (var j = N3; j < (N2 + N3); ++j) {
+				data.push([149, j, fft_data_150[j - N3]]);
+			}
+
+			// for(var i=0; i<150; ++i){
+			// 	for(var j=N3; j<(N2+N3); ++j){
+			// 		data.push([i,j,9]);
+			// 	}
+			// }
+
+
+			option = {
+
+				tooltip: {
+					position: 'top'
+				},
+				grid: {
+					height: '50%',
+					top: '10%'
+				},
+				xAxis: {
+					type: 'category',
+					name: "time/s",
+					data: time,
+					splitArea: {
+						show: true
+					}
+				},
+				yAxis: {
+					type: 'category',
+					data: freq,
+					name: "Freq/Hz",
+					// min: 800,
+					// max: 1200,
+					splitArea: {
+						show: true
+					}
+				},
+				visualMap: {
+					min: 0,
+					max: 0.1,
+					calculable: true,
+					orient: 'horizontal',
+					left: 'center',
+					bottom: '15%',
+					inRange: {
+						color: [
+							'#313695',
+							'#4575b4',
+							'#74add1',
+							'#abd9e9',
+							'#e0f3f8',
+							'#ffffbf',
+							'#fee090',
+							'#fdae61',
+							'#f46d43',
+							'#d73027',
+							'#a50026'
+						]
+					}
+				},
+				series: [
+					{
+						name: 'FFT results',
+						type: 'heatmap',
+
+						data: data,
+						// label: {
+						//   show: true
+						// },
+						emphasis: {
+							itemStyle: {
+								shadowBlur: 10,
+								shadowColor: 'rgba(0, 0, 0, 0.5)'
+							}
+						},
+						progressive: 2000,
+						animation: false
+					}
+				]
+			};
+
+			if (option && typeof option === 'object') {
+				myChart2.setOption(option);
+			}
+
+			window.addEventListener('resize', myChart2.resize);
+		}
+	</script>
+
+</body>
+
+</html>

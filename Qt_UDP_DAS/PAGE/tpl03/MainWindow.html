@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport"
+		content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title>分布式声音传感上位机</title>
+	<link rel="stylesheet" type="text/css" href="css/MainWindow.css" />
+
+	<script src="jQuery.js"></script>
+	<script src="qwebchannel.js"></script>
+
+
+	<script>
+		function LocalMsg(str) {
+			const HostName = str["HostName"];
+			const IpAddr = str["IpAddr"];
+			const ModeI = str["ModeI"];
+
+			console.log(HostName);
+
+			var MsgWindow = document.getElementById("msg_window");
+
+			MsgWindow.appendChild(document.createTextNode(HostName));
+			MsgWindow.appendChild(document.createTextNode(IpAddr));
+			MsgWindow.appendChild(document.createTextNode(ModeI));
+		}
+
+		var isStart = 0;
+		var isStop = 0;
+
+		function button_start_clicked() {
+			console.log("button_start_clicked");
+			isStart = 1;
+			new QWebChannel(qt.webChannelTransport,
+				function (channel) {
+					var webobj = channel.objects.webobj;
+					window.foo = webobj;
+					webobj.content = isStart;
+					webobj.js_btn_start_called();
+				});
+		}
+		function Start_Msg(str) {
+			const start_msg = str["start"];
+
+			var MsgWindow = document.getElementById("msg_window");
+
+			MsgWindow.appendChild(document.createTextNode(start_msg));
+		}
+
+		function button_stop_clicked() {
+			console.log("button_stop_clicked");
+			isStop = 1;
+
+			// 调用qt的js_btn_stop_called()
+			new QWebChannel(qt.webChannelTransport,
+				function (channel) {
+					var webobj = channel.objects.webobj;
+					window.foo = webobj;
+					webobj.content = isStop;
+					webobj.js_btn_stop_called();
+				});
+		}
+
+		function Stop_Msg(str) {
+			const stop_msg = str["stop"];
+
+			var MsgWindow = document.getElementById("msg_window");
+
+			MsgWindow.appendChild(document.createTextNode(stop_msg));
+		}
+
+		function button_clear_clicked() {
+			console.log("button_clear_clicked");
+
+		}
+
+		function button_display_pulse_clicked() {
+			console.log("button_display_pulse_clicked");
+
+			new QWebChannel(qt.webChannelTransport,
+				function (channel) {
+					var webobj = channel.objects.webobj;
+					window.foo = webobj;
+					webobj.js_btn_display_pulse_called();
+				});
+		}
+
+		function button_send_clicked() {
+			console.log("button_send_clicked");
+		}
+
+		function button_display_demo_clicked() {
+			console.log("button_display_demo_clicked");
+
+			new QWebChannel(qt.webChannelTransport,
+				function (channel) {
+					var webobj = channel.objects.webobj;
+					window.foo = webobj;
+					webobj.js_btn_display_demo_called();
+				});
+		}
+
+		var isSave;
+		function isSave_onclicked() {
+			var isSave_obj = document.getElementById("checkbox_isSave");
+			isSave = isSave_obj.checked;
+			console.log(isSave);
+
+			new QWebChannel(qt.webChannelTransport,
+				function (channel) {
+					var webobj = channel.objects.webobj;
+					window.foo = webobj;
+					webobj.content = isSave;
+					webobj.js_checkbox_isSave_called();
+				});
+		}
+
+		function save_msg(str) {
+			const msg = str["save"];
+
+			var MsgWindow = document.getElementById("msg_window");
+
+			MsgWindow.appendChild(document.createTextNode(msg));
+		}
+
+		var isDemo;
+		function isDemo_onclicked() {
+			var isDemo_obj = document.getElementById("checkbox_isDemo");
+			isDemo = isDemo_obj.checked;
+			console.log(isDemo);
+
+			new QWebChannel(qt.webChannelTransport,
+				function (channel) {
+					var webobj = channel.objects.webobj;
+					window.foo = webobj;
+					webobj.content = isDemo;
+					webobj.js_checkbox_isDemo_called();
+				});
+		}
+		function demo_msg(str) {
+			const msg = str["demo"];
+
+			var MsgWindow = document.getElementById("msg_window");
+
+			MsgWindow.appendChild(document.createTextNode(msg));
+		}
+
+		function mode_select(){
+			var s_mode = $('select option:selected').val(); //传递option的value
+			// console.log(s_mode);
+
+			// 调用qt的js_combobox_mode_indexchanged()
+			new QWebChannel(qt.webChannelTransport,
+				function (channel) {
+					var webobj = channel.objects.webobj;
+					window.foo = webobj;
+					webobj.content = s_mode;
+					webobj.js_combobox_mode_indexchanged();
+				});
+		}
+
+	</script>
+</head>
+
+<body id="body">
+	<header id="header">
+		<h3 class="header-title">分布式声音传感上位机</h3>
+	</header>
+
+	<!-- 页面缩放设置分辨率 -->
+	<script type="text/javascript">
+		// body宽高
+		let cw = 1280, ch = 720
+		let body = document.getElementById('body')
+		body.style.width = `${cw}px`
+		body.style.height = `${ch}px`
+
+		// 对body进行缩放
+		function windowResize() {
+			// 窗口宽高
+			let w = window.innerWidth, h = window.innerHeight
+			// 缩放比例
+			let r = w / cw < h / ch ? w / cw : h / ch
+
+			body.style.transform = `scale( ${r})`
+			// 因为scale是以body的原中心点为基准进行缩放，所以缩放之后需要调整外边距，使其位于窗口的中心位置
+			body.style.marginLeft = (-(cw - r * cw) / 2 + (w - r * cw) / 2) + 'px'
+			body.style.marginTop = (-(ch - r * ch) / 2 + (h - r * ch) / 2) + 'px'
+			body.style.marginBottom = (-(h > ch ? h : ch - r * ch)) + 'px'
+			body.style.marginRight = (-(w > cw ? w : cw - r * cw)) + 'px'
+		}
+
+		windowResize()
+		// 监听窗口尺寸变化
+		window.addEventListener('resize', windowResize);
+	</script>
+
+	<div id="container">
+		<div id="flexCon">
+			<div class="mode_div">
+				<select class="downlist_mode" name="downlist_mode" onchange="mode_select()">
+					<option value="1">Mode I</option>
+					<option value="2">Mode II</option>
+				</select>
+				<button onclick="button_clear_clicked()" class="button_clear"> 清空窗口</button>
+			</div>
+
+			<div class="flex-row">
+				<!-- <div class="flex-cell flex-cell-l">
+						<div class="chart-wrapper">
+							<h3 class="chart-title">图表</h3>
+							<div class="chart-div">
+								<div class="chart-loader"><div class="loader"></div></div>
+							</div>
+						</div>
+					</div> -->
+
+				<div class="flex-cell flex-cell-c">
+					<div class="chart-wrapper">
+						<h3 class="chart-title">信息显示窗口</h3>
+						<div class="chart-div">
+							<textarea id="msg_window" class="msg-window" readonly></textarea>
+						</div>
+
+					</div>
+				</div>
+
+				<!-- <div class="flex-cell flex-cell-r">
+						<div class="chart-wrapper">
+							<h3 class="chart-title"></h3>
+							<div class="chart-div chart-done">
+								<div class="chart-loader"><div class="loader"></div></div>
+							</div>
+						</div>
+					</div> -->
+			</div>
+			<div class="button_div1">
+				<button onclick="button_start_clicked()" class="button_start"> 开始接收</button>
+				<button onclick="button_stop_clicked()" class="button_stop"> 停止接收</button>
+
+			</div>
+			<br>
+			<div class="checkbox_div">
+				<input class="checkbox_isSave" type="checkbox" value="1" id="checkbox_isSave"
+					onclick="isSave_onclicked()">
+				<label class="label_isSave" for="isSave">存储文件</label>
+				<input class="checkbox_isDemo" type="checkbox" value="2" id="checkbox_isDemo"
+					onclick="isDemo_onclicked()">
+				<label class="label_isSave" for="isDemo">解调数据</label>
+
+			</div>
+			<br>
+
+			<div class="button_div2">
+				<button onclick="button_display_pulse_clicked()" class="button_display_pulse"> 脉冲波形显示</button>
+				<button onclick="button_send_clicked()" class="button_send"> 发送配置文件</button>
+				<button onclick="button_display_demo_clicked()" class="button_display_demo"> 解调波形显示</button>
+			</div>
+
+
+
+
+		</div>
+	</div>
+	<script>
+
+	</script>
+</body>
+
+</html>

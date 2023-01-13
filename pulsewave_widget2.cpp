@@ -5,75 +5,44 @@ pulsewave_widget2::pulsewave_widget2(UDP_Recv *udp_Recv):
     ui( new Ui::pulsewave_widget2),
     udp_recv(udp_Recv)
 {
+    this->setAttribute(Qt::WA_DeleteOnClose);
+
     ui->setupUi(this);
 
     PulsedataHEX = new char[READ_PULSE_LENGTH*2];
 
-    initWidget();
+    setHtmlPages();
+
+    connect(webobj2,&WebClass::send_pulsewave_widget_btn_pulsewave_pause,this,&pulsewave_widget2::PulseWave_pause_slot);
+    connect(webobj2,&WebClass::send_pulsewave_widget_btn_pulsewave_restart,this,&pulsewave_widget2::PulseWave_restart_slot);
 }
 
 pulsewave_widget2::~pulsewave_widget2()
 {
+    delete ui;
     FreeMemory();
 }
 
-void pulsewave_widget2::initWidget()
+void pulsewave_widget2::setHtmlPages()
 {
     setWindowTitle(QString("Pulse Wave Display"));
 
-    m_customPlot = ui->customPlot;
+    m_pulsewave_widget = ui->pulsewave_widget;
+    m_pulsewave_widget->setContextMenuPolicy(Qt::NoContextMenu);
+    m_pulsewave_widget->load(QUrl::fromLocalFile(QString("C:/Qt_UDP_DAS/PAGE/tpl03/PulseWaveDisplay.html")));
 
-    //每条曲线都会独占一个graph()
-    m_customPlot->addGraph();
+    webChannel2 = new QWebChannel;
 
-    //设置画笔QPen
-    QPen pen;
-    pen.setWidth(4);//线宽
-    pen.setStyle(Qt::PenStyle::SolidLine);//实线
-    pen.setColor(Qt::blue); //颜色
+    webobj2 = new WebClass();
 
-    //给图层添加画笔
-    m_customPlot->graph(0)->setPen(pen);
-    m_customPlot->graph(0)->setBrush(QBrush(QColor(0, 0, 255, 20))); // 曲线与X轴包围区的颜色
+    webChannel2->registerObject("webobj2", webobj2);
 
-    m_customPlot->xAxis->setRangeLower(0);
-    m_customPlot->xAxis->setRangeUpper(2000);
-    m_customPlot->yAxis->setRangeLower(-200);
-    m_customPlot->yAxis->setRangeUpper(2048);
-
-    // 边框右侧和上侧均显示刻度线，但不显示刻度值:
-    // (参见 QCPAxisRect::setupFullAxesBox for a quicker method to do this)
-    m_customPlot->xAxis2->setVisible(true);
-    m_customPlot->xAxis2->setTickLabels(false);
-    m_customPlot->yAxis2->setVisible(true);
-    m_customPlot->yAxis2->setTickLabels(false);
-    // 使上下两个X轴的范围总是相等，使左右两个Y轴的范围总是相等
-    //    connect(m_customPlot->xAxis, &QCPAxis::rangeChanged(QCPRange), m_customPlot->xAxis2, &QCPAxis::setRange(QCPRange));
-    //    connect(m_customPlot->yAxis, &QCPAxis::rangeChanged(QCPRange), m_customPlot->yAxis2, &QCPAxis::setRange(QCPRange));
-
-
-    // 支持鼠标拖拽轴的范围、滚动缩放轴的范围，左键点选图层（每条曲线独占一个图层）
-    m_customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
-
-    //框选放大
-    m_customPlot->selectionRect()->setPen(QPen(Qt::black,1,Qt::DashLine));//设置选框的样式：虚线
-    m_customPlot->selectionRect()->setBrush(QBrush(QColor(0,0,100,50)));//设置选框的样式：半透明浅蓝
-    m_customPlot->setSelectionRectMode(QCP::SelectionRectMode::srmZoom);
-
-    //确定鼠标点击的精度
-    ui->customPlot->setSelectionTolerance(1);
-
-    //标记点信号槽
-    connect(ui->customPlot,&QCustomPlot::mouseRelease, this, &pulsewave_widget2::slot_MouseRelease);
-
+    m_pulsewave_widget->page()->setWebChannel(webChannel2);
 }
 
 void pulsewave_widget2::FlashWave()
 {
     qDebug() <<"Flash Pulse Wave Slot responsed !"<<endl;
-
-    //clear history data
-    m_customPlot->graph(0)->data()->clear();
 
     sizeoPulsedata = READ_PULSE_LENGTH*2;
 
@@ -103,40 +72,48 @@ void pulsewave_widget2::FlashWave()
 
     sizeoDisplaydata = sizeoPulsedataDec/4;
 
-    //4. Channel select
-    ChannelIndex = ui->comboBox_Channel->currentIndex();
-    switch (ChannelIndex) {
-    case 0:
-//        copy(begin(Pulsedata_DEC_1_HEX),end(Pulsedata_DEC_1_HEX),begin(Pulsedata_DEC_disp));
-        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_1_HEX,sizeof(int)*sizeoDisplaydata);
-        break;
-    case 1:
-//        copy(begin(Pulsedata_DEC_2_HEX),end(Pulsedata_DEC_2_HEX),begin(Pulsedata_DEC_disp));
-        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_2_HEX,sizeof(int)*sizeoDisplaydata);
-        break;
-    case 2:
-//        copy(begin(Pulsedata_DEC_3_HEX),end(Pulsedata_DEC_3_HEX),begin(Pulsedata_DEC_disp));
-        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_3_HEX,sizeof(int)*sizeoDisplaydata);
-        break;
-    case 3:
-//        copy(begin(Pulsedata_DEC_4_HEX),end(Pulsedata_DEC_4_HEX),begin(Pulsedata_DEC_disp));
-        memcpy(Pulsedata_DEC_disp,Pulsedata_DEC_4_HEX,sizeof(int)*sizeoDisplaydata);
-        break;
-    default:
-        break;
+    //5.Wave Display
+    QJsonObject pulse_wave_obj1,pulse_wave_obj2,pulse_wave_obj3,pulse_wave_obj4;
+    QJsonArray pulse_wave_json1,pulse_wave_json2,pulse_wave_json3,pulse_wave_json4;
+
+    for(int i=0; i<sizeoDisplaydata-1; ++i) {
+        pulse_wave_json1.push_back(Pulsedata_DEC_1_HEX[i]);
+        pulse_wave_json2.push_back(Pulsedata_DEC_2_HEX[i]);
+        pulse_wave_json3.push_back(Pulsedata_DEC_3_HEX[i]);
+        pulse_wave_json4.push_back(Pulsedata_DEC_4_HEX[i]);
     }
+    pulse_wave_obj1.insert("pulse_wave_1", pulse_wave_json1);
+    pulse_wave_obj2.insert("pulse_wave_2", pulse_wave_json2);
+    pulse_wave_obj3.insert("pulse_wave_3", pulse_wave_json3);
+    pulse_wave_obj4.insert("pulse_wave_4", pulse_wave_json4);
+
+    QString pulse_wave_str1 = QJsonDocument(pulse_wave_obj1).toJson();
+    QString pulse_wave_str2 = QJsonDocument(pulse_wave_obj2).toJson();
+    QString pulse_wave_str3 = QJsonDocument(pulse_wave_obj3).toJson();
+    QString pulse_wave_str4 = QJsonDocument(pulse_wave_obj4).toJson();
+
+    QString pulse_wave_js1 = QString("pulsewave_flash1(%1)").arg(pulse_wave_str1);
+    QString pulse_wave_js2 = QString("pulsewave_flash2(%1)").arg(pulse_wave_str2);
+    QString pulse_wave_js3 = QString("pulsewave_flash3(%1)").arg(pulse_wave_str3);
+    QString pulse_wave_js4 = QString("pulsewave_flash4(%1)").arg(pulse_wave_str4);
+
+    m_pulsewave_widget->page()->runJavaScript(pulse_wave_js1);
+    m_pulsewave_widget->page()->runJavaScript(pulse_wave_js2);
+    m_pulsewave_widget->page()->runJavaScript(pulse_wave_js3);
+    m_pulsewave_widget->page()->runJavaScript(pulse_wave_js4);
+
 
     //5. Wave Display /* (从8开始 因为起始帧开始部分包含了上一帧的8个点)*/
-    for(int i = 0;i<sizeoDisplaydata-1;i++){
-        QVector<double> x(1),y(1);
-        x[0] = i/*-8*/;
-        y[0]= Pulsedata_DEC_disp[i];
-        if(y[0]<-10) y[0]=0; //去掉下方的掉点问题
-        if(Pulsedata_DEC_disp[i]>0 && Pulsedata_DEC_disp[i-1]==0 && Pulsedata_DEC_disp[i+1]==0) y[0]=0; //去掉上方的掉点问题
-        m_customPlot->graph(0)->addData(x, y);
-    }
+//    for(int i = 0;i<sizeoDisplaydata-1;i++){
+//        QVector<double> x(1),y(1);
+//        x[0] = i/*-8*/;
+//        y[0]= Pulsedata_DEC_disp[i];
+//        if(y[0]<-10) y[0]=0; //去掉下方的掉点问题
+//        if(Pulsedata_DEC_disp[i]>0 && Pulsedata_DEC_disp[i-1]==0 && Pulsedata_DEC_disp[i+1]==0) y[0]=0; //去掉上方的掉点问题
+//        m_customPlot->graph(0)->addData(x, y);
+//    }
 
-    ui->customPlot->replot();
+//    ui->customPlot->replot();
 }
 
 void pulsewave_widget2::FreeMemory()
@@ -144,46 +121,18 @@ void pulsewave_widget2::FreeMemory()
     delete[] PulsedataHEX;
 }
 
-void pulsewave_widget2::on_btnReset_clicked()
+void pulsewave_widget2::PulseWave_pause_slot()
 {
-    //自动调整XY轴的范围，以便显示出graph(0)中所有的点
-    m_customPlot->graph(0)->rescaleAxes(true);
-
-//    m_customPlot->xAxis->setRangeLower(0);
-//    m_customPlot->xAxis->setRangeUpper(2000);
-    m_customPlot->yAxis->setRangeLower(-10);
-    m_customPlot->yAxis->setRangeUpper(2048);
-
-    // 立即刷新图像
-    ui->customPlot->replot();
+    emit send_mainwindow_btn_pause();
 }
 
-void pulsewave_widget2::on_pushButton_pause_clicked()
+void pulsewave_widget2::PulseWave_restart_slot()
 {
-    emit PauseWave();
+    emit send_mainwindow_btn_restart();
 }
 
-void pulsewave_widget2::on_pushButton_restart_clicked()
-{
-    emit RestartWave();
-}
-
-//获取鼠标选中点的数值
-void pulsewave_widget2::slot_MouseRelease(QMouseEvent *e)
-{
-    //排除非左鼠标键
-        if (e->button() != Qt::LeftButton){ return; }
-
-    //获取点击的点坐标
-        QPointF ChickedPoint = e->pos();
-    //排除区间外鼠标点
-        if(!ui->customPlot->viewport().contains(e->pos())){return;}
-    //将像素坐标转换为轴值
-         double currentx = ui->customPlot->xAxis->pixelToCoord(ChickedPoint.x());
-         double currenty = ui->customPlot->yAxis->pixelToCoord(ChickedPoint.y());
-    //使用QToolTip输出值，
-        QToolTip::showText(mapToGlobal(e->pos()),QString("x:%1, y:%2").arg(currentx).arg(currenty),this);
 
 
-}
+
+
 

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport"
+		content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title>分布式声音传感上位机</title>
+	<link rel="stylesheet" type="text/css" href="css/PulseWaveDisplay.css" />
+	<script src="qwebchannel.js"></script>
+	<script src="echarts.js"></script>
+	<script src="echarts.min.js"></script>
+	<script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.4.1/dist/echarts.min.js"></script>
+
+
+
+</head>
+
+<body id="body">
+	<header id="header">
+		<h3 class="header-title">脉冲波形显示</h3>
+	</header>
+
+	<!-- 页面缩放设置分辨率 -->
+	<script type="text/javascript">
+		// body宽高
+		let cw = 1920, ch = 1080
+		let body = document.getElementById('body')
+		body.style.width = `${cw}px`
+		body.style.height = `${ch}px`
+
+		// 对body进行缩放
+		function windowResize() {
+			// 窗口宽高
+			let w = window.innerWidth, h = window.innerHeight
+			// 缩放比例
+			let r = w / cw < h / ch ? w / cw : h / ch
+
+			body.style.transform = `scale( ${r})`
+			// 因为scale是以body的原中心点为基准进行缩放，所以缩放之后需要调整外边距，使其位于窗口的中心位置
+			body.style.marginLeft = (-(cw - r * cw) / 2 + (w - r * cw) / 2) + 'px'
+			body.style.marginTop = (-(ch - r * ch) / 2 + (h - r * ch) / 2) + 'px'
+			body.style.marginBottom = (-(h > ch ? h : ch - r * ch)) + 'px'
+			body.style.marginRight = (-(w > cw ? w : cw - r * cw)) + 'px'
+		}
+
+		windowResize()
+		// 监听窗口尺寸变化
+		window.addEventListener('resize', windowResize);
+	</script>
+
+	<div id="container">
+		<div id="flexCon">
+
+			<!-- <div class="channel_div">
+				<select class="downlist_channel" name="downlist_channel">
+					<option>Channel 1</option>
+					<option>Channel 2</option>
+					<option>Channel 3</option>
+					<option>Channel 4</option>
+				</select>
+				<button onclick="button_clear_clicked()" class="button_clear"> 清空窗口</button>
+			</div> -->
+
+			<div class="button_div1">
+				<button onclick="button_pause_clicked()" class="button_pause"> 暂停显示</button>
+				<button onclick="button_restart_clicked()" class="button_restart"> 恢复显示</button>
+
+			</div>
+
+			<div class="flex-row">
+				<div class="flex-cell flex-cell-c">
+					<div class="chart-div-h" id="pulsewave_view_ch1"></div>
+				</div>
+			</div>
+			<div class="flex-row">
+				<div class="flex-cell flex-cell-c">
+					<div class="chart-div-m" id="pulsewave_view_ch2"></div>
+				</div>
+			</div>
+			<div class="flex-row">
+				<div class="flex-cell flex-cell-c">
+					<div class="chart-div-l" id="pulsewave_view_ch3"></div>
+				</div>
+			</div>
+
+
+		</div>
+	</div>
+
+	<script>
+		function button_pause_clicked() {
+			console.log("button_pause_clicked");
+
+			new QWebChannel(qt.webChannelTransport,
+				function (channel) {
+					var webobj2 = channel.objects.webobj2;
+					window.foo = webobj2;
+					webobj2.js_btn_pause_called();
+				});
+			
+		}
+
+		function button_restart_clicked() {
+			console.log("button_restart_clicked");
+
+			new QWebChannel(qt.webChannelTransport,
+				function (channel) {
+					var webobj2 = channel.objects.webobj2;
+					window.foo = webobj2;
+					webobj2.js_btn_restart_called();
+				});
+		}
+
+	</script>
+
+	<script type="text/javascript">
+
+
+		function pulsewave_flash1(str) {
+			var dom = document.getElementById("pulsewave_view_ch1");
+			var myChart = echarts.init(dom, null, {
+				renderer: 'canvas',
+				useDirtyRect: false
+			});
+			var app = {};
+
+			var option;
+			let xdata = [];
+			let ydata = [];
+			for (let i = 0; i < 1024 * 4-1; i++) {
+				xdata.push([i]);
+			}
+			option = {
+				tooltip: {
+					trigger: 'axis',
+					position: function (pt) {
+						return [pt[0], '10%'];
+					}
+				},
+				title: {
+					left: 'center',
+					text: '通道1'
+				},
+				toolbox: {
+					feature: {
+						dataZoom: {
+							yAxisIndex: 'none'
+						},
+						restore: {},
+						saveAsImage: {}
+					}
+				},
+				xAxis: {
+					type: 'category',
+					boundaryGap: false,
+					data: xdata,
+				},
+				yAxis: {
+					type: 'value',
+					// boundaryGap: [0, '100%'],
+					splitLine: {
+						show: false
+					}
+				},
+				dataZoom: [
+					{
+						type: 'inside',
+						start: 0,
+						end: 10
+					},
+					{
+						start: 0,
+						end: 10
+					}
+				],
+				series: [
+					{
+						name: '',
+						type: 'line',
+						symbol: 'none',
+						sampling: 'lttb',
+						itemStyle: {
+							color: 'yellow',
+						},
+						// areaStyle: {
+						// 	color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+						// 		{
+						// 			offset: 0,
+						// 			color: 'rgb(139, 58, 169)'
+						// 		},
+						// 		{
+						// 			offset: 1,
+						// 			color: 'rgb(139, 58, 169)'
+						// 		}
+						// 	])
+						// },
+						data: str["pulse_wave_1"]
+					}
+				]
+			};
+
+			if (option && typeof option === 'object') {
+				myChart.setOption(option);
+			}
+
+			window.addEventListener('resize', myChart.resize);
+		}
+
+		function pulsewave_flash3(str) {
+			var dom = document.getElementById("pulsewave_view_ch2");
+			var myChart = echarts.init(dom, null, {
+				renderer: 'canvas',
+				useDirtyRect: false
+			});
+			var app = {};
+
+			var option;
+			let xdata = [];
+			let ydata = [];
+			for (let i = 0; i < 1024 * 4-1; i++) {
+				xdata.push([i]);
+			}
+			option = {
+				tooltip: {
+					trigger: 'axis',
+					position: function (pt) {
+						return [pt[0], '10%'];
+					}
+				},
+				title: {
+					left: 'center',
+					text: '通道3'
+				},
+				toolbox: {
+					feature: {
+						dataZoom: {
+							yAxisIndex: 'none'
+						},
+						restore: {},
+						saveAsImage: {}
+					}
+				},
+				xAxis: {
+					type: 'category',
+					boundaryGap: false,
+					data: xdata
+				},
+				yAxis: {
+					type: 'value',
+					// boundaryGap: [0, '100%']
+					splitLine: {
+						show: false
+					}
+				},
+				dataZoom: [
+					{
+						type: 'inside',
+						start: 0,
+						end: 10
+					},
+					{
+						start: 0,
+						end: 10
+					}
+				],
+				series: [
+					{
+						name: '',
+						type: 'line',
+						symbol: 'none',
+						sampling: 'lttb',
+						itemStyle: {
+							color: 'yellow',
+						},
+						// areaStyle: {
+						// 	color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+						// 		{
+						// 			offset: 0,
+						// 			color: 'rgb(139, 58, 169)'
+						// 		},
+						// 		{
+						// 			offset: 1,
+						// 			color: 'rgb(139, 58, 169)'
+						// 		}
+						// 	])
+						// },
+						data: str["pulse_wave_3"]
+					}
+				]
+			};
+
+			if (option && typeof option === 'object') {
+				myChart.setOption(option);
+			}
+
+			window.addEventListener('resize', myChart.resize);
+		}
+
+		
+		function pulsewave_flash4(str) {
+			var dom = document.getElementById("pulsewave_view_ch3");
+			var myChart = echarts.init(dom, null, {
+				renderer: 'canvas',
+				useDirtyRect: false
+			});
+			var app = {};
+
+			var option;
+			let xdata = [];
+			let ydata = [];
+			for (let i = 0; i < 1024 * 4-1; i++) {
+				xdata.push([i]);
+			}
+			option = {
+				tooltip: {
+					trigger: 'axis',
+					position: function (pt) {
+						return [pt[0], '10%'];
+					}
+				},
+				title: {
+					left: 'center',
+					text: '通道4'
+				},
+				toolbox: {
+					feature: {
+						dataZoom: {
+							yAxisIndex: 'none'
+						},
+						restore: {},
+						saveAsImage: {}
+					}
+				},
+				xAxis: {
+					type: 'category',
+					boundaryGap: false,
+					data: xdata
+				},
+				yAxis: {
+					type: 'value',
+					// boundaryGap: [0, '100%']
+					splitLine: {
+						show: false
+					}
+				},
+				dataZoom: [
+					{
+						type: 'inside',
+						start: 0,
+						end: 10
+					},
+					{
+						start: 0,
+						end: 10
+					}
+				],
+				series: [
+					{
+						name: '',
+						type: 'line',
+						symbol: 'none',
+						sampling: 'lttb',
+						itemStyle: {
+							color: 'yellow',
+						},
+						// areaStyle: {
+						// 	color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+						// 		{
+						// 			offset: 0,
+						// 			color: 'rgb(139, 58, 169)'
+						// 		},
+						// 		{
+						// 			offset: 1,
+						// 			color: 'rgb(139, 58, 169)'
+						// 		}
+						// 	])
+						// },
+						data: str["pulse_wave_4"]
+					}
+				]
+			};
+
+			if (option && typeof option === 'object') {
+				myChart.setOption(option);
+			}
+
+			window.addEventListener('resize', myChart.resize);
+		}
+
+	</script>
+
+</body>
+
+</html>

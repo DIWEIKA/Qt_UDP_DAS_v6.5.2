@@ -17,14 +17,15 @@ class Demodulation : public QThread
 {
     Q_OBJECT
 public:
-    Demodulation(UDP_Recv* udp_Recv,int DemoFlashTime, int DemoFlashFreq, int freq, int peaknum);
+    Demodulation(UDP_Recv* udp_Recv,int DemoFlashTime, int freq, int peaknum);
     ~Demodulation();
 
     UDP_Recv* udp_recv;
     shared_ptr<CirQueue<float>> DEMOdata_flash;
     shared_ptr<CirQueue<float>> DEMOdata_save;
+    shared_ptr<CirQueue<float>> DEMOdata_fft;
 //    CirQueue<float> DEMOdata_save2;
-    float DEMOdata_display[2048];
+//    float DEMOdata_display[2048];
     char* demo_CHdatax= new char[2048];
 
     //¶¯Ì¬Êý×é
@@ -57,7 +58,6 @@ public:
     int demo_CHdata_DEC_4[FrameLen/16];
 
     int demoFlashTime;
-    int demoFlashFreq;
     int Freq;
     int peakNum;
 

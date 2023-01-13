@@ -1,9 +1,8 @@
 #include "demodulation.h"
 
 //传入udp_recv下的CHdata即可解调
-Demodulation::Demodulation(UDP_Recv* udp_Recv, int DemoFlashTime, int DemoFlashFreq, int freq, int peaknum):
+Demodulation::Demodulation(UDP_Recv* udp_Recv, int DemoFlashTime, int freq, int peaknum):
     demoFlashTime(DemoFlashTime),
-    demoFlashFreq(DemoFlashFreq),
     Freq(freq),
     peakNum(peaknum),
     RealPh(new float[peakNum]),
@@ -19,36 +18,13 @@ Demodulation::Demodulation(UDP_Recv* udp_Recv, int DemoFlashTime, int DemoFlashF
 {
     udp_recv = udp_Recv;
 
-    DEMOdata_flash = make_shared<CirQueue<float>>(peakNum*Freq/demoFlashFreq); //量化存储容器的大小
-    DEMOdata_save = make_shared<CirQueue<float>>(peakNum*Freq*60); //量化存储容器的大小
-
-    //    demo_CHdata = new unsigned char[READ_LENGTH](); //动态数组初始化
-    //    Vi = new float[CHDATA_LENGTH]();
-    //    Vq = new float[CHDATA_LENGTH]();
-    //    Ph = new float[CHDATA_LENGTH]();
-    //    atanTable = new float[NUMTABLE]();
-    //    demo_CHdata_DEC_all = new int[CHDATA_ALL_LENGTH]();
-    //    demo_CHdata_DEC_1 = new int[CHDATA_LENGTH]();
-    //    demo_CHdata_DEC_2 = new int[CHDATA_LENGTH]();
-    //    demo_CHdata_DEC_3 = new int[CHDATA_LENGTH]();
-    //    demo_CHdata_DEC_4 = new int[CHDATA_LENGTH]();
-
-    //    RealPh = new float[peakNum]();
-    //    PriorPh = new float[peakNum]();
-    //    K=new float[peakNum]();
-    //    PriorK=new float[peakNum]();
+    DEMOdata_flash = make_shared<CirQueue<float>>(peakNum*Freq*DemoFlashTime/1000*1000); //1s数据量 * 1000
+    DEMOdata_save = make_shared<CirQueue<float>>(peakNum*Freq*60*10); //60s数据 * 10
+    DEMOdata_fft = make_shared<CirQueue<float>>(peakNum*Freq*2*1000); //2s数据 * 1000
 
     readAtanTable(atanTable);
 
-    //    RealPhReg = new float[peakNum][FILTERODR]();
-    //    RealPhOut = new float[peakNum][FILTERODR]();
-
-    //    HPFilterCoeff = new float[54]();
     ReadFilterCoeff(HPFilterCoeff);
-
-    //    cnt=new unsigned long[peakNum]();
-    //    FirstRealPh=new float[peakNum]();
-    //    FirstIn_n=new int[peakNum]();
 }
 
 Demodulation::~Demodulation()
@@ -71,90 +47,45 @@ void Demodulation::run()
             //判断前16位是否是6666666666666666，若不是则继续找;
             //若是则从当前位置开始存入一个6666666666666666到6666666666666666之间的长度，即一个峰值点的数据到demo_CHdata中
             do{
-//                   if(udp_recv->CHdata1->isEmpty())  msleep(100);
+//                 if(udp_recv->CHdata1->isEmpty()) QThread::msleep(10);
+//                while(udp_recv->CHdata1->isEmpty()) QThread::msleep(10);
                 if(udp_recv->CHdata1->pop() == '6' ){
-//                    if(udp_recv->CHdata1->isEmpty())  msleep(10);
+//                    if(udp_recv->CHdata1->isEmpty())  QThread::msleep(10);
                     if(udp_recv->CHdata1->pop() == '6' ){
-//                       if(udp_recv->CHdata1->isEmpty())  msleep(10);
+//                       if(udp_recv->CHdata1->isEmpty())  QThread::msleep(10);
                         if(udp_recv->CHdata1->pop() == '6' ){
-//                             if(udp_recv->CHdata1->isEmpty())  msleep(6);
+//                             if(udp_recv->CHdata1->isEmpty())  QThread::msleep(10);
                             if(udp_recv->CHdata1->pop() == '6' ){
-//                                if(udp_recv->CHdata1->pop() == '6' ){
-////                                     if(udp_recv->CHdata1->isEmpty())  msleep(10);
-//                                    if(udp_recv->CHdata1->pop() == '6' ){
-////                                         if(udp_recv->CHdata1->isEmpty())  msleep(10);
-//                                        if(udp_recv->CHdata1->pop() == '6' ){
-////                                             if(udp_recv->CHdata1->isEmpty())  msleep(10);
-//                                            if(udp_recv->CHdata1->pop() == '6' ){
-//                                                if(udp_recv->CHdata1->pop() == '6' ){
-////                                                if(udp_recv->CHdata1->isEmpty())  msleep(10);
-//                                                    if(udp_recv->CHdata1->pop() == '6' ){
-////                                                         if(udp_recv->CHdata1->isEmpty())  msleep(10);
-//                                                        if(udp_recv->CHdata1->pop() == '6' ){
-////                                                             if(udp_recv->CHdata1->isEmpty())  msleep(10);
-//                                                            if(udp_recv->CHdata1->pop() == '6' ){
-//                                                                if(udp_recv->CHdata1->pop() == '6' ){
-////                                                                     if(udp_recv->CHdata1->isEmpty())  msleep(10);
-//                                                                    if(udp_recv->CHdata1->pop() == '6' ){
-////                                                                        if(udp_recv->CHdata1->isEmpty())  msleep(10);
-//                                                                        if(udp_recv->CHdata1->pop() == '6' ){
-////                                                                             if(udp_recv->CHdata1->isEmpty())  msleep(10);
-//                                                                            if(udp_recv->CHdata1->pop() == '6' ){
 
-                                                                                sizeoCHdata = peakNum*16; //两个6666666666666666之间的长度
+                                sizeoCHdata = peakNum*16; //两个6666666666666666之间的长度
 
-                                                                                demo_CHdata[0] = '6';
-                                                                                demo_CHdata[1] = '6';
-                                                                                demo_CHdata[2] = '6';
-                                                                                demo_CHdata[3] = '6';
-//                                                                                demo_CHdata[4] = '6';
-//                                                                                demo_CHdata[5] = '6';
-//                                                                                demo_CHdata[6] = '6';
-//                                                                                demo_CHdata[7] = '6';
-//                                                                                demo_CHdata[8] = '6';
-//                                                                                demo_CHdata[9] = '6';
-//                                                                                demo_CHdata[10] = '6';
-//                                                                                demo_CHdata[11] = '6';
-//                                                                                demo_CHdata[12] = '6';
-//                                                                                demo_CHdata[13] = '6';
-//                                                                                demo_CHdata[14] = '6';
-//                                                                                demo_CHdata[15] = '6';
+                                demo_CHdata[0] = '6';
+                                demo_CHdata[1] = '6';
+                                demo_CHdata[2] = '6';
+                                demo_CHdata[3] = '6';
 
-                                                                                //从16开始存读sizeoCHdata长度
-                                                                                for( int j=4; j<sizeoCHdata; ++j){
-                                                                                         if(udp_recv->CHdata1->isEmpty())  msleep(10);
-//                                                                                    unsigned char usCHdata = udp_recv->CHdata1->pop();
-                                                                                    demo_CHdata[j] = udp_recv->CHdata1->pop();
-                                                                                }
 
-                                                                                isHeadFream = 1;
+                                //从16开始存读sizeoCHdata长度
+                                for( int j=4; j<sizeoCHdata; ++j){
+                                    if(udp_recv->CHdata1->isEmpty())  QThread::msleep(10);
+                                    //unsigned char usCHdata = udp_recv->CHdata1->pop();
+                                    demo_CHdata[j] = udp_recv->CHdata1->pop();
+                                }
 
-                                                                                qDebug()<<"Found 6666666666666666!!"<<endl;
-//                                                                            }
-//                                                                        }
-//                                                                    }
-//                                                                }
-//                                                            }
-//                                                        }
-//                                                    }
-//                                                }
-//                                            }
-//                                        }
-//                                    }
-//                                }
+                                isHeadFream = 1;
+
+//                                qDebug()<<"Found 6666666666666666!!"<<endl;
+
                             }
                         }
                     }
-                }
 
+                }
 
             }while (isHeadFream==0) ;//isHeadFream == 0时循环，直到不等于0跳出循环
 
-//            //1.CHdatax >> demo_CHdatax[]
-
-//            memcpy(demo_CHdatax,udp_recv->CHdatax,sizeof(char)*2048);
-
             //2. demo_CHdata[] >> demo_CHdata_DEC_all[]
+//            sizeoCHdata=0; //test
             int sizeoDemodata = sizeoCHdata;
 
             for(int m = 0; m<sizeoDemodata; m+=4){
@@ -193,16 +124,20 @@ void Demodulation::run()
                 RealPh[t] = Unwrap(Ph[t], t);
 
 
-                //6.Ph[] >> DEMOdata_flash ; Ph[] >> DEMOdata_save
+                //6.Ph[] >> DEMOdata_flash ; Ph[] >> DEMOdata_save; Ph[] >> DEMOdata_fft
+//                if(DEMOdata_flash->isFull()) QThread::usleep(10);
                 DEMOdata_flash->push(RealPh[t]);
+//                if(DEMOdata_save->isFull()) QThread::usleep(10);
                 DEMOdata_save->push(RealPh[t]);
+//                if(DEMOdata_fft->isFull()) QThread::usleep(10);
+                DEMOdata_fft->push(RealPh[t]);
+
+//                qDebug()<<RealPh[t]<<endl;
             }
 
-            qDebug()<<"aa"<<endl;
+//            qDebug()<<"aa"<<endl;
 
         } // end if
-
-
 
     }//end while
 
@@ -333,7 +268,7 @@ void Demodulation::ReadFilterCoeff(float *HPFcoeff/*, float *LPFcoeff*/)
     //fileName = QString("ChebysheyIIFilterCoefficient_Order8_4Section_")+QString::number((int)(frequency/1000))+QString("KHz_1Hz.bin");//1Hz的高通滤波器文件名为ButtorWorthFilterCoefficient_Order8_1KHz_1Hz
     //fileName2 = QString("LPFilterCoefficient_")+QString::number((int)(frequency/1000))+QString("KHz_400Hz.bin");// 400Hz低通滤波器文件名LPFilterCoefficient_1KHz_400Hz.bin
 
-    QString pat = QString("C:/Qt_UDP_DAS/ButtorWorthFilterCoefficient_10KHz_5Hz.bin");
+    QString pat = QString("C:/Qt_UDP_DAS/ButtorWorthFilterCoefficient_30KHz_5Hz.bin");
     //    QString pat2 = QString("C:/DAS/ButtorWorthFilterCoefficient/") + fileName2;
 
     //    qDebug()<<"Filter Coefficient path:"<<pat.toStdString().c_str()<<"  "<<pat2.toStdString().c_str();
