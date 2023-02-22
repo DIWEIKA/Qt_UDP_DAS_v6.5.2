@@ -268,7 +268,7 @@ void Demodulation::ReadFilterCoeff(float *HPFcoeff/*, float *LPFcoeff*/)
     //fileName = QString("ChebysheyIIFilterCoefficient_Order8_4Section_")+QString::number((int)(frequency/1000))+QString("KHz_1Hz.bin");//1Hz的高通滤波器文件名为ButtorWorthFilterCoefficient_Order8_1KHz_1Hz
     //fileName2 = QString("LPFilterCoefficient_")+QString::number((int)(frequency/1000))+QString("KHz_400Hz.bin");// 400Hz低通滤波器文件名LPFilterCoefficient_1KHz_400Hz.bin
 
-    QString pat = QString("C:/Qt_UDP_DAS/ButtorWorthFilterCoefficient_30KHz_5Hz.bin");
+    QString pat = QString("C:/Qt_UDP_DAS/ButtorWorthFilterCoefficient_10KHz_5Hz.bin");
     //    QString pat2 = QString("C:/DAS/ButtorWorthFilterCoefficient/") + fileName2;
 
     //    qDebug()<<"Filter Coefficient path:"<<pat.toStdString().c_str()<<"  "<<pat2.toStdString().c_str();

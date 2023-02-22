@@ -9,7 +9,7 @@ MainWindow::MainWindow(QWidget *parent)
     ,isStart(false)
     ,isHEX(true)
     ,AcqMode(1)
-    ,Freq(20*1000) //采样率
+    ,Freq(10*1000) //采样率
     ,demoFlashTime(2000)//解调信号 flash一次的时间
     ,pulseFlashTime(1000)//脉冲信号 flash一次的时间
 //    ,demoFlashFreq(1000/demoFlashTime)  //即flash的频率

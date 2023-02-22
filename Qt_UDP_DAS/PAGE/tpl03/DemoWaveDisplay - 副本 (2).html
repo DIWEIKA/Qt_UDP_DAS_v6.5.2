@@ -18,7 +18,7 @@
 	<script>
 
 
-		var region_num = 4; //区域数 (需要手动修改)
+		var region_num = 4; //区域数
 
 		//接收Qt传过来的区域数
 		function get_region_num(str) {
@@ -163,7 +163,7 @@
 			var option;
 			let xdata = [];
 			let ydata = [];
-			var N1;  //  采样时间点
+			var N1;
 			N1 = str["N1"];
 			// ydata = str["demo_wave"];
 
@@ -255,7 +255,7 @@
 			});
 			var app = {};
 			var N1 = 150; //横轴的长度
-			var N2 = 200; //纵轴的长度(频点个数)
+			var N2 = 614; //纵轴的长度(频点个数)
 			var N3 = 0; //起始频率
 
 			var option;
@@ -264,7 +264,7 @@
 			let freq = [];
 			//10kHz使用
 			for (var i = N3; i < (N2 + N3); ++i) {
-				freq.push((0.488*i + 400 ).toFixed(1)); //分度值*点数 + 偏移量
+				freq.push((0.488*i + 200 ).toFixed(1)); //分度值*点数 + 偏移量
 			}
 
 			// //20kHz使用
@@ -1064,12 +1064,13 @@
 
 
 			option = {
-
+				width:'1500px',
+				height:'10000px',
 				tooltip: {
 					position: 'top'
 				},
 				grid: {
-					height: '50%',
+					height: '80%',
 					top: '10%'
 				},
 				xAxis: {
@@ -1092,11 +1093,11 @@
 				},
 				visualMap: {
 					min: 0,
-					max: 3,
+					max: 0.2,
 					calculable: true,
 					orient: 'horizontal',
 					left: 'center',
-					bottom: '15%',
+					bottom: '1%',
 					inRange: {
 						color: [
 							'#313695',
@@ -1117,7 +1118,7 @@
 					{
 						name: 'FFT results',
 						type: 'heatmap',
-
+						// height:'1200px',
 						data: data,
 						// label: {
 						//   show: true
