@@ -223,6 +223,12 @@ demowave_widget2::demowave_widget2(Demodulation *demodulation, FFT *_fft):
 demowave_widget2::~demowave_widget2()
 {
     delete ui;
+    delete m_demowave_widget;
+    delete webChannel4;
+    delete webobj4;
+    delete demodu;
+    delete timer_flash;
+    delete m_fft;
     delete[] DemodataArray;
 }
 

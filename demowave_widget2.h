@@ -50,7 +50,6 @@ private:
     int peakNum;
     QVector<QString> Region; //存放区域label的容器
     QVector<QString> Sampledots; //存放采样点label的容器
-    QCPColorMap *heatmap; //瀑布图
     FFT* m_fft;
 
     //存放Demodata[]的数组(二维数组) 二维数组最大为20000*20000*4Bytes(总容量不能超过2GBytes)

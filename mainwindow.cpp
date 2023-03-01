@@ -102,6 +102,22 @@ MainWindow::~MainWindow()
     delete ui;
     delete webChannel;
     delete webobj;
+    delete m_mainwindow_widget;
+    delete webChannel;
+    delete MsgTimer;
+    delete udp_recv;
+    delete SaveTimer;
+    delete FlashTimer_Pulse;
+    delete DemoTimer;
+    delete FlashTimer;
+    delete writeToFiles;
+    delete pulsewave_Widget2;
+    delete demodu;
+    delete demowave_Widget2;
+    delete com_send;
+    delete demodata_save;
+    delete m_fft;
+    delete fftTimer;
 
     on_pushButton_Stop_clicked();
     FinishUDP_RecvThread();

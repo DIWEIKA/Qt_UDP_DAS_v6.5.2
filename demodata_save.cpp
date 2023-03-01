@@ -7,6 +7,11 @@ DemoData_Save::DemoData_Save(Demodulation* demodulation)
 
 }
 
+DemoData_Save::~DemoData_Save()
+{
+    delete m_demodulation;
+}
+
 
 
 void DemoData_Save::run()

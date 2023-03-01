@@ -11,6 +11,7 @@ class DemoData_Save : public QThread
     Q_OBJECT
 public:
     DemoData_Save(Demodulation* demodulation);
+    ~DemoData_Save();
     QString& SaveFileDemo() {return saveFileDemo;}
 private:
     Demodulation* m_demodulation;

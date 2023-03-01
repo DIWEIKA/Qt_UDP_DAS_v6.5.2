@@ -182,7 +182,9 @@ FFT::FFT(Demodulation* _demodulation)
 
 FFT::~FFT()
 {
-
+    delete m_demodulation;
+    delete[] DemodataArray;
+    delete[] fft_result_array;
 }
 
 void FFT::run()

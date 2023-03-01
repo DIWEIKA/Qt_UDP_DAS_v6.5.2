@@ -30,6 +30,7 @@ Demodulation::Demodulation(UDP_Recv* udp_Recv, int DemoFlashTime, int freq, int 
 Demodulation::~Demodulation()
 {
     FreeMemory();
+    delete udp_recv;
 }
 
 

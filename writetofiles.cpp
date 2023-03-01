@@ -8,6 +8,11 @@ WriteToFiles::WriteToFiles(UDP_Recv* udp_Recv, int peaknum):
 
 }
 
+WriteToFiles::~WriteToFiles()
+{
+    delete udp_recv;
+}
+
 /*----------------保存模式二中的四通道原始数据----------------*/
 void WriteToFiles::run()
 {

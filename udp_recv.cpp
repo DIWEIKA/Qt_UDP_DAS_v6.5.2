@@ -253,6 +253,7 @@ UDP_Recv::UDP_Recv(MainWindow* mainwindow):
 UDP_Recv::~UDP_Recv()
 {
     FreeMemory();
+    delete mainWindow;
 }
 
 void UDP_Recv::clearCHdata()

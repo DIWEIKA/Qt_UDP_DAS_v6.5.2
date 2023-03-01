@@ -20,6 +20,10 @@ pulsewave_widget2::pulsewave_widget2(UDP_Recv *udp_Recv):
 pulsewave_widget2::~pulsewave_widget2()
 {
     delete ui;
+    delete m_pulsewave_widget;
+    delete webChannel2;
+    delete webobj2;
+    delete udp_recv;
     FreeMemory();
 }
 
