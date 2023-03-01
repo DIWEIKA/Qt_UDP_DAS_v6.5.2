@@ -39,7 +39,7 @@ void Demodulation::run()
 
         /*------------遍历CHdataArray[0]即可---------------*/
 
-        if(udp_recv->isStart){
+        if(udp_recv->IsStart()){
 
             //1. CHdataArray[0] >> demo_CHdata
             bool isHeadFream = 0;
@@ -49,13 +49,13 @@ void Demodulation::run()
             do{
 //                 if(udp_recv->CHdata1->isEmpty()) QThread::msleep(10);
 //                while(udp_recv->CHdata1->isEmpty()) QThread::msleep(10);
-                if(udp_recv->CHdata1->pop() == '6' ){
+                if(udp_recv->Get_CHdata1()->pop() == '6' ){
 //                    if(udp_recv->CHdata1->isEmpty())  QThread::msleep(10);
-                    if(udp_recv->CHdata1->pop() == '6' ){
+                    if(udp_recv->Get_CHdata1()->pop() == '6' ){
 //                       if(udp_recv->CHdata1->isEmpty())  QThread::msleep(10);
-                        if(udp_recv->CHdata1->pop() == '6' ){
+                        if(udp_recv->Get_CHdata1()->pop() == '6' ){
 //                             if(udp_recv->CHdata1->isEmpty())  QThread::msleep(10);
-                            if(udp_recv->CHdata1->pop() == '6' ){
+                            if(udp_recv->Get_CHdata1()->pop() == '6' ){
 
                                 sizeoCHdata = peakNum*16; //两个6666666666666666之间的长度
 
@@ -67,9 +67,9 @@ void Demodulation::run()
 
                                 //从16开始存读sizeoCHdata长度
                                 for( int j=4; j<sizeoCHdata; ++j){
-                                    if(udp_recv->CHdata1->isEmpty())  QThread::msleep(10);
+                                    if(udp_recv->Get_CHdata1()->isEmpty())  QThread::msleep(10);
                                     //unsigned char usCHdata = udp_recv->CHdata1->pop();
-                                    demo_CHdata[j] = udp_recv->CHdata1->pop();
+                                    demo_CHdata[j] = udp_recv->Get_CHdata1()->pop();
                                 }
 
                                 isHeadFream = 1;

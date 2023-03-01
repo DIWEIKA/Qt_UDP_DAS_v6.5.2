@@ -13,7 +13,14 @@ class UDP_Recv : public QThread
 public:
     UDP_Recv(MainWindow* mainwindow);
     ~UDP_Recv();
+    void clearCHdata();
+    void FreeMemory();
+    char* Pack_Hex_Display() const {return pack_HEX_Display;}
+    bool& IsStart() {return isStart;}
+    shared_ptr<CirQueue<unsigned char>> Get_CHdata1() const {return CHdata1;}
+    vector<shared_ptr<CirQueue<unsigned char>>>& Get_CHdataArray() {return CHdataArray;}
 
+private:
     MainWindow* mainWindow;
 
     //winSocket API
@@ -40,10 +47,10 @@ public:
     int pack_count;
     char* pack_HEX_32; //用于存放32帧数据
     char* pack_HEX_Display; //用于显示的32帧数据
+    bool hasRecved; //UDP是否收到了数据
 
     shared_ptr<CirQueue<unsigned char>> CHdata1; //存放待解调数据
     char* CHdatax; //存放待解调数据
-
     //CHdata2~101存放保存至本地的四通道原始数据
     shared_ptr<CirQueue<unsigned char>> CHdata2;
     shared_ptr<CirQueue<unsigned char>> CHdata3;
@@ -146,11 +153,7 @@ public:
 //    shared_ptr<CirQueue<unsigned char>> CHdata100;
 //    shared_ptr<CirQueue<unsigned char>> CHdata101;
 
-    shared_ptr<CirQueue<unsigned char>> CHdataArray[SaveNum]; //存放保存至本地的四通道原始数据
-
-    void clearCHdata();
-
-    void FreeMemory();
+    vector<shared_ptr<CirQueue<unsigned char>>> CHdataArray; //存放保存至本地的四通道原始数据
 
 protected:
     void run();

@@ -14,6 +14,8 @@ class WriteToFiles : public QThread
 public:
     WriteToFiles(UDP_Recv* udp_Recv, int peaknum);
 
+    QString& SaveFilenameAll() {return saveFilenameAll;}
+private:
     UDP_Recv* udp_recv;
     QDateTime dateTime; //当前系统时间
     QString saveFilenameAll;

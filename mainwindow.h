@@ -57,7 +57,19 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void setHtmlPages();
+    void setLocalMsg();
+    void OpenSaveThread();
+    void OpenDemoSaveThread();
+    void stopThread();
+    void readConfigFile();
+    void OpenFFTThread();
+    const int freq() const {return Freq;};
+    int& PeakNum()  {return peakNum;}
+    bool& IsStart()  {return isStart;}
+    int& acqMode()  {return AcqMode;}
 
+private:
     Ui::MainWindow *ui;
 
     QWebEngineView* m_mainwindow_widget;
@@ -69,12 +81,12 @@ public:
     bool isStart;
     bool isHEX;
     int AcqMode;
-    int Freq;
+    const int Freq;
     int peakNum;
-    int demoFlashTime;
-    int pulseFlashTime;
+    const int demoFlashTime;
+    const int pulseFlashTime;
 //    double demoFlashFreq;
-    double pulseFlashFreq;
+    const double pulseFlashFreq;
     int cnt;
 
     QTimer* MsgTimer;
@@ -92,14 +104,6 @@ public:
     FFT *m_fft;
     QTimer* fftTimer;
 
-    void setHtmlPages();
-    void setLocalMsg();
-    void OpenSaveThread();
-    void OpenDemoSaveThread();
-    void stopThread();
-    void readConfigFile();
-    void OpenFFTThread();
-
 
 private slots:
     void FinishUDP_RecvThread();
@@ -107,25 +111,15 @@ private slots:
     void FinishDemodulationThread();
     void FinishDemoData_saveThread();
     void FinishFFT_Thread();
-
     void on_pushButton_Start_clicked();
-
     void on_pushButton_Stop_clicked();
-
     void on_pushButton_Clear_clicked();
-
     void on_checkBox_Save_clicked(bool _isSave);
-
     void on_pushButton_Display_pulse_clicked();
-
     void on_checkBox_Demo_clicked(bool _isDemo);
-
     void on_comboBox_Mode_currentIndexChangedSlot(int _AcqMode);
-
     void on_pushButton_Send_clicked();
-
     void on_pushButton_Display_demo_clicked();
-
     void PulseWave_pause_slot();
     void PulseWave_restart_slot();
 

@@ -1,5 +1,5 @@
-/* @Decription é€šè¿‡æ•°ç»„å®ç°çº¿ç¨‹å®‰å…¨å¾ªç¯é˜Ÿåˆ—
-* å…¶æœ¬è´¨ä¸Šæ˜¯ä¸€ä¸ªTç±»å‹çš„æ•°ç»„ æ¯”å¦‚CHdataå°±æ˜¯ä¸€ä¸ªunsigned charç±»å‹çš„æ•°ç»„
+/* @Decription Í¨¹ıÊı×éÊµÏÖÏß³Ì°²È«Ñ­»·¶ÓÁĞ
+* Æä±¾ÖÊÉÏÊÇÒ»¸öTÀàĞÍµÄÊı×é ±ÈÈçCHdata¾ÍÊÇÒ»¸öunsigned charÀàĞÍµÄÊı×é
 * */
 #pragma once
 #include<stdlib.h>
@@ -40,8 +40,8 @@ private:
     unsigned long m_front;
     unsigned long m_rear;
 
-    unsigned long M_wrpos;//å½“å‰å†™å…¥ä½ç½®
-    unsigned long M_rdpos;//å½“å‰è¯»å–ä½ç½®
+    unsigned long M_wrpos;//µ±Ç°Ğ´ÈëÎ»ÖÃ
+    unsigned long M_rdpos;//µ±Ç°¶ÁÈ¡Î»ÖÃ
 public:
 
 };
@@ -59,7 +59,7 @@ CirQueue<T>::CirQueue()
     M_rdpos = 0;
 }
 /**
- * @brief é€šè¿‡é¢„å…ˆé…ç½®æ•°ç»„çš„ç©ºé—´å¤§å°æ„é€ é˜Ÿåˆ—ï¼Œå¤šçº¿ç¨‹å¯¹æ•°ç»„è¿›è¡Œå†…å­˜åˆ†é…ä¼šå‡ºé”™
+ * @brief Í¨¹ıÔ¤ÏÈÅäÖÃÊı×éµÄ¿Õ¼ä´óĞ¡¹¹Ôì¶ÓÁĞ£¬¶àÏß³Ì¶ÔÊı×é½øĞĞÄÚ´æ·ÖÅä»á³ö´í
  */
 template<typename T>
 CirQueue<T>::CirQueue(unsigned long maxlen)
@@ -79,7 +79,7 @@ CirQueue<T>::~CirQueue()
     m_data = NULL;
 }
 /**
- * @brief é‡æ–°åˆ†é…å¾ªç¯é˜Ÿåˆ—çš„å†…å­˜å¤§å°
+ * @brief ÖØĞÂ·ÖÅäÑ­»·¶ÓÁĞµÄÄÚ´æ´óĞ¡
  */
 template<typename T>
 void CirQueue<T>::setMaxLen(unsigned long maxlen)
@@ -160,7 +160,7 @@ T* CirQueue<T>::end()
 }
 
 /**
- * @brief è·å–å¾ªç¯é˜Ÿåˆ—çš„åˆ†é…å†…å­˜å¤§å°(å½“å‰å¯ä»¥å­˜å‚¨çš„é˜Ÿåˆ—æœ€å¤§é•¿åº¦)
+ * @brief »ñÈ¡Ñ­»·¶ÓÁĞµÄ·ÖÅäÄÚ´æ´óĞ¡(µ±Ç°¿ÉÒÔ´æ´¢µÄ¶ÓÁĞ×î´ó³¤¶È)
  */
 template<typename T>
 unsigned long CirQueue<T>::MaxLength()
@@ -168,7 +168,7 @@ unsigned long CirQueue<T>::MaxLength()
     return M_LEN;
 }
 /**
- * @brief è·å–å½“å‰é˜Ÿåˆ—ä¸­æœ‰æ•ˆæ•°æ®çš„é•¿åº¦
+ * @brief »ñÈ¡µ±Ç°¶ÓÁĞÖĞÓĞĞ§Êı¾İµÄ³¤¶È
  */
 template<typename T>
 unsigned long CirQueue<T>::size()
@@ -177,7 +177,7 @@ unsigned long CirQueue<T>::size()
 }
 
 /**
- * æ¸…ç©ºé˜Ÿåˆ—
+ * Çå¿Õ¶ÓÁĞ
  */
 template<typename T>
 void CirQueue<T>::clear()

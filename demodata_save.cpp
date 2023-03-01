@@ -2,7 +2,7 @@
 
 DemoData_Save::DemoData_Save(Demodulation* demodulation)
     :m_demodulation(demodulation),
-    peakNum(m_demodulation->peakNum)
+    peakNum(m_demodulation->PeakNum())
 {
 
 }
@@ -34,21 +34,21 @@ void DemoData_Save::run()
 
     if (!outfileDemo.is_open()) return;
 
-    int sizeofDEMOdata = m_demodulation->DEMOdata_save->size();
+    int sizeofDEMOdata = m_demodulation->GetDEMOdata_save()->size();
 
 //    qDebug()<<"sizeofDEMOdata = "<<sizeofDEMOdata<<endl;
 
     for(int i = 0; i<sizeofDEMOdata; i++){
-        outfileDemo.write((const char*)m_demodulation->DEMOdata_save->begin(),sizeof(float));
+        outfileDemo.write((const char*)m_demodulation->GetDEMOdata_save()->begin(),sizeof(float));
 
         //如果队列为空，延迟一会，若依然为空，说明没有数据了
-         if(m_demodulation->DEMOdata_save->isEmpty()){
+         if(m_demodulation->GetDEMOdata_save()->isEmpty()){
              msleep(3);
-             if(m_demodulation->DEMOdata_save->isEmpty())
+             if(m_demodulation->GetDEMOdata_save()->isEmpty())
                  break;
          }
 
-        m_demodulation->DEMOdata_save->pop();
+        m_demodulation->GetDEMOdata_save()->pop();
     }
 
     outfileDemo.close();

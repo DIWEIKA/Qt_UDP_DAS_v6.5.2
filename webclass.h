@@ -17,6 +17,7 @@ public:
 
     QString getContent(){return m_content;}
 
+private:
     QString m_content;
 
 signals:

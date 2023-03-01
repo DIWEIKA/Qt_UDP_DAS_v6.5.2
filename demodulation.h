@@ -19,7 +19,15 @@ class Demodulation : public QThread
 public:
     Demodulation(UDP_Recv* udp_Recv,int DemoFlashTime, int freq, int peaknum);
     ~Demodulation();
+    void FreeMemory();
+    void ReadFilterCoeff(float *HPFcoeff/*,float *LPFcoeff*/);
+    void Hpfilter(int i);
+    int& PeakNum() {return peakNum;}
+    shared_ptr<CirQueue<float>>& GetDEMOdata_save(){return DEMOdata_save;}
+    shared_ptr<CirQueue<float>>& GetDEMOdata_flash(){return DEMOdata_flash;}
+    shared_ptr<CirQueue<float>>& GetDEMOdata_fft(){return DEMOdata_fft;}
 
+private:
     UDP_Recv* udp_recv;
     shared_ptr<CirQueue<float>> DEMOdata_flash;
     shared_ptr<CirQueue<float>> DEMOdata_save;
@@ -27,20 +35,6 @@ public:
 //    CirQueue<float> DEMOdata_save2;
 //    float DEMOdata_display[2048];
     char* demo_CHdatax= new char[2048];
-
-    //动态数组
-//    unsigned char *demo_CHdata;
-//    float *Vi;
-//    float *Vq;
-//    float *Ph;
-//    float *atanTable;
-//    int sizeoCHdata;
-//    int sizeoCHdataDec;
-//    int *demo_CHdata_DEC_all;
-//    int *demo_CHdata_DEC_1;
-//    int *demo_CHdata_DEC_2;
-//    int *demo_CHdata_DEC_3;
-//    int *demo_CHdata_DEC_4;
 
     //静态数组
     char demo_CHdata[READ_LENGTH];
@@ -81,11 +75,6 @@ public:
     float *FirstRealPh;
     int *FirstIn_n;
 
-    void FreeMemory();
-
-    void ReadFilterCoeff(float *HPFcoeff/*,float *LPFcoeff*/);
-
-    void Hpfilter(int i);
 
 protected:
     void run();

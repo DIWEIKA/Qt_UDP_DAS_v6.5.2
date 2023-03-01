@@ -177,7 +177,7 @@ FFT::FFT(Demodulation* _demodulation)
     memset(FFTData_149, 0, sizeof(float)*N2);
     memset(FFTData_150, 0, sizeof(float)*N2);
 
-    regionNum = m_demodulation->peakNum;
+    regionNum = m_demodulation->PeakNum();
 }
 
 FFT::~FFT()
@@ -193,7 +193,7 @@ void FFT::run()
         int p = k/regionNum;
         for(int q=0; q<regionNum;q++){
 //            if(m_demodulation->DEMOdata_fft->isEmpty()) QThread::msleep(10);
-            DemodataArray[q][p] = m_demodulation->DEMOdata_fft->pop();
+            DemodataArray[q][p] = m_demodulation->GetDEMOdata_fft()->pop();
 
 //            DemodataArray[q][p] = 1; //ceshi
         }

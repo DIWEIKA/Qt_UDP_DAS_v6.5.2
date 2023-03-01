@@ -12,6 +12,7 @@ class COM_Send : public QThread
 public:
     COM_Send(MainWindow*);
 
+private:
     MainWindow* mainWindow;
     Win_QextSerialPort* myCom;
     QString filePath;

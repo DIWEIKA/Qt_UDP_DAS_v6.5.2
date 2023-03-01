@@ -47,7 +47,7 @@ void pulsewave_widget2::FlashWave()
     sizeoPulsedata = READ_PULSE_LENGTH*2;
 
     //1. pack_HEX_Display >> PulsedataHEX[]
-    memcpy(PulsedataHEX,udp_recv->pack_HEX_Display,sizeof(char)*sizeoPulsedata);
+    memcpy(PulsedataHEX,udp_recv->Pack_Hex_Display(),sizeof(char)*sizeoPulsedata);
 
     //2. PulsedataHEX[] >> Pulsedata_DEC_all[]
     for(int i = 0; i<sizeoPulsedata; i+=4){

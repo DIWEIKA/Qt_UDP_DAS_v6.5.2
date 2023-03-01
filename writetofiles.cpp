@@ -34,23 +34,23 @@ void WriteToFiles::run()
 
     for(int i = 0; i< SaveNum; i++){
 
-        if(udp_recv->CHdataArray[i]->isEmpty())
+        if(udp_recv->Get_CHdataArray()[i]->isEmpty())
             break;
         else
         {
-            unsigned int sizeoCHdata = udp_recv->CHdataArray[i]->size();
+            unsigned int sizeoCHdata = udp_recv->Get_CHdataArray()[i]->size();
 
             for(unsigned int j=0; j<sizeoCHdata; ++j){
-                outfileAll.write((const char*)udp_recv->CHdataArray[i]->begin(),sizeof(unsigned char));
+                outfileAll.write((const char*)udp_recv->Get_CHdataArray()[i]->begin(),sizeof(unsigned char));
 
                 //如果队列为空，延迟一会，若依然为空，说明没有数据了
-                 if(udp_recv->CHdataArray[i]->isEmpty()){
+                 if(udp_recv->Get_CHdataArray()[i]->isEmpty()){
                      msleep(3);
-                     if(udp_recv->CHdataArray[i]->isEmpty())
+                     if(udp_recv->Get_CHdataArray()[i]->isEmpty())
                          break;
                  }
 
-                udp_recv->CHdataArray[i]->pop();
+                udp_recv->Get_CHdataArray()[i]->pop();
             }
 
         }

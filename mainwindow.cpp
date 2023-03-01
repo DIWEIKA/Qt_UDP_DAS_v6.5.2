@@ -73,8 +73,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(webobj,&WebClass::send_mainwindow_btn_display_pulse,this,&MainWindow::on_pushButton_Display_pulse_clicked);
     connect(webobj,&WebClass::send_mainwindow_btn_display_demo,this,&MainWindow::on_pushButton_Display_demo_clicked);
     connect(webobj,&WebClass::send_mainwindow_combobox_mode_indexchanged,this,&MainWindow::on_comboBox_Mode_currentIndexChangedSlot);
-    connect(demowave_Widget2->webobj4,&WebClass::send_demowidget_combobox_region_indexchanged,demowave_Widget2,&demowave_widget2::on_comboBox_region_currentIndexChangedSlot);
-    connect(demowave_Widget2->webobj4,&WebClass::send_fft_combobox_region_indexchanged,m_fft,&FFT::on_comboBox_region_currentIndexChangedSlot);
+    connect(demowave_Widget2->GetWebobj4(),&WebClass::send_demowidget_combobox_region_indexchanged,demowave_Widget2,&demowave_widget2::on_comboBox_region_currentIndexChangedSlot);
+    connect(demowave_Widget2->GetWebobj4(),&WebClass::send_fft_combobox_region_indexchanged,m_fft,&FFT::on_comboBox_region_currentIndexChangedSlot);
     connect(pulsewave_Widget2,&pulsewave_widget2::send_mainwindow_btn_pause,this,&MainWindow::PulseWave_pause_slot);
     connect(pulsewave_Widget2,&pulsewave_widget2::send_mainwindow_btn_restart,this,&MainWindow::PulseWave_restart_slot);
 
@@ -243,7 +243,7 @@ void MainWindow::FinishWriteToFilesThread()
 
     QJsonObject save_msg_obj;
     QJsonArray saveMsg;
-    saveMsg.push_back(QString(" Save Files have been saved in " + writeToFiles->saveFilenameAll));
+    saveMsg.push_back(QString(" Save Files have been saved in " + writeToFiles->SaveFilenameAll()));
     save_msg_obj.insert("save",saveMsg);
     QString save_msg_js = QString("save_msg(%1)").arg(QString(QJsonDocument(save_msg_obj).toJson()));
     m_mainwindow_widget->page()->runJavaScript(save_msg_js);
@@ -262,7 +262,7 @@ void MainWindow::FinishDemoData_saveThread()
 
     QJsonObject demo_msg_obj;
     QJsonArray demoMsg;
-    demoMsg.push_back(QString("Demodulation have been saved in " + demodata_save->saveFileDemo));
+    demoMsg.push_back(QString("Demodulation have been saved in " + demodata_save->SaveFileDemo()));
     demo_msg_obj.insert("demo",demoMsg);
     QString demo_msg_js = QString("demo_msg(%1)").arg(QString(QJsonDocument(demo_msg_obj).toJson()));
     m_mainwindow_widget->page()->runJavaScript(demo_msg_js);
@@ -318,8 +318,8 @@ void MainWindow::on_pushButton_Stop_clicked()
     udp_recv->quit();
 
     //clear DEMOdata
-    demodu->DEMOdata_flash->clear();
-    demodu->DEMOdata_save->clear();
+    demodu->GetDEMOdata_flash()->clear();
+    demodu->GetDEMOdata_save()->clear();
 
     if(SaveTimer->isActive()) SaveTimer->stop();
     if(DemoTimer->isActive()) DemoTimer->stop();

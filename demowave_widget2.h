@@ -31,7 +31,13 @@ class demowave_widget2: public QWidget
 public:
     demowave_widget2(Demodulation *demodulation, FFT *_fft);
     ~demowave_widget2();
+    void setHtmlPages();
+    void initComboBox_Region();
+    QVector<double> labelPositions(const QVector<QString> &labels, double offset);
+    void FreeMemory();
+    WebClass* GetWebobj4() const {return webobj4;}
 
+private:
     Ui::demowave_widget2 *ui;
 
     QWebEngineView *m_demowave_widget;
@@ -152,11 +158,6 @@ public:
     float Demodata_99[REGION_DATA_LENGTH];
     float Demodata_100[REGION_DATA_LENGTH];//region100
 
-    void setHtmlPages();
-    void initComboBox_Region();
-    QVector<double> labelPositions(const QVector<QString> &labels, double offset);
-
-    void FreeMemory();
 
 public slots:
     void FlashWave();

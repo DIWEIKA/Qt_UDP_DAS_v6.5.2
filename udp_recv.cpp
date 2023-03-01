@@ -4,8 +4,8 @@ UDP_Recv::UDP_Recv(MainWindow* mainwindow):
     mainWindow(mainwindow),
     net_pack_size(0),
     isStartFrame(0),
-    Freq(mainWindow->Freq), //采样率
-    peakNum(mainWindow->peakNum), //峰值点数
+    Freq(mainWindow->freq()), //采样率
+    peakNum(mainWindow->PeakNum()), //峰值点数
     lenoRecv(1024), //接受一帧的数据长度
     lenoRecvHEX(lenoRecv*2),
     LenoUDP(Freq*peakNum*4*4*200),//一个存储容器的大小: 采样率 * 峰值点数 * 4通道 * 4个char转化为一个float(1s数据量) * 100
@@ -146,7 +146,7 @@ UDP_Recv::UDP_Recv(MainWindow* mainwindow):
 //    CHdata100 = make_shared<CirQueue<unsigned char>>(LenoUDP);
 //    CHdata101 = make_shared<CirQueue<unsigned char>>(LenoUDP);
 
-
+    CHdataArray = vector<shared_ptr<CirQueue<unsigned char>>>(SaveNum);
 //    init CHdataArray
     CHdataArray[0] =  CHdata2;
     CHdataArray[1] =  CHdata3;
@@ -271,7 +271,8 @@ void UDP_Recv::run()
 {
     while(1)
     {
-        isStart = mainWindow->isStart;
+        isStart = mainWindow->IsStart();
+        hasRecved = false;
 
         if(isStart){
 
@@ -283,6 +284,8 @@ void UDP_Recv::run()
                 net_pack_size = recvfrom(echo_socket_WIN, (char*)p_echo_net_pack, lenoRecvHEX, 0, (sockaddr *)&src_addr_WIN, &src_addr_len);
 
                 qDebug()<<"Reciving net_pack_size = "<< net_pack_size <<endl;
+
+                 if(net_pack_size > 0) hasRecved = true;
 
                 //clear QByteArray
                 p_echo_net_pack_array.clear();
@@ -307,7 +310,7 @@ void UDP_Recv::run()
                     isStartFrame = 1;
 
                 /*---------------Mode I: 将脉冲波形显示出来------------*/
-                if((mainWindow->AcqMode == 1) && isStartFrame){
+                if((mainWindow->acqMode() == 1)&& hasRecved && isStartFrame){
 
                     //p_echo_net_pack_HEX >> pack_HEX_32[]
                     for(int k = 2*pack_count; k<(2*pack_count + 2048) ; k++ )
@@ -329,7 +332,7 @@ void UDP_Recv::run()
                 }
 
                 /*---------------Mode II: 直接保存收到的峰值点原始数据------------*/
-                if(mainWindow->AcqMode == 2){
+                if(mainWindow->acqMode() == 2 && hasRecved){
 
                     for(int i=0; i<lenoRecvHEX; i++) {
 

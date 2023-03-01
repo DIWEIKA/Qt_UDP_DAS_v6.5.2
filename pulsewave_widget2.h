@@ -3,7 +3,6 @@
 
 #include <mainwindow.h>
 #include <QWidget>
-#include "qcustomplot.h"
 #include <QMainWindow>
 #include <qmainwindow.h>
 #include <QTimer>
@@ -39,6 +38,7 @@ public:
     void FlashWave();
     void FreeMemory();
 
+private:
     Ui::pulsewave_widget2 *ui;
 
     QWebEngineView *m_pulsewave_widget;
@@ -46,10 +46,7 @@ public:
     WebClass *webobj2;
 
     UDP_Recv *udp_recv;
-    QCPItemText *textLabel;
-    QCPItemLine *arrow;
-    QCPItemTracer *m_sameTimeTracer;
-    QCPItemText *m_sameTimeTextTip;
+
     int sizeoPulsedata ;
     int sizeoPulsedataDec;
     int sizeoDisplaydata;
